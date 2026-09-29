@@ -13,7 +13,7 @@ The wiki is the git submodule `softhier_vla_wiki/`: typed Markdown notes with ti
 ## File back (after a decision or finding)
 Durable outcomes belong in the wiki, not only in chat:
 1. `softhier_vla_wiki/tools/wiki.py new decision|concept|comparison <path> "<Title>"`, fill it fully, link related notes (`related <note>` shows candidates).
-2. Add the catalog line to the directory's `.overview.md`, then `stamp`, `index`, `health` until clean.
+2. Add the catalog line to the directory's `_overview.md`, then `stamp`, `index`, `health` until clean.
 3. Commit inside the submodule only when the user asks: `softhier_vla_wiki/tools/wiki.py commit update "<subject>"`. Never bump the parent's submodule pointer unasked.
 
-Full conventions (note types, sidecars, commit format, health review): `softhier_vla_wiki/CLAUDE.md`.
+Full conventions (note types, folder summary files, commit format, health review): `softhier_vla_wiki/CLAUDE.md`.

@@ -9,9 +9,9 @@ Run periodically (weekly, or after a large ingest), by hand or via the `wiki-hea
 
 ## Steps
 1. `tools/wiki.py health` — read the whole report.
-2. **Errors first** (`ERROR` rows fail `check`): fix `MISSING`/`STALE`/`TOO LONG` sidecars, `UNCATALOGUED` notes, `FRONTMATTER`/`BADTYPE`/`NOTITLE`/`NOSECTION` structure, `BROKENLINK`s.
+2. **Errors first** (`ERROR` rows fail `check`): fix `MISSING`/`EMPTY`/`STALE`/`TOO LONG` summary files, `UNCATALOGUED` notes, `FRONTMATTER`/`BADTYPE`/`NOTITLE`/`NOSECTION` structure, `BROKENLINK`s.
 3. **`NEARDUP` / `DUPLICATE`:** read both notes fully. Merge into the stronger note — the one with more sources/detail, else the older, better-named one (union the `tags:` and `sources:`, redirect inbound links, remove its catalog line, delete the weaker one) or, if they are legitimately different, cross-link them and state the difference in each.
-4. **`ORPHAN`:** run `tools/wiki.py related <note>` and link it from the notes that should point to it (a catalog entry in `.overview.md` does not count as a link). If nothing related exists yet, leave it as a deliberate warning.
+4. **`ORPHAN`:** run `tools/wiki.py related <note>` and link it from the notes that should point to it (a catalog entry in `_overview.md` does not count as a link). If nothing related exists yet, leave it as a deliberate warning.
 5. **`PLACEHOLDER` / `NOSOURCES` / `NOTAGS`:** resolve from the actual source or report that information is missing; never invent.
 6. **Contradictions:** `tools/wiki.py health --candidates` lists related-but-distinct pairs (`REVIEW`, similarity 0.65 to the duplicate threshold). Read each pair for conflicting claims or stale statements; fix the wrong note, or record the tension in both and cross-link.
 7. **Stale claims:** for notes that a recent ingest should have affected, `tools/wiki.py log --pages` shows what changed and when; check whether older notes still assert what newer sources supersede, and update them.
@@ -21,7 +21,7 @@ Run periodically (weekly, or after a large ingest), by hand or via the `wiki-hea
 11. **Log:** when asked to commit: `tools/wiki.py commit lint "<subject>"`.
 
 ## Troubleshooting
-- Threshold too noisy or too quiet: `tools/wiki.py health --dup-threshold 0.86`.
+- Threshold too noisy or too quiet: `tools/wiki.py health --dup-threshold 0.90` (noisier) or `0.95`. The default 0.93 was calibrated in [decision 0005](../memories/decisions/0005-near-duplicate-threshold.md); lower it temporarily with `--candidates` to look for overlap that is not a copy.
 - Index looks wrong: `rm -rf .index && tools/wiki.py index`.
 
 New content goes in via the [ingest runbook](ingest-a-source.md); the rationale for these checks is [decision 0002](../memories/decisions/0002-lint-and-git-as-log.md).

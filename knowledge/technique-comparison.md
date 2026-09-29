@@ -1,0 +1,46 @@
+---
+type: comparison
+tags: [comparison, speedup, accuracy-cost, techniques, vla-efficiency]
+sources: [resources/openvla-oft.md, resources/vla-cache.md, resources/lightvla.md, resources/efficientvla.md, resources/deer-vla.md, resources/dysl-vla.md, resources/clp-layer-pruning.md, resources/pruned-vla-recovery.md, resources/bitvla.md, resources/quantvla.md, resources/vla-cpp.md, resources/flashvla-streaming.md, resources/realtime-vla.md, resources/jetson-pi.md, resources/smolvla.md, resources/real-time-chunking.md, resources/openvla.md, resources/vla-xpu-characterization.md]
+---
+# Technique comparison
+
+VLA efficiency techniques compared on training need, reported speedup, accuracy cost and the hardware they were measured on.
+
+## Summary
+No technique dominates. System-level work (graphs, fused kernels) gives 2–4× with no accuracy cost but no model change; removing sequential decoding (OFT) gives the largest speedup for autoregressive VLAs; for flow VLAs the cheapest wins are layer pruning before fine-tuning (about 1.4×), fewer denoising steps (up to about 1.8× per halving with a small drop), and asynchronous execution. Token pruning and caching help 7B models with 256–512 tokens and help little elsewhere. Quantization saves memory reliably but speed only with native low-bit kernels. Numbers are not additive and are rarely measured on ≤10-TOPS hardware.
+
+## Comparison
+
+| Technique | Acts on | Training | Reported speedup | Accuracy change | Hardware | Source |
+|---|---|---|---|---|---|---|
+| Kernel/graph optimization | whole call | none | 3.9× (106.5 → 27.3 ms, π0, 2 views) | none | RTX 4090 | [Realtime-VLA](../resources/realtime-vla.md) |
+| System stack on edge (graphs, buffers, unrolled flow) | whole call | none (+ 40M module for async) | 8.66× control frequency (π0.5, Orin); 3.48× (Thor) | LIBERO about equal to sync | Jetson Orin, Thor | [Jetson-PI](../resources/jetson-pi.md) |
+| Parallel decoding + chunking + L1 head (OFT) | action decode | fine-tune | 26× throughput (4.2 → 109.7 Hz) | LIBERO 76.5 → 95.3 (same inputs) | A100 | [OpenVLA-OFT](../resources/openvla-oft.md) |
+| Async inference (SmolVLA stack) | serving | none | about 30% faster task completion; 2× completions in fixed time | avg success 78.3 → 73.3 (real, 3 tasks) | SO100 robot | [SmolVLA](../resources/smolvla.md) |
+| Real-time chunking | serving | none | about 20% faster than sync (paper's claim), robust to +200 ms delay | higher throughput at all delays | RTX 4090 (server) | [RTC](../resources/real-time-chunking.md) |
+| Streaming action decoding | expert | fine-tune | 2.43× per step (async d = 1); 45.8 → 26.7 ms | LIBERO 96.9 → 97.8 | RTX 4090/5090 | [FlashVLA](../resources/flashvla-streaming.md) |
+| Fewer denoising steps (OFT diffusion head, 10 → 5) | expert | none at test | 1.8× (19.3 → 35.1 Hz) | LIBERO-Long 91.0 → 90.0; 1 step fails (0.0) | A100 | [OpenVLA-OFT](../resources/openvla-oft.md) |
+| Static layer pruning before fine-tune (CLP) | prefix + expert | fine-tune | 1.39–1.47× | LIBERO −0.4 to −0.9 | RTX 4070 | [CLP](../resources/clp-layer-pruning.md) |
+| Width pruning + hidden-state distillation (72%) | weights | offline KD (8 GPU-h) | 1.16× (H100); 2.23× (Thor) | sim: within 3.5 pts of teacher at 63%; real robot +12 pts vs teacher | H100, Jetson Thor | [pruned VLA recovery](../resources/pruned-vla-recovery.md) |
+| Dynamic-static layer skipping | prefix | train adapters and controllers | 1.93× (A6000), 1.96× (Orin) | LIBERO 97.1 → 96.5 | A6000, Jetson Orin | [DySL-VLA](../resources/dysl-vla.md) |
+| Early exit (DeeR-VLA) | prefix | train exits | 5.2–6.5× LLM FLOPs; 3.1× LLM time (55 → 17.5 ms) | CALVIN length about equal | V100 | [DeeR-VLA](../resources/deer-vla.md) |
+| Layer + token pruning + feature cache (EfficientVLA) | prefix + expert | none | 1.93× (FLOPs 28.9%) | SIMPLER 74.8 → 74.2 | A40 | [EfficientVLA](../resources/efficientvla.md) |
+| Temporal token caching (VLA-Cache) | prefix | none | 1.63× (OpenVLA); 1.24× (OFT) | LIBERO −0.3 / +0.6 | RTX 4090 | [VLA-Cache](../resources/vla-cache.md) |
+| Learned token pruning (LightVLA) | prefix | fine-tune | 1.6× (34 → 21 ms), FLOPs −59% | 94.8 → 97.4 vs reproduced baseline (published OFT 97.1) | H20 | [LightVLA](../resources/lightvla.md) |
+| VLM token pruning (FastV, SparseVLM) on OpenVLA | prefix | none | about 1.0× / slower | −1.7 / −10.3 pts | RTX 4090 | [VLA-Cache](../resources/vla-cache.md) |
+| INT4 weights (OpenVLA) | weights | PTQ | memory 16.8 → 7.0 GB; speed higher on 4090-class | success 71.3 → 71.9 (8-bit fell to 58.1 because slower) | A5000 and others | [OpenVLA](../resources/openvla.md) |
+| W4A8 LLM + DiT MLP (QuantVLA) | weights, activations | PTQ (calibration) | memory −70% (π0.5); latency not reported | LIBERO 97.1 → 97.6 | A100 | [QuantVLA](../resources/quantvla.md) |
+| GGUF Q4_0 (GR00T-N1.7) | weights | PTQ | 1.14× | 196 → 190–195 of 200 | RTX 3060 | [vla.cpp](../resources/vla-cpp.md) |
+| Ternary VLA (BitVLA) | all weights | native QAT + distill | 4.4× vs OFT+ on A100 (baseline copied from OFT paper); 11× memory | LIBERO 97.1 → 96.0 | A100; kernel tests on RTX 3060, AGX Orin | [BitVLA](../resources/bitvla.md) |
+| torch.compile | whole call | none | 2.9× (4090); 1.51× (Thor); 2.34× (Ascend 310P) | none | as listed | [XPU](../resources/vla-xpu-characterization.md) |
+
+Notes: speedups use each paper's own baseline (often naive PyTorch); accuracy deltas use its benchmark (mostly LIBERO simulation with one seed); "hardware" is where the speed was measured.
+
+## Caveats
+- Baselines differ (eager PyTorch, compiled, tuned), so a technique measured against a weak baseline looks better; see the spread for SmolVLA in [SmolVLA](smolvla.md).
+- Efficiency methods are seldom compared on the same model and device; combinations reported by [XPU characterization](../resources/vla-xpu-characterization.md) lost more accuracy than either method alone.
+- Rows from recently posted papers (Jetson-PI, FlashVLA, pruned-VLA recovery, vla.cpp) have not been independently reproduced.
+- On ≤10-TOPS hardware nothing here is measured; see [edge hardware and the 10 TOPS gap](edge-hardware-and-the-10-tops-gap.md) and [edge budget estimate](edge-budget-estimate.md).
+- The baselines these speedups are measured against are described in [inference workload characterization](inference-workload-characterization.md).
+- Related notes: [layer skipping and pruning](layer-skipping-and-pruning.md), [token pruning and caching](token-pruning-and-caching.md), [quantization](quantization.md), [flow-step reduction](flow-step-reduction.md), [serving methods](serving-methods.md).

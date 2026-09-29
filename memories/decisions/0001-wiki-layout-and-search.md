@@ -23,3 +23,5 @@ everything) and fast local retrieval without running a service or needing API ke
 - Skipped from OpenViking: server, sessions/memory extraction, automatic LLM summarization.
 
 See also: [0002 lint and git-as-log](0002-lint-and-git-as-log.md), [ingest runbook](../../skills/ingest-a-source.md).
+
+Note: the file names and the word "sidecar" used here were replaced by [0006](0006-rename-folder-summary-files-and-plain-language.md).

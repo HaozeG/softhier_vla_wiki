@@ -13,7 +13,7 @@ Use when adding a paper, doc, repo, or experiment result to the wiki. One source
 3. **Source note:** `tools/wiki.py new paper resources/<slug>.md "<Title>"` (or `concept`/`entity` for non-papers). Fill every section faithfully; put the URL/ID in `sources:`. Leave no placeholder text behind.
 4. **Synthesize:** update or create the `knowledge/` notes the source informs (`new concept knowledge/<slug>.md "<Title>"`; `new comparison …` for trade-off analyses). Where the new source contradicts or supersedes an existing claim, fix that note and say so in it, each citing the source note in `sources:` and linking to it.
 5. **Cross-link:** `tools/wiki.py related <each touched note>`; add relative links for every `NOT LINKED` neighbour that is genuinely related.
-6. **Catalog:** add `- [Title](file.md) — one-line summary` per new note to its directory's `.overview.md`; revise `.abstract.md` if the directory's summary changed; repeat up the tree (`check` will flag parents).
+6. **Catalog:** add `- [Title](file.md) — one-line summary` per new note to its directory's `_overview.md`; revise `_abstract.md` if the directory's summary changed; repeat up the tree (`check` will flag parents).
 7. **Decisions:** if the source changed a choice, write `new decision memories/decisions/NNNN-<slug>.md "<Title>"`.
 8. **Verify:** `tools/wiki.py stamp <dirs>` → `index` → `health` (no errors; review every warning).
 9. **Log:** when asked to commit: `tools/wiki.py commit ingest "<subject>" --source <url>`.

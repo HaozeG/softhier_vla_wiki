@@ -2,12 +2,12 @@
 """Local search + browsing for the wiki (OpenViking-style layers, zvec index).
 
 Layers (per directory, like OpenViking):
-  L0  .abstract.md   <=256 chars, one-glance summary of the directory
-  L1  .overview.md   <=4000 chars, what is inside and where to look
+  L0  _abstract.md   <=256 chars, one-glance summary of the directory
+  L1  _overview.md   <=4000 chars, what is inside and where to look
   L2  *.md           the actual notes (indexed per heading chunk)
 
-Sidecars carry `covers: <hash>` in frontmatter: a hash of the directory's direct
-children (file contents + child abstracts). `check` flags a sidecar stale when it
+Folder summary files carry `covers: <hash>` in frontmatter: a hash of the directory's direct
+children (file contents + child abstracts). `check` flags a summary file stale when it
 no longer matches; after rewriting one, run `stamp` to record the new hash.
 
 Notes (L2) carry frontmatter (`type`, `tags`, `sources`) and per-type required sections;
@@ -15,7 +15,7 @@ no dates live in files: git is the log (`commit` writes structured messages, `lo
 
 Commands:
   index | find | related | ls | tree            search & browse (zvec hybrid / nearest-neighbour)
-  new | check | health | stamp                  create from template, lint, semantic health, sidecar stamp
+  new | check | health | stamp                  create from template, lint, semantic health, summary-file stamp
   commit | log | history | install-hooks        git-as-log
   setup                                         one-time environment setup
 """
@@ -50,7 +50,7 @@ SCHEMA_VERSION = 1
 SKIP_DIRS = {"tools", "node_modules", "__pycache__"}  # plus any dot-dir
 ROOT_SKIP_FILES = {"README.md", "CLAUDE.md"}
 L0_MAX, L1_MAX, CHUNK_MAX = 256, 4000, 1500
-SIDECARS = {".abstract.md": "L0", ".overview.md": "L1"}
+SUMMARY_FILES = {"_abstract.md": "L0", "_overview.md": "L1"}
 # note type -> required "## " sections
 TYPES = {
     "concept": ["Summary"],
@@ -62,7 +62,7 @@ TYPES = {
 }
 NEED_SOURCES = {"concept", "entity", "paper"}
 OPS = ["ingest", "update", "delete", "lint", "refactor", "init"]
-DUP_THRESHOLD = 0.82  # bge-small: paraphrases ~0.86, related-but-distinct ~0.75-0.80, unrelated <0.65
+DUP_THRESHOLD = 0.93  # bge-small, chunk-level: a lightly reworded copy scores ~1.0; related-but-distinct notes in one narrow topic reach ~0.90-0.92 (see decision 0005); unrelated <0.65
 
 
 # ---------- filesystem model ----------
@@ -145,7 +145,7 @@ def dirs(base: Path):
 
 def notes(d: Path):
     for f in sorted(d.glob("*.md")):
-        if f.name in SIDECARS or (d == ROOT and f.name in ROOT_SKIP_FILES):
+        if f.name in SUMMARY_FILES or (d == ROOT and f.name in ROOT_SKIP_FILES):
             continue
         yield f
 
@@ -158,14 +158,14 @@ def all_dirs():
         stack.extend(reversed(list(dirs(d))))
 
 
-def sidecar_body(d: Path, name: str):
+def summary_body(d: Path, name: str):
     f = d / name
     return split_fm(f.read_text())[1].strip() if f.exists() else None
 
 
 def covers_hash(d: Path) -> str:
     parts = [f"{f.name}:{sha(f.read_text())}" for f in notes(d)]
-    parts += [f"{c.name}/:{sha(sidecar_body(c, '.abstract.md') or '')}" for c in dirs(d)]
+    parts += [f"{c.name}/:{sha(summary_body(c, '_abstract.md') or '')}" for c in dirs(d)]
     return sha("\n".join(parts))[:12]
 
 
@@ -202,7 +202,7 @@ def chunks(text: str, title: str):
 def build_docs(f: Path):
     """-> list of (chunk_id, fields) for one file."""
     fm, body = split_fm(f.read_text())
-    layer = SIDECARS.get(f.name, "L2")
+    layer = SUMMARY_FILES.get(f.name, "L2")
     body = body.strip()
     meta = ""
     if layer == "L2":
@@ -225,7 +225,7 @@ def indexable():
     for d in all_dirs():
         for f in notes(d):
             yield f
-        for name in SIDECARS:
+        for name in SUMMARY_FILES:
             if (d / name).exists():
                 yield d / name
 
@@ -342,7 +342,7 @@ def first_line(f: Path):
 
 def show_dir(d: Path, depth: int, indent=""):
     for c in dirs(d):
-        ab = sidecar_body(c, ".abstract.md")
+        ab = summary_body(c, "_abstract.md")
         print(f"{indent}{c.name}/  — {re.sub(chr(10), ' ', ab) if ab else '(no abstract)'}")
         if depth > 1:
             show_dir(c, depth - 1, indent + "  ")
@@ -353,7 +353,7 @@ def show_dir(d: Path, depth: int, indent=""):
 def cmd_ls(a):
     d = resolve(a.path)
     print(uri(d) if d == ROOT else uri(d) + "/")
-    ab = sidecar_body(d, ".abstract.md")
+    ab = summary_body(d, "_abstract.md")
     if ab:
         print(f"  {ab}")
     show_dir(d, a.depth)
@@ -367,24 +367,26 @@ def structural_issues():
     titles, bodies = {}, {}
     for d in all_dirs():
         rel = d.relative_to(ROOT).as_posix()
-        for name, cap in ((".abstract.md", L0_MAX), (".overview.md", L1_MAX)):
+        for name, cap in (("_abstract.md", L0_MAX), ("_overview.md", L1_MAX)):
             f = d / name
             if not f.exists():
                 if any(True for _ in notes(d)) or any(True for _ in dirs(d)):
-                    add("ERROR", "MISSING", f"{rel}/{name}", "sidecar missing")
+                    add("ERROR", "MISSING", f"{rel}/{name}", "folder summary file missing")
                 continue
             fm, body = split_fm(f.read_text())
+            if not body.strip():
+                add("ERROR", "EMPTY", f"{rel}/{name}", "summary file has no body text; write the summary, then `stamp`")
             if len(body.strip()) > cap:
                 add("ERROR", "TOO LONG", f"{rel}/{name}", f"{len(body.strip())} > {cap} chars")
             if fm.get("covers") != covers_hash(d):
                 add("ERROR", "STALE", f"{rel}/{name}", "children changed; review/rewrite then `stamp`")
-        overview = sidecar_body(d, ".overview.md") or ""
+        overview = summary_body(d, "_overview.md") or ""
         for f in notes(d):
             frel = f.relative_to(ROOT).as_posix()
             fm, body = split_fm(f.read_text())
             typ = fm.get("type")
             if not re.search(r"\]\(" + re.escape(f.name) + r"\)", overview):
-                add("ERROR", "UNCATALOGUED", frel, f"needs a link `[title]({f.name})` + one-line summary in {rel}/.overview.md")
+                add("ERROR", "UNCATALOGUED", frel, f"needs a link `[title]({f.name})` + one-line summary in {rel}/_overview.md")
             for key in ("type", "tags", "sources"):
                 if key not in fm:
                     add("ERROR", "FRONTMATTER", frel, f"missing `{key}:`")
@@ -442,7 +444,7 @@ def neighbours(db, cid, topk=10):
 def semantic_pairs(db, man, floor):
     pairs = {}
     for rel, info in man["files"].items():
-        if Path(rel).name in SIDECARS:
+        if Path(rel).name in SUMMARY_FILES:
             continue
         for cid in info["ids"]:
             for r in neighbours(db, cid, 6):
@@ -502,7 +504,7 @@ def cmd_new(a):
     dest.parent.mkdir(parents=True, exist_ok=True)
     dest.write_text(tpl.read_text().replace("{{title}}", a.title))
     rel = dest.relative_to(ROOT)
-    print(f"created {rel}\nnext: replace every `<!-- ... -->` guidance comment with real content, list it in {rel.parent}/.overview.md, "
+    print(f"created {rel}\nnext: replace every `<!-- ... -->` guidance comment with real content, list it in {rel.parent}/_overview.md, "
           f"`related {rel}` to cross-link, then `stamp`, `index`, `health`")
 
 
@@ -524,12 +526,12 @@ def cmd_commit(a):
     changes = [l.split("\t") for l in git("diff", "--cached", "--name-status").splitlines()]
     if not changes:
         sys.exit("nothing to commit")
-    pages = [f"{c[0][0]} {c[-1]}" for c in changes if Path(c[-1]).name not in SIDECARS]
+    pages = [f"{c[0][0]} {c[-1]}" for c in changes if Path(c[-1]).name not in SUMMARY_FILES]
     n_side = len(changes) - len(pages)
     date = a.date or datetime.date.today().isoformat()
-    trailers = [f"Date: {date}", f"Op: {a.op}", f"Pages: {'; '.join(pages) or '(sidecars only)'}"]
+    trailers = [f"Date: {date}", f"Op: {a.op}", f"Pages: {'; '.join(pages) or '(summary files only)'}"]
     if n_side:
-        trailers.append(f"Sidecars: {n_side}")
+        trailers.append(f"Summary-files: {n_side}")
     if a.source:
         trailers.append(f"Sources: {'; '.join(a.source)}")
     body = (a.body.strip() + "\n\n") if a.body else ""
@@ -590,13 +592,13 @@ def session_context(project: Path) -> str:
              f"or the `softhier-wiki:wiki` skill; commit only inside the submodule and only when asked."]
     if not (ROOT / ".venv").exists() or not INDEX.exists():
         lines.append(f"Not set up on this machine yet: run `{tool} setup` once before using it.")
-    ab, ov = sidecar_body(ROOT, ".abstract.md"), sidecar_body(ROOT, ".overview.md")
+    ab, ov = summary_body(ROOT, "_abstract.md"), summary_body(ROOT, "_overview.md")
     if ab:
         lines.append(f"\nWiki abstract: {ab}")
     if ov:
         lines.append(f"\nWiki overview:\n{ov}")
     for d in dirs(ROOT):
-        a0 = sidecar_body(d, ".abstract.md")
+        a0 = summary_body(d, "_abstract.md")
         lines.append(f"- {d.name}/: {a0 or '(no abstract)'}")
     try:
         recent = git("log", "-5", "--format=%as %s", check=False).strip()
@@ -632,7 +634,7 @@ def cmd_stamp(a):
     # bottom-up so parents hash the freshly-stamped child abstracts... abstracts' bodies
     # don't change on stamp, so order only matters for the printed output.
     for d in sorted(targets, key=lambda p: -len(p.parts)):
-        for name in SIDECARS:
+        for name in SUMMARY_FILES:
             f = d / name
             if f.exists():
                 body = split_fm(f.read_text())[1].lstrip("\n")
@@ -659,7 +661,7 @@ def main():
     p.add_argument("path", nargs="?", default=".")
     p.add_argument("-d", "--depth", type=int, default=4)
     p.set_defaults(fn=cmd_ls)
-    p = sub.add_parser("check", help="fast structural lint (no model): sidecars, frontmatter, sections, links, catalog")
+    p = sub.add_parser("check", help="fast structural lint (no model): folder summary files, frontmatter, sections, links, catalog")
     p.add_argument("--strict", action="store_true", help="warnings also fail")
     p.set_defaults(fn=cmd_check)
     p = sub.add_parser("health", help="sync index, run check, add semantic near-duplicate detection (zvec)")
@@ -701,7 +703,7 @@ def main():
     p.set_defaults(fn=cmd_hook)
     sub.add_parser("setup", help="one-time: create .venv, install deps, build index, enable hook").set_defaults(fn=cmd_setup)
     sub.add_parser("install-hooks", help="enable the commit-msg hook").set_defaults(fn=cmd_install_hooks)
-    p = sub.add_parser("stamp", help="record current children hash in sidecars")
+    p = sub.add_parser("stamp", help="record current children hash in summary files")
     p.add_argument("paths", nargs="*")
     p.set_defaults(fn=cmd_stamp)
     a = ap.parse_args()

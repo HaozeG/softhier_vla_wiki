@@ -9,7 +9,7 @@ An LLM-maintained wiki for SoftHier-VLA. You (the agent) own the wiki: you write
 | Wiki | `knowledge/` (synthesis), `memories/decisions/` (decisions), `skills/` (runbooks) | You maintain it; every note cross-linked and cited |
 | Schema | this file, `tools/templates/`, `tools/wiki.py` (lint) | Follow it; propose changes via a decision record |
 
-Two navigation tiers per directory (from OpenViking): **L0** `.abstract.md` (≤256 chars) and **L1** `.overview.md` (≤4000 chars, also the *catalog*: every note gets a line `- [Title](file.md) — one-line summary`). Read L0/L1 first, open L2 notes only when needed. **Git is the log**; zvec is the relational layer.
+Every folder has two short summary files: `_abstract.md` (≤256 chars, the one-glance summary; also called L0) and `_overview.md` (≤4000 chars, also the *catalog*: every note gets a line `- [Title](file.md) — one-line summary`; also called L1). Read these first, open the full notes (L2) only when needed. The layering comes from OpenViking. **Git is the log**; zvec is the search index that finds related notes by meaning.
 
 ## Note format (enforced by `check`)
 ```
@@ -21,7 +21,7 @@ sources: [url, wiki-path, or session:<name>]   # required non-empty for concept/
 # Title
 ## <required sections for the type>
 ```
-Required `##` sections: concept/entity → `Summary`; paper → `Summary`, `Key claims`; decision → `Context`, `Decision`, `Why`; runbook → `Steps`; comparison → `Summary`, `Comparison` (a table; use for analysed questions such as design trade-offs). Scaffold with `tools/wiki.py new <type> <path> "<Title>"`. Rules: one topic per note; claim first; short paragraphs/lists; relative links to related notes; no dates in files (git records them); no `TODO` left behind; never invent facts — cite `sources:`.
+Required `##` sections: concept/entity → `Summary`; paper → `Summary`, `Key claims`; decision → `Context`, `Decision`, `Why`; runbook → `Steps`; comparison → `Summary`, `Comparison` (a table; use for analysed questions such as design trade-offs). Scaffold with `tools/wiki.py new <type> <path> "<Title>"`. Rules: one topic per note; claim first; short paragraphs/lists; relative links to related notes; no dates in files (git records them); no `TODO` left behind; never invent facts — cite `sources:`; use plain words over jargon, and define any unavoidable term the first time it appears ([decision 0006](memories/decisions/0006-rename-folder-summary-files-and-plain-language.md)).
 
 ## The three operations
 - **Ingest** a source → follow `skills/ingest-a-source.md`. First tell the user the key takeaways and what you plan to touch. One source touches several notes (often 10–15): source note, the knowledge notes it informs, cross-links, catalog entries, decisions.
@@ -39,17 +39,17 @@ Required `##` sections: concept/entity → `Summary`; paper → `Summary`, `Key 
 | `ls [<dir>] [-d N]` / `tree [<dir>] [-d N]` | Browse with L0 abstracts |
 | `new <type> <path> "<Title>"` | Scaffold a note from `tools/templates/` |
 | `index` | Sync the search index with the files (incremental) |
-| `check [--strict]` | Fast structural lint, no model: sidecars, frontmatter, sections, links, catalog, unfilled template comments, orphans, TODOs, exact duplicates |
-| `health [--strict] [--dup-threshold 0.82] [--candidates]` | `index` + `check` + zvec near-duplicate detection; `--candidates` also lists related-but-distinct pairs to read for contradictions |
-| `stamp [<dirs>]` | Record children hash in sidecars after you rewrite them |
+| `check [--strict]` | Fast structural lint, no model: folder summary files (missing, empty, stale, too long), frontmatter, sections, links, catalog, unfilled template comments, orphans, TODOs, exact duplicates |
+| `health [--strict] [--dup-threshold 0.93] [--candidates]` | `index` + `check` + zvec near-duplicate detection; `--candidates` also lists related-but-distinct pairs to read for contradictions |
+| `stamp [<dirs>]` | Record the folder's content hash in its summary files after you rewrite them |
 | `commit <op> "<subject>" [--source URL]... [--body ...] [--dry-run]` | Lint-gated commit with structured message |
 | `log [-n N] [--op OP] [--path P] [--pages]` / `history <note>` | Read the change log back from git |
 | `setup` | One-time: create `.venv`, install deps, build the index, enable the hook (works from any cwd, e.g. `softhier_vla_wiki/tools/wiki.py setup`) |
 | `install-hooks` | Enable the `commit-msg` hook that enforces the format below |
 
 ## Write workflow (every insert / update / delete)
-1. Edit notes. Update the directory's `.overview.md` (catalog line) and `.abstract.md` if its summary changed; parents too.
-2. `stamp <dirs>` → `check`. Staleness cascades upward: a directory's hash includes its children's L0 abstracts, so changing `knowledge/.abstract.md` flags the root sidecars too; review them and stamp (`stamp .` for root). Re-stamping an accurate sidecar is fine. Replace placeholder text such as "Empty until populated" when adding the first note.
+1. Edit notes. Update the directory's `_overview.md` (catalog line) and `_abstract.md` if its summary changed; parents too.
+2. `stamp <dirs>` → `check`. Staleness cascades upward: a directory's hash includes its children's L0 abstracts, so changing `knowledge/_abstract.md` flags the root summary files too; review them and stamp (`stamp .` for root). Re-stamping an accurate sidecar is fine. Replace placeholder text such as "Empty until populated" when adding the first note.
 3. `index` → `health`; no errors, and every warning read (`NEARDUP`: merge or cross-link; `ORPHAN`: link via `related`).
 4. **Delete** = remove the file, its catalog line, and links to it (`check` finds the rest).
 5. Commit (op: `ingest` = a new external source; `update` = new/changed knowledge or decisions from our own work; `delete`; `lint` = health fixes; `refactor` = restructuring; `init` = first commit). Only commit when the user asked you to, or in an autonomous maintenance run): `tools/wiki.py commit <op> "<subject>"`.
@@ -78,4 +78,4 @@ The Claude Code plugin in `tools/claude-plugin/` (see README) makes parent-repo 
 ```bash
 tools/wiki.py setup   # venv + deps + index + commit hook; first run downloads the embedding model (~130 MB)
 ```
-`.venv/` and `.index/` are git-ignored; `.index/` is a rebuildable cache (`rm -rf .index && tools/wiki.py index`). Sidecars are dot-files (`cat <dir>/.abstract.md`); write only their body, `stamp` manages the `covers:` frontmatter.
+`.venv/` and `.index/` are git-ignored; `.index/` is a rebuildable cache (`rm -rf .index && tools/wiki.py index`). Each folder's summary files are `_abstract.md` and `_overview.md` (`cat <dir>/_abstract.md`); write only their body, `stamp` manages the `covers:` frontmatter.

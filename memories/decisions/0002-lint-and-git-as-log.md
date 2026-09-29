@@ -30,3 +30,5 @@ Mapping to the gist (read and checked): raw sources → `resources/` + raw files
 Builds on [0001](0001-wiki-layout-and-search.md); procedures: [ingest](../../skills/ingest-a-source.md), [health review](../../skills/review-wiki-health.md).
 
 Followed by [0003 Claude Code plugin](0003-claude-code-plugin.md).
+
+Note: the file names and the word "sidecar" used here were replaced by [0006](0006-rename-folder-summary-files-and-plain-language.md).
