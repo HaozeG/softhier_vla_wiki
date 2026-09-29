@@ -553,7 +553,7 @@ def cmd_log(a):
     for rec in git(*args).split("\x1e"):
         if not rec.strip():
             continue
-        h, adate, subj, date, pages = [x.strip() for x in rec.strip().split("\x1f")]
+        h, adate, subj, date, pages = ([x.strip() for x in rec.split("\x1f")] + [""] * 5)[:5]  # older commits lack trailers
         print(f"{date or adate}  {h}  {subj}" + (f"\n{'':12}{pages}" if pages and a.pages else ""))
 
 
