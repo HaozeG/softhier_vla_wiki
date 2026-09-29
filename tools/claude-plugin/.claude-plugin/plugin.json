@@ -1,0 +1,5 @@
+{
+  "name": "softhier-wiki",
+  "version": "0.1.0",
+  "description": "Makes sessions in a repo that contains the SoftHier-VLA wiki (as softhier_vla_wiki/) consult and update it."
+}

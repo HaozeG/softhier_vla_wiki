@@ -1,0 +1,12 @@
+{
+  "name": "softhier-wiki",
+  "description": "Claude Code integration for the SoftHier-VLA wiki",
+  "owner": { "name": "SoftHier-VLA" },
+  "plugins": [
+    {
+      "name": "softhier-wiki",
+      "source": "./tools/claude-plugin",
+      "description": "Session orientation and a skill so parent-repo sessions consult and update the SoftHier-VLA wiki"
+    }
+  ]
+}

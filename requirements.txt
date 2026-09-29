@@ -1,0 +1,2 @@
+zvec>=0.7
+fastembed>=0.8
