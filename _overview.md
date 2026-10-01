@@ -1,13 +1,17 @@
 ---
-covers: 6fad98496ea8
+covers: 6d3d7cad328b
 ---
 # SoftHier-VLA wiki
 
 Top-level map. Start here, drill down via each directory's `_overview.md`.
 
-- `resources/` — 48 source notes on VLA models, surveys, serving systems, compression methods, first-party docs, RK3588 reports and hardware specs, tagged by evidence tier.
+**Project side** (what we know and decided about SoftHier-VLA)
+- `resources/` — 48 source notes in six topic folders (models, surveys, serving, compression, rk3588, hardware), tagged by evidence tier.
 - `knowledge/` — synthesis on VLA edge serving; start with `vla-edge-serving-overview.md`.
-- `memories/` — decisions and lessons. `memories/decisions/` holds numbered decision records.
-- `skills/` — runbooks: ingesting a source, reviewing wiki health.
+- `memories/` — project memory; `memories/decisions/` holds project decision records (none yet).
+
+**Wiki side** (how the wiki works)
+- `wiki-design/` — decisions about the wiki and runbooks (ingest a source, review health).
+- `tools/` — `wiki.py`, note templates, hooks, Claude Code plugin.
 
 Change log: `tools/wiki.py log` (git). Health: `tools/wiki.py health`. Search: `tools/wiki.py find "..."`. Conventions: `CLAUDE.md`.

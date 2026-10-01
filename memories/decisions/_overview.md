@@ -1,13 +1,8 @@
 ---
-covers: 9ea23a5bfc49
+covers: da39a3ee5e6b
 ---
 # memories/decisions/
 
-- [0001 wiki layout and search](0001-wiki-layout-and-search.md) — layered L0/L1/L2 directory summaries (from OpenViking) plus local hybrid search with zvec + fastembed; no server or API keys.
-- [0002 typed notes, lint, git as the log](0002-lint-and-git-as-log.md) — typed notes with required sections, `health` lint with zvec near-duplicate detection, git commits with trailers as the dated change log.
-- [0003 Claude Code plugin for parent-repo sessions](0003-claude-code-plugin.md) — SessionStart hook + `wiki` skill, local-scope install, no doc mandate.
-- [0004 evidence tiers for fast-moving VLA sources](0004-evidence-tiers-for-fast-moving-vla-sources.md) — read primary text, tag recent/low-evidence/first-party/community, record caveats beside claims.
-- [0005 near-duplicate threshold 0.93](0005-near-duplicate-threshold.md) — raised from 0.82 after calibration on a single-topic corpus; copies still flagged.
-- [0006 rename folder summary files, plain language](0006-rename-folder-summary-files-and-plain-language.md) — `_abstract.md`/`_overview.md` replace the dot-file "sidecars"; plain words over jargon.
-- [0007 ASCII diagrams as a logic check](0007-ascii-diagrams-as-logic-check.md) — structural notes carry one plain-text diagram that must match the prose; drawing it is a second check on the text.
-- [0008 Obsidian-padded tables](0008-obsidian-padded-tables.md) — tables stored padded like Obsidian so opening notes there causes no diffs; `wiki.py fmt` and a `TABLEFMT` warning enforce it.
+Decisions about the SoftHier-VLA project itself, one file per decision named `NNNN-slug.md`, numbered from 0001. Decisions about how the wiki works are in `wiki-design/decisions/`.
+
+Empty until populated.

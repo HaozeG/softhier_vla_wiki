@@ -1,4 +1,4 @@
 ---
-covers: 9ea23a5bfc49
+covers: da39a3ee5e6b
 ---
-Decision records (context, decision, why): 0001 layout + zvec; 0002 typed notes, lint, git log; 0003 plugin; 0004 evidence tiers; 0005 dup threshold; 0006 file names; 0007 ASCII diagrams; 0008 Obsidian-padded tables.
+Project decisions for SoftHier-VLA (context, decision, why), numbered from 0001. Empty until populated.

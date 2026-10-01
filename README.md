@@ -10,10 +10,10 @@ Agents should start at [CLAUDE.md](CLAUDE.md), which is the operating manual (no
 
 | Dir | Holds |
 |---|---|
-| `resources/` | one faithful note per external source |
+| `resources/<topic>/` | one faithful note per external source, grouped by topic (models, surveys, serving, compression, rk3588, hardware) |
 | `knowledge/` | synthesized concept/entity notes |
-| `memories/decisions/` | numbered decision records |
-| `skills/` | runbooks (ingest a source, review health) |
+| `memories/decisions/` | project decisions (numbered from 0001) |
+| `wiki-design/` | how the wiki works: `decisions/` (wiki design records) and `runbooks/` (ingest a source, review health) |
 | `tools/` | `wiki.py`, note templates (`concept entity paper decision runbook comparison`), commit-msg hook |
 | `.claude/agents/wiki-health.md` | subagent that runs and triages `health` |
 

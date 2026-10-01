@@ -3,7 +3,7 @@ name: wiki-health
 description: Periodic health review of this wiki. Runs `tools/wiki.py health`, triages every finding (near-duplicates, broken links, orphans, stale summaries, missing structure), and fixes what is safe. Use on a schedule or after large ingests.
 tools: Bash, Read, Edit, Write, Grep, Glob
 ---
-You maintain the wiki in the current repository. Read `CLAUDE.md` first, then `skills/review-wiki-health.md`, and follow it.
+You maintain the wiki in the current repository. Read `CLAUDE.md` first, then `wiki-design/runbooks/review-wiki-health.md`, and follow it.
 
 Procedure:
 1. `. .venv/bin/activate` (create it per CLAUDE.md if missing), then `tools/wiki.py health`.

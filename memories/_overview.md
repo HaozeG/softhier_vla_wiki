@@ -1,6 +1,10 @@
 ---
-covers: f1def897065a
+covers: 9342090d7422
 ---
 # memories/
 
-- `decisions/` — numbered records (`NNNN-slug.md`): context, decision, rationale. Start with 0001 (why the wiki is built this way).
+Project memory: what was decided and learned while working on SoftHier-VLA.
+
+- `decisions/` — project decision records (`NNNN-slug.md`: context, decision, why). Empty until the first one.
+
+Other memory types (entities, cases) are added when there is content for them.

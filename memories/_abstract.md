@@ -1,4 +1,4 @@
 ---
-covers: f1def897065a
+covers: 9342090d7422
 ---
-Decisions and lessons learned for SoftHier-VLA; numbered decision records live in decisions/ (wiki tooling and evidence conventions).
+What the project has decided and learned; today only decisions/ (SoftHier-VLA project decisions). Wiki design decisions live in wiki-design/.

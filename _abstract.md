@@ -1,4 +1,4 @@
 ---
-covers: 6fad98496ea8
+covers: 6d3d7cad328b
 ---
-SoftHier-VLA wiki: VLA edge-serving knowledge (architectures, serving, pruning, quantization, ~10 TOPS hardware), source notes by evidence tier, decisions and runbooks; browse via the folder summary files.
+SoftHier-VLA wiki. Project side: resources/ (sources by topic), knowledge/ (VLA edge-serving synthesis), memories/decisions/ (project decisions). Wiki side: wiki-design/ and tools/.

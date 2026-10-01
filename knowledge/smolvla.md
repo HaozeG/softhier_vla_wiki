@@ -1,7 +1,7 @@
 ---
 type: entity
 tags: [smolvla, small-vla, edge, flow-matching, lerobot]
-sources: [resources/smolvla.md, resources/lerobot-async-inference-docs.md, resources/vla-cpp.md, resources/vla-simd.md, resources/flashvla-streaming.md, resources/clp-layer-pruning.md, resources/pruned-vla-recovery.md, resources/bitvla.md]
+sources: [resources/models/smolvla.md, resources/serving/lerobot-async-inference-docs.md, resources/serving/vla-cpp.md, resources/serving/vla-simd.md, resources/serving/flashvla-streaming.md, resources/compression/clp-layer-pruning.md, resources/compression/pruned-vla-recovery.md, resources/compression/bitvla.md]
 ---
 # SmolVLA
 
@@ -21,7 +21,7 @@ robot state -> 1 token -----------------------------+    layers (N = L/2)
 ```
 
 ## Details
-**Architecture (from [the paper](../resources/smolvla.md))**
+**Architecture (from [the paper](../resources/models/smolvla.md))**
 - Vision-language trunk: SmolVLM-2 (SigLIP encoder plus SmolLM2 decoder); the action expert reads features from LLM layers up to N = L/2 (16 layers in the released model); no image tiling; images resized to 512×512; 64 visual tokens per frame after pixel shuffle; sensorimotor state projected to one prefix token.
 - Action expert: about 100M parameters, hidden size 0.75× the VLM's, alternating cross-attention and causal self-attention, flow matching, chunk n = 50, 10 integration steps at inference.
 - Whole model 450M parameters; bf16 and `torch.compile` in training; the VLM stays frozen during pretraining; about 30k GPU-hours for the whole project.
@@ -29,22 +29,22 @@ robot state -> 1 token -----------------------------+    layers (N = L/2)
 
 **Accuracy**
 - Paper (LIBERO, from scratch ablations): N = 16 → 78.5, N = 32 → 80.3. Real world (SO100): pretrained multi-task 78.3%, no-pretraining 51.7%. Async vs sync: 73.3 vs 78.3 average success, 30% faster completion.
-- LIBERO averages by size in the paper's Table 2: 0.24B 82.75, 0.45B 87.3, 2.25B 88.75; papers quoting 88.8 (for example [BitVLA](../resources/bitvla.md), [LightVLA](../resources/lightvla.md)) mean the 2.25B model. Other papers report lower numbers for the 0.45B model under their own training: 80.1 ([FlashVLA](../resources/flashvla-streaming.md)) and 77.15 ([CLP](../resources/clp-layer-pruning.md)). Compare only within one paper's protocol.
+- LIBERO averages by size in the paper's Table 2: 0.24B 82.75, 0.45B 87.3, 2.25B 88.75; papers quoting 88.8 (for example [BitVLA](../resources/compression/bitvla.md), [LightVLA](../resources/compression/lightvla.md)) mean the 2.25B model. Other papers report lower numbers for the 0.45B model under their own training: 80.1 ([FlashVLA](../resources/serving/flashvla-streaming.md)) and 77.15 ([CLP](../resources/compression/clp-layer-pruning.md)). Compare only within one paper's protocol.
 
 **Measured serving numbers from other sources**
 
-| Source                                                                               | Hardware                                            | Number                                                                     | Notes                                        |
-| ------------------------------------------------------------------------------------ | --------------------------------------------------- | -------------------------------------------------------------------------- | -------------------------------------------- |
-| [vla.cpp](../resources/vla-cpp.md)                                                   | RTX 3090                                            | 55.8 ms per chunk (server side)                                            | eager PyTorch 174.1 ms, compiled 65.9 ms     |
-| vla.cpp                                                                              | RTX 5070                                            | 74.1 ms                                                                    | eager 176.0 ms, graph-captured 76.3 ms       |
-| vla.cpp                                                                              | AGX Orin / RTX 3060                                 | 65.4 / 28.2 ms per executed action (S = 4, includes transport)             | about 262 / 113 ms per chunk                 |
-| vla.cpp                                                                              | Jetson Orin Nano 8 GB                               | median 358–457 ms per chunk                                                | 176/200 LIBERO-Object success at S = 4       |
-| vla.cpp                                                                              | Apple M4 (Metal)                                    | 374 ms                                                                     | 9/10 success                                 |
-| vla.cpp                                                                              | i9-14900HX, 8 threads CPU                           | 2141 ms                                                                    |                                              |
-| [vla.simd](../resources/vla-simd.md)                                                 | Apple M4 / i9 / Ryzen 5 / Raspberry Pi 5 CPU        | about 0.68 / 1.19 / 1.32 / 8.19 s per chunk (50 / f_eff)                   | fp32, engine-only latency                    |
-| [XPU characterization](../resources/vla-xpu-characterization.md) (plot, approximate) | i7-11700 CPU / Ascend 310P / Orin / Thor / RTX 4090 | about 0.3 / 2 / 1.2 / 4.9 / 11 Hz (PyTorch baseline; a 310B bar is absent) | read off a log-scale bar chart, roughly ±20% |
-| [FlashVLA](../resources/flashvla-streaming.md)                                       | RTX 4090 class                                      | 19.7 ms baseline → 10.1 ms streaming                                       | CUDA graphs, fused kernels                   |
-| [CLP](../resources/clp-layer-pruning.md)                                             | RTX 4070                                            | 201 ms → 137 ms after layer pruning                                        | different measurement boundary               |
+| Source                                                                                       | Hardware                                            | Number                                                                     | Notes                                        |
+| -------------------------------------------------------------------------------------------- | --------------------------------------------------- | -------------------------------------------------------------------------- | -------------------------------------------- |
+| [vla.cpp](../resources/serving/vla-cpp.md)                                                   | RTX 3090                                            | 55.8 ms per chunk (server side)                                            | eager PyTorch 174.1 ms, compiled 65.9 ms     |
+| vla.cpp                                                                                      | RTX 5070                                            | 74.1 ms                                                                    | eager 176.0 ms, graph-captured 76.3 ms       |
+| vla.cpp                                                                                      | AGX Orin / RTX 3060                                 | 65.4 / 28.2 ms per executed action (S = 4, includes transport)             | about 262 / 113 ms per chunk                 |
+| vla.cpp                                                                                      | Jetson Orin Nano 8 GB                               | median 358–457 ms per chunk                                                | 176/200 LIBERO-Object success at S = 4       |
+| vla.cpp                                                                                      | Apple M4 (Metal)                                    | 374 ms                                                                     | 9/10 success                                 |
+| vla.cpp                                                                                      | i9-14900HX, 8 threads CPU                           | 2141 ms                                                                    |                                              |
+| [vla.simd](../resources/serving/vla-simd.md)                                                 | Apple M4 / i9 / Ryzen 5 / Raspberry Pi 5 CPU        | about 0.68 / 1.19 / 1.32 / 8.19 s per chunk (50 / f_eff)                   | fp32, engine-only latency                    |
+| [XPU characterization](../resources/serving/vla-xpu-characterization.md) (plot, approximate) | i7-11700 CPU / Ascend 310P / Orin / Thor / RTX 4090 | about 0.3 / 2 / 1.2 / 4.9 / 11 Hz (PyTorch baseline; a 310B bar is absent) | read off a log-scale bar chart, roughly ±20% |
+| [FlashVLA](../resources/serving/flashvla-streaming.md)                                       | RTX 4090 class                                      | 19.7 ms baseline → 10.1 ms streaming                                       | CUDA graphs, fused kernels                   |
+| [CLP](../resources/compression/clp-layer-pruning.md)                                         | RTX 4070                                            | 201 ms → 137 ms after layer pruning                                        | different measurement boundary               |
 
 The 10× spread across sources on similar GPUs (10–20 ms vs 65–200 ms) is an implementation effect (eager dispatch vs CUDA graphs and fused kernels), not a hardware effect. See [inference workload characterization](inference-workload-characterization.md).
 
@@ -52,7 +52,7 @@ The 10× spread across sources on similar GPUs (10–20 ms vs 65–200 ms) is an
 
 **Device context:** hardware classes, and what is and is not measured below Orin, are in [edge hardware and the 10 TOPS gap](edge-hardware-and-the-10-tops-gap.md); this note is model-centric while that one is device-centric.
 
-**Memory:** about 2 GB at inference per the [LeRobot docs](../resources/lerobot-async-inference-docs.md), vs 14 GB for π0. Serving arithmetic for a 10-TOPS-class device is in [edge budget estimate](edge-budget-estimate.md).
+**Memory:** about 2 GB at inference per the [LeRobot docs](../resources/serving/lerobot-async-inference-docs.md), vs 14 GB for π0. Serving arithmetic for a 10-TOPS-class device is in [edge budget estimate](edge-budget-estimate.md).
 
 ## Open questions
 - Cross-embodiment generalization beyond SO100 arms (the paper's own limitation).

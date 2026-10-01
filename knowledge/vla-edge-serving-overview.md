@@ -1,7 +1,7 @@
 ---
 type: concept
 tags: [overview, vla, edge, serving, start-here]
-sources: [resources/survey-efficient-vla-yu.md, resources/survey-efficient-vla-guan.md, resources/vla-perf.md, resources/smolvla.md, resources/pi0.md, resources/vla-cpp.md, resources/jetson-pi.md]
+sources: [resources/surveys/survey-efficient-vla-yu.md, resources/surveys/survey-efficient-vla-guan.md, resources/serving/vla-perf.md, resources/models/smolvla.md, resources/models/pi0.md, resources/serving/vla-cpp.md, resources/serving/jetson-pi.md]
 ---
 # VLA edge serving: overview and reading path
 
@@ -41,9 +41,9 @@ Serving cost, per the Summary: vision + prefill (compute-bound), expert loop (me
 8. Map of the literature: [VLA efficiency taxonomy](vla-efficiency-taxonomy.md).
 
 **Best-supported findings**
-- The action expert (few tokens, weights re-read each step) is memory-bound on every device tested; prefill and vision are compute-bound except on bandwidth-poor Jetson Thor ([VLA-Perf](../resources/vla-perf.md), [VLA XPU characterization](../resources/vla-xpu-characterization.md)).
-- Naive software is 4–9× off the roofline; graph capture, fused kernels and fixed shapes recover most of it ([Realtime-VLA](../resources/realtime-vla.md), [Jetson-PI](../resources/jetson-pi.md)).
-- Redundant depth is real: 30–50% of layers can be removed from π0, GR00T-N1.5 and SmolVLA with small loss when fine-tuned ([CLP](../resources/clp-layer-pruning.md)); heavier weight pruning needs distillation recovery.
+- The action expert (few tokens, weights re-read each step) is memory-bound on every device tested; prefill and vision are compute-bound except on bandwidth-poor Jetson Thor ([VLA-Perf](../resources/serving/vla-perf.md), [VLA XPU characterization](../resources/serving/vla-xpu-characterization.md)).
+- Naive software is 4–9× off the roofline; graph capture, fused kernels and fixed shapes recover most of it ([Realtime-VLA](../resources/serving/realtime-vla.md), [Jetson-PI](../resources/serving/jetson-pi.md)).
+- Redundant depth is real: 30–50% of layers can be removed from π0, GR00T-N1.5 and SmolVLA with small loss when fine-tuned ([CLP](../resources/compression/clp-layer-pruning.md)); heavier weight pruning needs distillation recovery.
 - Chunking plus async execution lets a slow model keep a robot moving if latency is below the chunk duration; RTC-style stitching helps when latency exceeds the control period so chunks arrive late, and above the chunk duration only a smaller model or a dual-system split helps ([serving methods](serving-methods.md)).
 - Quantization saves memory reliably; speed gains need native low-bit kernels ([quantization](quantization.md)).
 
