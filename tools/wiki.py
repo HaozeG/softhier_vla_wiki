@@ -96,6 +96,74 @@ DIAGRAM_RE = re.compile(r"```text\n(.*?)```", re.S)  # diagrams are fenced as ``
 DIAGRAM_COLS = 80
 
 
+# ---------- table format (Obsidian pads tables; matching it avoids reformat diffs, decision 0008) ----------
+SEP_RE = re.compile(r"^\s*\|?(\s*:?-+:?\s*\|)+(\s*:?-+:?\s*)?\s*$")
+
+
+def split_row(line: str):
+    """Cells of a `| a | b |` row; `|` inside backticks or escaped as `\\|` does not split."""
+    s = line.strip()
+    s = s[1:] if s.startswith("|") else s
+    s = s[:-1] if s.endswith("|") and not s.endswith("\\|") else s
+    cells, cur, tick = [], "", False
+    i = 0
+    while i < len(s):
+        c = s[i]
+        if c == "\\" and i + 1 < len(s):
+            cur += s[i:i + 2]
+            i += 2
+            continue
+        if c == "`":
+            tick = not tick
+        if c == "|" and not tick:
+            cells.append(cur.strip())
+            cur = ""
+        else:
+            cur += c
+        i += 1
+    cells.append(cur.strip())
+    return cells
+
+
+def format_tables(text: str):
+    """-> (text with every pipe table padded like Obsidian, list of problems). Idempotent."""
+    lines, out, problems, i, fenced = text.split("\n"), [], [], 0, False
+    while i < len(lines):
+        ln = lines[i]
+        if ln.lstrip().startswith("```"):
+            fenced = not fenced
+        if fenced or not ln.lstrip().startswith("|") or i + 1 >= len(lines) or not SEP_RE.match(lines[i + 1]) or "|" not in lines[i + 1]:
+            out.append(ln)
+            i += 1
+            continue
+        j = i
+        while j < len(lines) and lines[j].lstrip().startswith("|"):
+            j += 1
+        rows = [split_row(l) for l in lines[i:j]]
+        n = len(rows[0])
+        if any(len(r) != n for r in rows):
+            problems.append(f"line {i + 1}: table rows have different cell counts; left as is")
+            out.extend(lines[i:j])
+            i = j
+            continue
+        aligns = []
+        for c in rows[1]:
+            aligns.append("c" if c.startswith(":") and c.endswith(":") and len(c) > 1 else "r" if c.endswith(":") else "l")
+        body = [rows[0]] + rows[2:]
+        widths = [max(3, *(len(r[k]) for r in body)) for k in range(n)]
+        def cell(t, k):
+            return t.rjust(widths[k]) if aligns[k] == "r" else t.center(widths[k]) if aligns[k] == "c" else t.ljust(widths[k])
+        def sep(k):
+            w = widths[k]
+            return ":" + "-" * (w - 2) + ":" if aligns[k] == "c" else "-" * (w - 1) + ":" if aligns[k] == "r" else (":" + "-" * (w - 1) if rows[1][k].startswith(":") else "-" * w)
+        fmt = lambda cs: "| " + " | ".join(cs) + " |"
+        out.append(fmt([cell(t, k) for k, t in enumerate(rows[0])]))
+        out.append(fmt([sep(k) for k in range(n)]))
+        out.extend(fmt([cell(t, k) for k, t in enumerate(r)]) for r in rows[2:])
+        i = j
+    return "\n".join(out), problems
+
+
 LINK_RE = re.compile(r"\[[^\]]*\]\(([^)\s]+)\)|(wiki://[\w./-]+\.md)")
 
 
@@ -415,6 +483,8 @@ def structural_issues():
             _, broken = note_links(f, body)
             for t in broken:
                 add("ERROR", "BROKENLINK", frel, t)
+            if format_tables(body)[0] != body:
+                add("WARN", "TABLEFMT", frel, "table not padded like Obsidian; run `tools/wiki.py fmt`")
             for blk in DIAGRAM_RE.findall(body):
                 lines = blk.splitlines()
                 bad = next((n for n, l in enumerate(lines, 1) if not l.isascii()), None)
@@ -484,6 +554,26 @@ def cmd_health(a):
         elif sim < a.dup_threshold and a.candidates:
             issues.append(("INFO", "REVIEW", x, f"{sim:.2f} related to {y} (# {head}); read both for conflicting claims"))
     sys.exit(report(issues, a.strict))
+
+
+def cmd_fmt(a):
+    """Pad pipe tables the way Obsidian does, so opening a note there changes nothing."""
+    changed = 0
+    for d in all_dirs():
+        for f in notes(d):
+            text = f.read_text()
+            fm = re.match(r"---\n.*?\n---\n?", text, re.S)
+            head, body = (text[:fm.end()], text[fm.end():]) if fm else ("", text)
+            new, problems = format_tables(body)
+            for p in problems:
+                print(f"WARN  {f.relative_to(ROOT).as_posix()}  {p}")
+            if new != body:
+                changed += 1
+                print(("would reformat " if a.check else "reformatted ") + f.relative_to(ROOT).as_posix())
+                if not a.check:
+                    f.write_text(head + new)
+    print(f"{changed} note(s) {'need' if a.check else 'were'} reformatted" if changed else "tables ok")
+    sys.exit(1 if a.check and changed else 0)
 
 
 def cmd_related(a):
@@ -717,6 +807,9 @@ def main():
     p.add_argument("event", choices=["session-start"])
     p.set_defaults(fn=cmd_hook)
     sub.add_parser("setup", help="one-time: create .venv, install deps, build index, enable hook").set_defaults(fn=cmd_setup)
+    p = sub.add_parser("fmt", help="pad pipe tables like Obsidian (idempotent); --check only reports")
+    p.add_argument("--check", action="store_true")
+    p.set_defaults(fn=cmd_fmt)
     sub.add_parser("install-hooks", help="enable the commit-msg hook").set_defaults(fn=cmd_install_hooks)
     p = sub.add_parser("stamp", help="record current children hash in summary files")
     p.add_argument("paths", nargs="*")

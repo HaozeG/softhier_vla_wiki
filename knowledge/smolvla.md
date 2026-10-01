@@ -33,18 +33,18 @@ robot state -> 1 token -----------------------------+    layers (N = L/2)
 
 **Measured serving numbers from other sources**
 
-| Source | Hardware | Number | Notes |
-|---|---|---|---|
-| [vla.cpp](../resources/vla-cpp.md) | RTX 3090 | 55.8 ms per chunk (server side) | eager PyTorch 174.1 ms, compiled 65.9 ms |
-| vla.cpp | RTX 5070 | 74.1 ms | eager 176.0 ms, graph-captured 76.3 ms |
-| vla.cpp | AGX Orin / RTX 3060 | 65.4 / 28.2 ms per executed action (S = 4, includes transport) | about 262 / 113 ms per chunk |
-| vla.cpp | Jetson Orin Nano 8 GB | median 358–457 ms per chunk | 176/200 LIBERO-Object success at S = 4 |
-| vla.cpp | Apple M4 (Metal) | 374 ms | 9/10 success |
-| vla.cpp | i9-14900HX, 8 threads CPU | 2141 ms | |
-| [vla.simd](../resources/vla-simd.md) | Apple M4 / i9 / Ryzen 5 / Raspberry Pi 5 CPU | about 0.68 / 1.19 / 1.32 / 8.19 s per chunk (50 / f_eff) | fp32, engine-only latency |
+| Source                                                                               | Hardware                                            | Number                                                                     | Notes                                        |
+| ------------------------------------------------------------------------------------ | --------------------------------------------------- | -------------------------------------------------------------------------- | -------------------------------------------- |
+| [vla.cpp](../resources/vla-cpp.md)                                                   | RTX 3090                                            | 55.8 ms per chunk (server side)                                            | eager PyTorch 174.1 ms, compiled 65.9 ms     |
+| vla.cpp                                                                              | RTX 5070                                            | 74.1 ms                                                                    | eager 176.0 ms, graph-captured 76.3 ms       |
+| vla.cpp                                                                              | AGX Orin / RTX 3060                                 | 65.4 / 28.2 ms per executed action (S = 4, includes transport)             | about 262 / 113 ms per chunk                 |
+| vla.cpp                                                                              | Jetson Orin Nano 8 GB                               | median 358–457 ms per chunk                                                | 176/200 LIBERO-Object success at S = 4       |
+| vla.cpp                                                                              | Apple M4 (Metal)                                    | 374 ms                                                                     | 9/10 success                                 |
+| vla.cpp                                                                              | i9-14900HX, 8 threads CPU                           | 2141 ms                                                                    |                                              |
+| [vla.simd](../resources/vla-simd.md)                                                 | Apple M4 / i9 / Ryzen 5 / Raspberry Pi 5 CPU        | about 0.68 / 1.19 / 1.32 / 8.19 s per chunk (50 / f_eff)                   | fp32, engine-only latency                    |
 | [XPU characterization](../resources/vla-xpu-characterization.md) (plot, approximate) | i7-11700 CPU / Ascend 310P / Orin / Thor / RTX 4090 | about 0.3 / 2 / 1.2 / 4.9 / 11 Hz (PyTorch baseline; a 310B bar is absent) | read off a log-scale bar chart, roughly ±20% |
-| [FlashVLA](../resources/flashvla-streaming.md) | RTX 4090 class | 19.7 ms baseline → 10.1 ms streaming | CUDA graphs, fused kernels |
-| [CLP](../resources/clp-layer-pruning.md) | RTX 4070 | 201 ms → 137 ms after layer pruning | different measurement boundary |
+| [FlashVLA](../resources/flashvla-streaming.md)                                       | RTX 4090 class                                      | 19.7 ms baseline → 10.1 ms streaming                                       | CUDA graphs, fused kernels                   |
+| [CLP](../resources/clp-layer-pruning.md)                                             | RTX 4070                                            | 201 ms → 137 ms after layer pruning                                        | different measurement boundary               |
 
 The 10× spread across sources on similar GPUs (10–20 ms vs 65–200 ms) is an implementation effect (eager dispatch vs CUDA graphs and fused kernels), not a hardware effect. See [inference workload characterization](inference-workload-characterization.md).
 

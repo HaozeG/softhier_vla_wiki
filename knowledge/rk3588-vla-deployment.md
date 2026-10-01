@@ -50,11 +50,11 @@ chunk lasts 1.67 s at 30 Hz.  Estimated chunk latency per camera count:
 **Estimate for a SmolVLA-class call on RK3588 (derived; not a measurement)**
 - Inputs: vision per camera about 0.84 s (SmolVLM-256M as proxy; the tower dimensions match SmolVLA's, depth may differ); LLM prefix scaled from the 77 ms / 128-token row by parameters (157M vs about 106M non-embedding) and tokens (113–241) gives 0.10–0.22 s; expert 10 steps at 0.2 GB FP16 weights per step over about 25 GB/s gives at least 0.08 s, up to about 0.5 s with graph-split overhead (assumed).
 
-| Cameras | Estimated chunk latency | 30 Hz chunk (1.67 s) | Comment |
-|---|---|---|---|
-| 1 | about 1.0–1.4 s | supplies actions, borderline | discarding stale actions needs under 0.83 s: fails |
-| 2 | about 1.9–2.3 s | starves | |
-| 3 (released default) | about 2.8–3.2 s | starves | consistent with the reported 5.05 s given unknown overheads |
+| Cameras              | Estimated chunk latency | 30 Hz chunk (1.67 s)         | Comment                                                     |
+| -------------------- | ----------------------- | ---------------------------- | ----------------------------------------------------------- |
+| 1                    | about 1.0–1.4 s         | supplies actions, borderline | discarding stale actions needs under 0.83 s: fails          |
+| 2                    | about 1.9–2.3 s         | starves                      |                                                             |
+| 3 (released default) | about 2.8–3.2 s         | starves                      | consistent with the reported 5.05 s given unknown overheads |
 
 - The action-supply conditions are from [serving methods](serving-methods.md). Compared with the 0.11 s roofline for a generic 10-TFLOP/s device, the RK3588 estimate is 10–30× slower, from low NPU utilization and FP16 vision.
 

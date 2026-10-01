@@ -28,12 +28,12 @@ visual tokens per frame?
 ## Details
 **Methods and measured results**
 
-| Method | Idea | Training | Result | Source |
-|---|---|---|---|---|
-| VLA-Cache | reuse KV of tokens whose patches barely changed; recompute task-relevant ones; layer-adaptive reuse | none | OpenVLA LIBERO 75.0 → 74.7 avg, latency 51.9 → 31.8 ms, FLOPs −27%; OpenVLA-OFT 96.8 → 97.4, 65 → 79 Hz (RTX 4090) | [VLA-Cache](../resources/vla-cache.md) |
-| LightVLA | parameter-free instruction-driven queries pick tokens with Gumbel-softmax | fine-tune | 512 → about 78 tokens on OFT; FLOPs −59%, 34 → 21 ms (H20), 94.8 → 97.4% vs its reproduced baseline (published OFT 97.1%) | [LightVLA](../resources/lightvla.md) |
-| EfficientVLA token step | top-K task-relevant plus diverse tokens | none | 56 of 256 tokens alone: 1.23× (saturates) | [EfficientVLA](../resources/efficientvla.md) |
-| FastV / SparseVLM on OpenVLA | attention-based pruning inside one frame | none | FastV about 1.0× (53.3 vs 51.9 ms), SparseVLM slower (83.4 ms) and 64.7% success | [VLA-Cache](../resources/vla-cache.md) |
+| Method                       | Idea                                                                                                | Training  | Result                                                                                                                    | Source                                       |
+| ---------------------------- | --------------------------------------------------------------------------------------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------- |
+| VLA-Cache                    | reuse KV of tokens whose patches barely changed; recompute task-relevant ones; layer-adaptive reuse | none      | OpenVLA LIBERO 75.0 → 74.7 avg, latency 51.9 → 31.8 ms, FLOPs −27%; OpenVLA-OFT 96.8 → 97.4, 65 → 79 Hz (RTX 4090)        | [VLA-Cache](../resources/vla-cache.md)       |
+| LightVLA                     | parameter-free instruction-driven queries pick tokens with Gumbel-softmax                           | fine-tune | 512 → about 78 tokens on OFT; FLOPs −59%, 34 → 21 ms (H20), 94.8 → 97.4% vs its reproduced baseline (published OFT 97.1%) | [LightVLA](../resources/lightvla.md)         |
+| EfficientVLA token step      | top-K task-relevant plus diverse tokens                                                             | none      | 56 of 256 tokens alone: 1.23× (saturates)                                                                                 | [EfficientVLA](../resources/efficientvla.md) |
+| FastV / SparseVLM on OpenVLA | attention-based pruning inside one frame                                                            | none      | FastV about 1.0× (53.3 vs 51.9 ms), SparseVLM slower (83.4 ms) and 64.7% success                                          | [VLA-Cache](../resources/vla-cache.md)       |
 
 **What is established**
 - **Why VLM pruning fails in VLAs:** the output is a short action sequence (about 7 tokens for OpenVLA), so prefill dominates but intra-frame pruning disturbs spatial detail that manipulation needs ([VLA-Cache](../resources/vla-cache.md), [LightVLA](../resources/lightvla.md)).

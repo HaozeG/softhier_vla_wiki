@@ -29,16 +29,16 @@ Reading rule behind the "10 TOPS gap": the ratio of compute to bandwidth (FLOP/b
 ## Details
 **Hardware classes (vendor figures; precision and sparsity matter)**
 
-| Class | Compute | Memory bandwidth | Power | Source |
-|---|---|---|---|---|
-| Ascend 310B | 10 TFLOP/s FP16 | 51.2 GB/s (12 GB) | not listed | [XPU](../resources/vla-xpu-characterization.md) |
-| Raspberry Pi AI HAT+ (Hailo-8L / Hailo-8) | 13 / 26 TOPS | not listed | not listed | [datasheets](../resources/edge-accelerator-datasheets.md) |
-| Hailo-10H | 20 (INT8) / 40 (INT4) TOPS | LPDDR4/4X interface, no figure | 2.5 W typical | datasheets |
-| Rockchip RK3588 (3-core NPU) | 6 TOPS headline (INT8); 12–19% used in measured LLM prefill | 21–22 GB/s measured (CPU); 24–30 GB/s implied by NPU decode; 64-bit LPDDR | est. 5–6 W under AI load | [RK3588 platform](../resources/rk3588-platform-specs.md), [measurements](../resources/rk3588-vlm-llm-measurements.md) |
-| Jetson Orin Nano 8 GB | 67 sparse INT8 TOPS | 102 GB/s | 7–25 W | [Jetson specs](../resources/nvidia-jetson-platform-specs.md) |
-| Jetson AGX Orin 64 GB | 275 TOPS (sparse INT8) | 204.8 GB/s | 15–60 W | Jetson specs |
-| Jetson Thor | 517 dense FP8 TFLOPS, 1035 sparse | 273 GB/s | 40–130 W | Jetson specs |
-| RTX 4090 (reference) | about 165–330 dense BF16 TFLOPS, depending on source | about 1000 GB/s | high | [VLA-Perf](../resources/vla-perf.md), XPU |
+| Class                                     | Compute                                                     | Memory bandwidth                                                          | Power                    | Source                                                                                                                |
+| ----------------------------------------- | ----------------------------------------------------------- | ------------------------------------------------------------------------- | ------------------------ | --------------------------------------------------------------------------------------------------------------------- |
+| Ascend 310B                               | 10 TFLOP/s FP16                                             | 51.2 GB/s (12 GB)                                                         | not listed               | [XPU](../resources/vla-xpu-characterization.md)                                                                       |
+| Raspberry Pi AI HAT+ (Hailo-8L / Hailo-8) | 13 / 26 TOPS                                                | not listed                                                                | not listed               | [datasheets](../resources/edge-accelerator-datasheets.md)                                                             |
+| Hailo-10H                                 | 20 (INT8) / 40 (INT4) TOPS                                  | LPDDR4/4X interface, no figure                                            | 2.5 W typical            | datasheets                                                                                                            |
+| Rockchip RK3588 (3-core NPU)              | 6 TOPS headline (INT8); 12–19% used in measured LLM prefill | 21–22 GB/s measured (CPU); 24–30 GB/s implied by NPU decode; 64-bit LPDDR | est. 5–6 W under AI load | [RK3588 platform](../resources/rk3588-platform-specs.md), [measurements](../resources/rk3588-vlm-llm-measurements.md) |
+| Jetson Orin Nano 8 GB                     | 67 sparse INT8 TOPS                                         | 102 GB/s                                                                  | 7–25 W                   | [Jetson specs](../resources/nvidia-jetson-platform-specs.md)                                                          |
+| Jetson AGX Orin 64 GB                     | 275 TOPS (sparse INT8)                                      | 204.8 GB/s                                                                | 15–60 W                  | Jetson specs                                                                                                          |
+| Jetson Thor                               | 517 dense FP8 TFLOPS, 1035 sparse                           | 273 GB/s                                                                  | 40–130 W                 | Jetson specs                                                                                                          |
+| RTX 4090 (reference)                      | about 165–330 dense BF16 TFLOPS, depending on source        | about 1000 GB/s                                                           | high                     | [VLA-Perf](../resources/vla-perf.md), XPU                                                                             |
 
 Dense-BF16 numbers for the same device differ by 2× or more between papers; compare devices on stated precision, and note that INT4/INT8 TOPS are unusable for a BF16 flow loop.
 

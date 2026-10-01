@@ -11,26 +11,26 @@ Rockchip publishes RKLLM benchmarks for language models and a few vision-languag
 ## Details
 **Rockchip benchmark (RK3588, w8a8, 128-token prompt, 64 new tokens; columns TTFT ms / tokens per s / memory MB)**
 
-| Model | TTFT (ms) | Tokens/s | Memory (MB) |
-|---|---|---|---|
-| Qwen2 0.5B | 145.90 | 41.58 | 669.56 |
-| MiniCPM4 0.5B | 135.29 | 45.34 | 534.82 |
-| TinyLlama 1.1B | 243.93 | 24.43 | 1093.66 |
-| Qwen2.5 1.5B | 378.31 | 16.69 | 1689.21 |
-| Gemma2 2B | 598.41 | 10.37 | 2779.22 |
-| Phi3 3.8B | 1017.28 | 7.45 | 3758.34 |
-| ChatGLM3 6B | 1352.94 | 4.98 | 5985.99 |
-| LFM2.5-VL 450M | 102.74 | 62.16 | 436.94 |
+| Model          | TTFT (ms) | Tokens/s | Memory (MB) |
+| -------------- | --------- | -------- | ----------- |
+| Qwen2 0.5B     | 145.90    | 41.58    | 669.56      |
+| MiniCPM4 0.5B  | 135.29    | 45.34    | 534.82      |
+| TinyLlama 1.1B | 243.93    | 24.43    | 1093.66     |
+| Qwen2.5 1.5B   | 378.31    | 16.69    | 1689.21     |
+| Gemma2 2B      | 598.41    | 10.37    | 2779.22     |
+| Phi3 3.8B      | 1017.28   | 7.45     | 3758.34     |
+| ChatGLM3 6B    | 1352.94   | 4.98     | 5985.99     |
+| LFM2.5-VL 450M | 102.74    | 62.16    | 436.94      |
 
 **Rockchip multimodal rows (RK3588, w8a8 language model)**
 
-| Model | Image encoder | Prefill | Decode |
-|---|---|---|---|
-| SmolVLM-256M | 842 ms at 512×512 | 77.3 ms (128 tokens) | 78 tokens/s |
-| Qwen3.5-0.8B | 690 ms at 448×448 | 1.56 s (216 tokens) | 27 tokens/s |
-| Qwen2-VL-2B | 3.28 s at 392×392 | 632.6 ms (196 tokens) | 16.6 tokens/s |
-| Qwen3-VL-2B | 2.08 s at 448×448 | 649 ms (196 tokens) | 14.91 tokens/s |
-| Qwen2.5-VL-3B | 2.93 s at 392×392 | 1120 ms (196 tokens) | 8.66 tokens/s |
+| Model         | Image encoder     | Prefill               | Decode         |
+| ------------- | ----------------- | --------------------- | -------------- |
+| SmolVLM-256M  | 842 ms at 512×512 | 77.3 ms (128 tokens)  | 78 tokens/s    |
+| Qwen3.5-0.8B  | 690 ms at 448×448 | 1.56 s (216 tokens)   | 27 tokens/s    |
+| Qwen2-VL-2B   | 3.28 s at 392×392 | 632.6 ms (196 tokens) | 16.6 tokens/s  |
+| Qwen3-VL-2B   | 2.08 s at 448×448 | 649 ms (196 tokens)   | 14.91 tokens/s |
+| Qwen2.5-VL-3B | 2.93 s at 392×392 | 1120 ms (196 tokens)  | 8.66 tokens/s  |
 
 **Community runs**
 - Radxa Qwen2-VL-2B (RKLLM 1.2.3, driver 0.9.8): vision encoder RKNN FP16 at 392×392 giving 196×1536 features; LLM W8A8; prefill 222 tokens in 929.4 ms (238.9 tokens/s); decode 60 tokens in 3897 ms (15.39 tokens/s); vision model load 2.36 s and LLM load 3.05 s.

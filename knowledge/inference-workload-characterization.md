@@ -61,11 +61,11 @@ The first drawing is the phase structure of the Summary, the second is the first
 
 **Roofline vs measured (π0, about three cameras)**
 
-| Device | Roofline | Measured | Source |
-|---|---|---|---|
-| RTX 4090 | 30.4 ms (VLA-Perf); 26.7 ms (Realtime-VLA, 27.6 with sync) | 36.8 ms tuned Triton; 67.6 ms openpi JAX; 113.9 ms naive PyTorch | [Realtime-VLA](../resources/realtime-vla.md), [VLA-Perf](../resources/vla-perf.md) |
-| Jetson Thor | 52.6 ms | π0: 246 ms baseline, 163 ms compiled ([XPU](../resources/vla-xpu-characterization.md)); 448 ms naive PyTorch ([Jetson-PI](../resources/jetson-pi.md)). π0.5: 458 ms naive, 310 ms after system work (Jetson-PI) | [XPU](../resources/vla-xpu-characterization.md), [Jetson-PI](../resources/jetson-pi.md) |
-| AGX Orin | not modeled | 921 ms (π0 baseline); 1403 ms at 50 W, 2269 ms at 30 W (π0 naive) | XPU, Jetson-PI |
+| Device      | Roofline                                                   | Measured                                                                                                                                                                                                        | Source                                                                                  |
+| ----------- | ---------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| RTX 4090    | 30.4 ms (VLA-Perf); 26.7 ms (Realtime-VLA, 27.6 with sync) | 36.8 ms tuned Triton; 67.6 ms openpi JAX; 113.9 ms naive PyTorch                                                                                                                                                | [Realtime-VLA](../resources/realtime-vla.md), [VLA-Perf](../resources/vla-perf.md)      |
+| Jetson Thor | 52.6 ms                                                    | π0: 246 ms baseline, 163 ms compiled ([XPU](../resources/vla-xpu-characterization.md)); 448 ms naive PyTorch ([Jetson-PI](../resources/jetson-pi.md)). π0.5: 458 ms naive, 310 ms after system work (Jetson-PI) | [XPU](../resources/vla-xpu-characterization.md), [Jetson-PI](../resources/jetson-pi.md) |
+| AGX Orin    | not modeled                                                | 921 ms (π0 baseline); 1403 ms at 50 W, 2269 ms at 30 W (π0 naive)                                                                                                                                               | XPU, Jetson-PI                                                                          |
 
 Measured runs use different chunk sizes, camera counts and frameworks; treat the table as an order-of-magnitude picture (naive software 4–9× above roofline: 113.9 vs 26.7 ms is 4.3× on the 4090 and 448 vs 52.6 ms is 8.5× on Thor; tuned software 36.8 vs 26.7 ms is 1.4× on a 4090). VLA-Perf itself reports real Triton at 73–83% of its roofline.
 

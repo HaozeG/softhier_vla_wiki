@@ -13,14 +13,14 @@ Two dedicated surveys organize VLA efficiency differently: [Yu et al.](../resour
 ## Details
 **Map from survey categories to wiki notes**
 
-| What is executed per control step | Technique family | Note |
-|---|---|---|
-| Vision encoder and projector | fewer/smaller images, pixel shuffle, no tiling, encoder quantization | [token pruning and caching](token-pruning-and-caching.md), [quantization](quantization.md) |
-| VLM prefill | layer skipping/pruning, width pruning, token pruning/caching, quantization | [layer skipping and pruning](layer-skipping-and-pruning.md), [token pruning and caching](token-pruning-and-caching.md), [quantization](quantization.md) |
-| Action decoding | discrete vs parallel vs flow head; step reduction; feature caching; streaming | [action representation and chunking](action-representation-and-chunking.md), [flow-step reduction](flow-step-reduction.md) |
-| Whole call | kernels, graphs, runtimes | [serving methods](serving-methods.md) |
-| Across calls | chunking, async, chunk stitching, dual-system, placement | [serving methods](serving-methods.md) |
-| Training-time | LoRA, distillation, pretraining recipes, data efficiency | [VLA architecture overview](vla-architecture-overview.md); surveys only |
+| What is executed per control step | Technique family                                                              | Note                                                                                                                                                    |
+| --------------------------------- | ----------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Vision encoder and projector      | fewer/smaller images, pixel shuffle, no tiling, encoder quantization          | [token pruning and caching](token-pruning-and-caching.md), [quantization](quantization.md)                                                              |
+| VLM prefill                       | layer skipping/pruning, width pruning, token pruning/caching, quantization    | [layer skipping and pruning](layer-skipping-and-pruning.md), [token pruning and caching](token-pruning-and-caching.md), [quantization](quantization.md) |
+| Action decoding                   | discrete vs parallel vs flow head; step reduction; feature caching; streaming | [action representation and chunking](action-representation-and-chunking.md), [flow-step reduction](flow-step-reduction.md)                              |
+| Whole call                        | kernels, graphs, runtimes                                                     | [serving methods](serving-methods.md)                                                                                                                   |
+| Across calls                      | chunking, async, chunk stitching, dual-system, placement                      | [serving methods](serving-methods.md)                                                                                                                   |
+| Training-time                     | LoRA, distillation, pretraining recipes, data efficiency                      | [VLA architecture overview](vla-architecture-overview.md); surveys only                                                                                 |
 
 Surveys' training-only and data-collection pillars (efficient pretraining, RL, simulation data) are outside this wiki's serving scope; consult [Yu et al.](../resources/survey-efficient-vla-yu.md) for them.
 

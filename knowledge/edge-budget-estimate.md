@@ -35,12 +35,12 @@ The first drawing is the roofline paragraph below; the second is "Does that keep
 
 **FLOPs per call**
 
-| Part | Basis | 2 cameras | 3 cameras (default config) |
-|---|---|---|---|
-| Vision encoder | per camera: 2 × 85M × 1024 + attention 12 × 4 × 1024² × 768 + connector, about 214 GFLOP | 428 GFLOP | 643 GFLOP |
-| LLM prefix (16 layers) | 2 × 157M × tokens (177 or 241) + attention | 58 GFLOP | 79 GFLOP |
-| Action expert, 10 steps | 10 × 2 × 100M × 50 | 100 GFLOP | 100 GFLOP |
-| Total | | about 586 GFLOP | about 822 GFLOP |
+| Part                    | Basis                                                                                    | 2 cameras       | 3 cameras (default config) |
+| ----------------------- | ---------------------------------------------------------------------------------------- | --------------- | -------------------------- |
+| Vision encoder          | per camera: 2 × 85M × 1024 + attention 12 × 4 × 1024² × 768 + connector, about 214 GFLOP | 428 GFLOP       | 643 GFLOP                  |
+| LLM prefix (16 layers)  | 2 × 157M × tokens (177 or 241) + attention                                               | 58 GFLOP        | 79 GFLOP                   |
+| Action expert, 10 steps | 10 × 2 × 100M × 50                                                                       | 100 GFLOP       | 100 GFLOP                  |
+| Total                   |                                                                                          | about 586 GFLOP | about 822 GFLOP            |
 
 **Roofline time per chunk** (per phase max of FLOPs ÷ 10 TFLOP/s and weight bytes ÷ 51.2 GB/s; bf16 weights)
 - 3 cameras: vision 64 ms (compute-bound), LLM 8 ms, expert 39 ms if its 0.2 GB of weights are re-read each of 10 steps (intensity 50 FLOP/byte against a ridge of about 195) → about **111 ms**. With the expert resident on chip (weights read once, so 10 ms): about **82 ms**.

@@ -23,3 +23,5 @@ Notes whose content has structure get one ASCII diagram, usually right after the
 Prose can hide a gap that a picture exposes (a missing branch, two steps that cannot both be true). The rule costs little because the diagram only restates what the text already says. Limits keep diagrams readable in a terminal, an editor and an embedding index. Tooling note: `find`/`index` embed diagram lines as ordinary text; the chunker was changed to ignore `#` inside fenced blocks, and `health` after adding diagrams to 16 notes reported no near-duplicates, so no threshold change was needed.
 
 Builds on [0002](0002-lint-and-git-as-log.md).
+
+See also [0008](0008-obsidian-padded-tables.md): tables are stored padded like Obsidian.

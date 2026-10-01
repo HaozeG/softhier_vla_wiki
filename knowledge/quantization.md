@@ -29,16 +29,16 @@ does a smaller format make it faster?
 ## Details
 **Evidence by method**
 
-| Method | Result | Hardware | Source |
-|---|---|---|---|
-| OpenVLA bf16 / int8 / int4 (weights) | success 71.3 / 58.1 / 71.9%; memory 16.8 / 10.2 / 7.0 GB | A5000 (eval), various GPUs | [OpenVLA](../resources/openvla.md) |
-| OpenVLA 4-bit vs bf16 | 1.14× faster, LIBERO average 76.5 → 67.7 | GPU not stated in the text read | [XPU](../resources/vla-xpu-characterization.md) |
-| BitVLA (ternary weights, INT8 activations, QAT + distillation) | LIBERO 96.0% at 1.4 GB vs OpenVLA-OFT 97.1% at 15.4 GB; 73 ms vs 321 ms on A100 (baseline copied from OFT paper) | A100 | [BitVLA](../resources/bitvla.md) |
-| BitVLA tensor-core kernel | 4.57× / 4.02× faster than CUDA-core path; packing alone no latency change | RTX 3060 / AGX Orin | [vla.cpp](../resources/vla-cpp.md) |
-| QuantVLA W4A8 (LLM + DiT MLP, calibrated) | π0.5 97.1 → 97.6% LIBERO, memory 4.27 → 1.28 GB; GR00T N1.5 86.5 → 88.0% | A100 (no latency reported) | [QuantVLA](../resources/quantvla.md) |
-| GGUF Q4_0 (+ vision) on GR00T-N1.7 | 190–195 vs 196/200 successes; 1.14× faster; file 6.3 → 4.6 GB | RTX 3060 | [vla.cpp](../resources/vla-cpp.md) |
-| W8A8 on CPUs | 1.13–1.26× on desktop CPUs, 1.7–2.7× on Pi 5, slower on M4 for some policies | four CPUs | [vla.simd](../resources/vla-simd.md) |
-| DeeR-VLA LLM precision | fp32 6 GB / fp16 3 GB / int4 1.7 GB; success length 4.13 / 4.12 / 3.91 | hardware not stated for this table | [DeeR-VLA](../resources/deer-vla.md) |
+| Method                                                         | Result                                                                                                           | Hardware                           | Source                                          |
+| -------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- | ---------------------------------- | ----------------------------------------------- |
+| OpenVLA bf16 / int8 / int4 (weights)                           | success 71.3 / 58.1 / 71.9%; memory 16.8 / 10.2 / 7.0 GB                                                         | A5000 (eval), various GPUs         | [OpenVLA](../resources/openvla.md)              |
+| OpenVLA 4-bit vs bf16                                          | 1.14× faster, LIBERO average 76.5 → 67.7                                                                         | GPU not stated in the text read    | [XPU](../resources/vla-xpu-characterization.md) |
+| BitVLA (ternary weights, INT8 activations, QAT + distillation) | LIBERO 96.0% at 1.4 GB vs OpenVLA-OFT 97.1% at 15.4 GB; 73 ms vs 321 ms on A100 (baseline copied from OFT paper) | A100                               | [BitVLA](../resources/bitvla.md)                |
+| BitVLA tensor-core kernel                                      | 4.57× / 4.02× faster than CUDA-core path; packing alone no latency change                                        | RTX 3060 / AGX Orin                | [vla.cpp](../resources/vla-cpp.md)              |
+| QuantVLA W4A8 (LLM + DiT MLP, calibrated)                      | π0.5 97.1 → 97.6% LIBERO, memory 4.27 → 1.28 GB; GR00T N1.5 86.5 → 88.0%                                         | A100 (no latency reported)         | [QuantVLA](../resources/quantvla.md)            |
+| GGUF Q4_0 (+ vision) on GR00T-N1.7                             | 190–195 vs 196/200 successes; 1.14× faster; file 6.3 → 4.6 GB                                                    | RTX 3060                           | [vla.cpp](../resources/vla-cpp.md)              |
+| W8A8 on CPUs                                                   | 1.13–1.26× on desktop CPUs, 1.7–2.7× on Pi 5, slower on M4 for some policies                                     | four CPUs                          | [vla.simd](../resources/vla-simd.md)            |
+| DeeR-VLA LLM precision                                         | fp32 6 GB / fp16 3 GB / int4 1.7 GB; success length 4.13 / 4.12 / 3.91                                           | hardware not stated for this table | [DeeR-VLA](../resources/deer-vla.md)            |
 
 **Lessons**
 - **Speed needs a kernel.** OpenVLA's 8-bit run dropped to about 1.2 Hz on an A5000 and the success drop was attributed to the resulting slower control rate, not to token accuracy; 4-bit was faster because reduced memory traffic outweighed dequantization cost ([OpenVLA](../resources/openvla.md)). Packed low-bit weights alone leave latency unchanged; tensor-core ternary execution gave 4× ([vla.cpp](../resources/vla-cpp.md)).

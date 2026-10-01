@@ -9,7 +9,7 @@ Run periodically (weekly, or after a large ingest), by hand or via the `wiki-hea
 
 ## Steps
 1. `tools/wiki.py health` — read the whole report.
-2. **Errors first** (`ERROR` rows fail `check`): fix `MISSING`/`EMPTY`/`STALE`/`TOO LONG` summary files, `UNCATALOGUED` notes, `FRONTMATTER`/`BADTYPE`/`NOTITLE`/`NOSECTION` structure, `BROKENLINK`s, `DIAGRAM` (diagram wider than 80 columns or not plain ASCII).
+2. **Errors first** (`ERROR` rows fail `check`): fix `MISSING`/`EMPTY`/`STALE`/`TOO LONG` summary files, `UNCATALOGUED` notes, `FRONTMATTER`/`BADTYPE`/`NOTITLE`/`NOSECTION` structure, `BROKENLINK`s, `DIAGRAM` (diagram wider than 80 columns or not plain ASCII); `TABLEFMT` warnings are cleared by `tools/wiki.py fmt`.
 3. **`NEARDUP` / `DUPLICATE`:** read both notes fully. Merge into the stronger note — the one with more sources/detail, else the older, better-named one (union the `tags:` and `sources:`, redirect inbound links, remove its catalog line, delete the weaker one) or, if they are legitimately different, cross-link them and state the difference in each.
 4. **`ORPHAN`:** run `tools/wiki.py related <note>` and link it from the notes that should point to it (a catalog entry in `_overview.md` does not count as a link). If nothing related exists yet, leave it as a deliberate warning.
 5. **`PLACEHOLDER` / `NOSOURCES` / `NOTAGS`:** resolve from the actual source or report that information is missing; never invent.

@@ -25,6 +25,8 @@ Required `##` sections: concept/entity → `Summary`; paper → `Summary`, `Key 
 
 **Diagrams ([decision 0007](memories/decisions/0007-ascii-diagrams-as-logic-check.md)).** A note whose content has structure (pipeline, timeline, tiers, decision tree, taxonomy, dataflow) carries one ```` ```text ```` ASCII diagram, usually right after `## Summary`: plain ASCII, ≤80 columns, ~25 lines, no line starting with `#`. The diagram adds no claim and no number the text lacks; text and diagram change in the same edit. Drawing it is a second check on the prose: if a case is missing, an arrow contradicts a sentence, or quantities do not add up, fix the text from the cited source and say so in the commit body. Not for tables of numbers, `resources/` notes, or `_abstract.md`/`_overview.md`.
 
+**Tables ([decision 0008](memories/decisions/0008-obsidian-padded-tables.md)).** Store pipe tables padded the way Obsidian does (the maintainer views the wiki there, and it would otherwise rewrite them). After editing a table run `tools/wiki.py fmt`; `check` warns `TABLEFMT` otherwise.
+
 ## The three operations
 - **Ingest** a source → follow `skills/ingest-a-source.md`. First tell the user the key takeaways and what you plan to touch. One source touches several notes (often 10–15): source note, the knowledge notes it informs, cross-links, catalog entries, decisions.
 - **Query** → `find "<question>"` (hybrid semantic + keyword), `ls`/`tree` to browse, read L0/L1 then the L2 hits. Answer from the wiki and cite `wiki://` URIs. If the answer is a valuable synthesis, **file it back** as a note (a good answer that stays in chat is lost).
@@ -41,8 +43,9 @@ Required `##` sections: concept/entity → `Summary`; paper → `Summary`, `Key 
 | `ls [<dir>] [-d N]` / `tree [<dir>] [-d N]` | Browse with L0 abstracts |
 | `new <type> <path> "<Title>"` | Scaffold a note from `tools/templates/` |
 | `index` | Sync the search index with the files (incremental) |
-| `check [--strict]` | Fast structural lint, no model: folder summary files (missing, empty, stale, too long), frontmatter, sections, links, catalog, diagrams (`DIAGRAM`: over 80 columns or non-ASCII), unfilled template comments, orphans, TODOs, exact duplicates |
+| `check [--strict]` | Fast structural lint, no model: folder summary files (missing, empty, stale, too long), frontmatter, sections, links, catalog, diagrams (`DIAGRAM`: over 80 columns or non-ASCII), table padding (`TABLEFMT` warning), unfilled template comments, orphans, TODOs, exact duplicates |
 | `health [--strict] [--dup-threshold 0.93] [--candidates]` | `index` + `check` + zvec near-duplicate detection; `--candidates` also lists related-but-distinct pairs to read for contradictions |
+| `fmt [--check]` | Pad all pipe tables like Obsidian (whitespace only, idempotent); `--check` just reports |
 | `stamp [<dirs>]` | Record the folder's content hash in its summary files after you rewrite them |
 | `commit <op> "<subject>" [--source URL]... [--body ...] [--dry-run]` | Lint-gated commit with structured message |
 | `log [-n N] [--op OP] [--path P] [--pages]` / `history <note>` | Read the change log back from git |
@@ -51,7 +54,7 @@ Required `##` sections: concept/entity → `Summary`; paper → `Summary`, `Key 
 
 ## Write workflow (every insert / update / delete)
 1. Edit notes. Update the directory's `_overview.md` (catalog line) and `_abstract.md` if its summary changed; parents too.
-2. `stamp <dirs>` → `check`. Staleness cascades upward: a directory's hash includes its children's L0 abstracts, so changing `knowledge/_abstract.md` flags the root summary files too; review them and stamp (`stamp .` for root). Re-stamping an accurate sidecar is fine. Replace placeholder text such as "Empty until populated" when adding the first note.
+2. `fmt` (if you touched a table) → `stamp <dirs>` → `check`. Staleness cascades upward: a directory's hash includes its children's L0 abstracts, so changing `knowledge/_abstract.md` flags the root summary files too; review them and stamp (`stamp .` for root). Re-stamping an accurate sidecar is fine. Replace placeholder text such as "Empty until populated" when adding the first note.
 3. `index` → `health`; no errors, and every warning read (`NEARDUP`: merge or cross-link; `ORPHAN`: link via `related`).
 4. **Delete** = remove the file, its catalog line, and links to it (`check` finds the rest).
 5. Commit (op: `ingest` = a new external source; `update` = new/changed knowledge or decisions from our own work; `delete`; `lint` = health fixes; `refactor` = restructuring; `init` = first commit). Only commit when the user asked you to, or in an autonomous maintenance run): `tools/wiki.py commit <op> "<subject>"`.

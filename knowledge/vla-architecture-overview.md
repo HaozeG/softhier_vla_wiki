@@ -42,18 +42,18 @@ Common pipeline and the design axes (Octo is the exception: no VLM)
 
 **Reference models.** Octo is not VLM-based (see its [note](../resources/octo.md)); it is listed as the small-model reference point the others compare against, so the Summary's "VLM as its core" does not apply to it.
 
-| Model | Params | Backbone | Action head | Reported speed (hardware) |
-|---|---|---|---|---|
-| RT-2 | 5B / 12B / 55B | PaLI-X / PaLM-E | 8 discrete tokens (256 bins) | 5 Hz (5B), 1–3 Hz (55B), multi-TPU cloud |
-| OpenVLA | 7B | Prismatic (SigLIP + DINOv2, Llama 2) | 7 discrete tokens | about 6 Hz, RTX 4090, bf16, 15 GB |
-| [Octo](../resources/octo.md) | 27M / 93M | T5 + patch CNN + transformer | diffusion head, 20 steps | not reported |
-| π0 | 3.3B | PaliGemma 3B + 300M expert | flow, 10 steps, H = 50 | 73 ms on-board RTX 4090, 3 cameras |
-| π0-FAST | about 3B (no action expert) | PaliGemma | 30–60 FAST tokens | about 750 ms per chunk, RTX 4090 |
-| OpenVLA-OFT | 7.5B | as OpenVLA | parallel L1 regression, K = 8–25 | 109.7 actions/s (K = 8, A100) |
-| GR00T N1 | 2.2B (1.34B VLM) | Eagle-2 (SmolLM2 + SigLIP-2) | DiT flow, 4 steps, H = 16 | 63.9 ms per chunk, L40, bf16 |
-| SmolVLA | 0.45B | truncated SmolVLM-2 | flow expert (100M), 10 steps, n = 50 | see [SmolVLA](smolvla.md) |
-| [TinyVLA](../resources/tinyvla.md) | 0.42–1.3B | Pythia-based | diffusion head | 14 ms per action, A6000 |
-| Helix (S2 / S1) | 7B / 80M | open VLM / cross-attn transformer | 200 Hz S1 | S2 7–9 Hz, onboard embedded GPUs |
+| Model                              | Params                      | Backbone                             | Action head                          | Reported speed (hardware)                |
+| ---------------------------------- | --------------------------- | ------------------------------------ | ------------------------------------ | ---------------------------------------- |
+| RT-2                               | 5B / 12B / 55B              | PaLI-X / PaLM-E                      | 8 discrete tokens (256 bins)         | 5 Hz (5B), 1–3 Hz (55B), multi-TPU cloud |
+| OpenVLA                            | 7B                          | Prismatic (SigLIP + DINOv2, Llama 2) | 7 discrete tokens                    | about 6 Hz, RTX 4090, bf16, 15 GB        |
+| [Octo](../resources/octo.md)       | 27M / 93M                   | T5 + patch CNN + transformer         | diffusion head, 20 steps             | not reported                             |
+| π0                                 | 3.3B                        | PaliGemma 3B + 300M expert           | flow, 10 steps, H = 50               | 73 ms on-board RTX 4090, 3 cameras       |
+| π0-FAST                            | about 3B (no action expert) | PaliGemma                            | 30–60 FAST tokens                    | about 750 ms per chunk, RTX 4090         |
+| OpenVLA-OFT                        | 7.5B                        | as OpenVLA                           | parallel L1 regression, K = 8–25     | 109.7 actions/s (K = 8, A100)            |
+| GR00T N1                           | 2.2B (1.34B VLM)            | Eagle-2 (SmolLM2 + SigLIP-2)         | DiT flow, 4 steps, H = 16            | 63.9 ms per chunk, L40, bf16             |
+| SmolVLA                            | 0.45B                       | truncated SmolVLM-2                  | flow expert (100M), 10 steps, n = 50 | see [SmolVLA](smolvla.md)                |
+| [TinyVLA](../resources/tinyvla.md) | 0.42–1.3B                   | Pythia-based                         | diffusion head                       | 14 ms per action, A6000                  |
+| Helix (S2 / S1)                    | 7B / 80M                    | open VLM / cross-attn transformer    | 200 Hz S1                            | S2 7–9 Hz, onboard embedded GPUs         |
 
 Speeds come from different hardware, batch sizes and definitions; do not rank models by this column. Per-paper detail (tables, ablations, limitations) lives in the `resources/` notes, for example [SmolVLA paper](../resources/smolvla.md) vs the model-centric [SmolVLA](smolvla.md) note; this note only compares designs across them.
 

@@ -1,5 +1,5 @@
 ---
-covers: 8cc48080f51d
+covers: 9ea23a5bfc49
 ---
 # memories/decisions/
 
@@ -10,3 +10,4 @@ covers: 8cc48080f51d
 - [0005 near-duplicate threshold 0.93](0005-near-duplicate-threshold.md) — raised from 0.82 after calibration on a single-topic corpus; copies still flagged.
 - [0006 rename folder summary files, plain language](0006-rename-folder-summary-files-and-plain-language.md) — `_abstract.md`/`_overview.md` replace the dot-file "sidecars"; plain words over jargon.
 - [0007 ASCII diagrams as a logic check](0007-ascii-diagrams-as-logic-check.md) — structural notes carry one plain-text diagram that must match the prose; drawing it is a second check on the text.
+- [0008 Obsidian-padded tables](0008-obsidian-padded-tables.md) — tables stored padded like Obsidian so opening notes there causes no diffs; `wiki.py fmt` and a `TABLEFMT` warning enforce it.
