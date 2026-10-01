@@ -1,4 +1,4 @@
 ---
-covers: cf66b7f31715
+covers: 8cc48080f51d
 ---
-Numbered decision records (context, decision, why). 0001 layout + zvec search; 0002 typed notes, lint, git log; 0003 Claude Code plugin; 0004 evidence tiers for VLA sources; 0005 near-duplicate threshold 0.93.
+Decision records (context, decision, why): 0001 layout + zvec; 0002 typed notes, lint, git log; 0003 plugin; 0004 evidence tiers; 0005 dup threshold; 0006 file names, plain words; 0007 ASCII diagrams as a logic check.

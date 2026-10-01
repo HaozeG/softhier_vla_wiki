@@ -1,5 +1,5 @@
 ---
-covers: cf66b7f31715
+covers: 8cc48080f51d
 ---
 # memories/decisions/
 
@@ -9,3 +9,4 @@ covers: cf66b7f31715
 - [0004 evidence tiers for fast-moving VLA sources](0004-evidence-tiers-for-fast-moving-vla-sources.md) — read primary text, tag recent/low-evidence/first-party/community, record caveats beside claims.
 - [0005 near-duplicate threshold 0.93](0005-near-duplicate-threshold.md) — raised from 0.82 after calibration on a single-topic corpus; copies still flagged.
 - [0006 rename folder summary files, plain language](0006-rename-folder-summary-files-and-plain-language.md) — `_abstract.md`/`_overview.md` replace the dot-file "sidecars"; plain words over jargon.
+- [0007 ASCII diagrams as a logic check](0007-ascii-diagrams-as-logic-check.md) — structural notes carry one plain-text diagram that must match the prose; drawing it is a second check on the text.

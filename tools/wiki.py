@@ -92,6 +92,10 @@ def note_title(body: str):
     return None
 
 
+DIAGRAM_RE = re.compile(r"```text\n(.*?)```", re.S)  # diagrams are fenced as ```text (decision 0007)
+DIAGRAM_COLS = 80
+
+
 LINK_RE = re.compile(r"\[[^\]]*\]\(([^)\s]+)\)|(wiki://[\w./-]+\.md)")
 
 
@@ -180,8 +184,11 @@ def chunks(text: str, title: str):
             sections.append((" > ".join(path), body))
         buf.clear()
 
+    fenced = False
     for line in text.splitlines():
-        m = re.match(r"(#{1,4})\s+(.*)", line)
+        if line.lstrip().startswith("```"):
+            fenced = not fenced
+        m = None if fenced else re.match(r"(#{1,4})\s+(.*)", line)
         if m:
             flush()
             path[:] = path[: len(m.group(1)) - 1] + [m.group(2).strip()]
@@ -408,6 +415,14 @@ def structural_issues():
             _, broken = note_links(f, body)
             for t in broken:
                 add("ERROR", "BROKENLINK", frel, t)
+            for blk in DIAGRAM_RE.findall(body):
+                lines = blk.splitlines()
+                bad = next((n for n, l in enumerate(lines, 1) if not l.isascii()), None)
+                if bad:
+                    add("ERROR", "DIAGRAM", frel, f"diagram line {bad} has non-ASCII characters; draw with + - | > v")
+                wide = next((n for n, l in enumerate(lines, 1) if len(l) > DIAGRAM_COLS), None)
+                if wide:
+                    add("ERROR", "DIAGRAM", frel, f"diagram line {wide} is wider than {DIAGRAM_COLS} columns")
             if "<!--" in body:
                 add("ERROR", "UNFILLED", frel, "template guidance comment (`<!-- ... -->`) still present; replace with real content")
             if re.search(r"\bTODO\b", body):

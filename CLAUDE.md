@@ -23,6 +23,8 @@ sources: [url, wiki-path, or session:<name>]   # required non-empty for concept/
 ```
 Required `##` sections: concept/entity → `Summary`; paper → `Summary`, `Key claims`; decision → `Context`, `Decision`, `Why`; runbook → `Steps`; comparison → `Summary`, `Comparison` (a table; use for analysed questions such as design trade-offs). Scaffold with `tools/wiki.py new <type> <path> "<Title>"`. Rules: one topic per note; claim first; short paragraphs/lists; relative links to related notes; no dates in files (git records them); no `TODO` left behind; never invent facts — cite `sources:`; use plain words over jargon, and define any unavoidable term the first time it appears ([decision 0006](memories/decisions/0006-rename-folder-summary-files-and-plain-language.md)).
 
+**Diagrams ([decision 0007](memories/decisions/0007-ascii-diagrams-as-logic-check.md)).** A note whose content has structure (pipeline, timeline, tiers, decision tree, taxonomy, dataflow) carries one ```` ```text ```` ASCII diagram, usually right after `## Summary`: plain ASCII, ≤80 columns, ~25 lines, no line starting with `#`. The diagram adds no claim and no number the text lacks; text and diagram change in the same edit. Drawing it is a second check on the prose: if a case is missing, an arrow contradicts a sentence, or quantities do not add up, fix the text from the cited source and say so in the commit body. Not for tables of numbers, `resources/` notes, or `_abstract.md`/`_overview.md`.
+
 ## The three operations
 - **Ingest** a source → follow `skills/ingest-a-source.md`. First tell the user the key takeaways and what you plan to touch. One source touches several notes (often 10–15): source note, the knowledge notes it informs, cross-links, catalog entries, decisions.
 - **Query** → `find "<question>"` (hybrid semantic + keyword), `ls`/`tree` to browse, read L0/L1 then the L2 hits. Answer from the wiki and cite `wiki://` URIs. If the answer is a valuable synthesis, **file it back** as a note (a good answer that stays in chat is lost).
@@ -39,7 +41,7 @@ Required `##` sections: concept/entity → `Summary`; paper → `Summary`, `Key 
 | `ls [<dir>] [-d N]` / `tree [<dir>] [-d N]` | Browse with L0 abstracts |
 | `new <type> <path> "<Title>"` | Scaffold a note from `tools/templates/` |
 | `index` | Sync the search index with the files (incremental) |
-| `check [--strict]` | Fast structural lint, no model: folder summary files (missing, empty, stale, too long), frontmatter, sections, links, catalog, unfilled template comments, orphans, TODOs, exact duplicates |
+| `check [--strict]` | Fast structural lint, no model: folder summary files (missing, empty, stale, too long), frontmatter, sections, links, catalog, diagrams (`DIAGRAM`: over 80 columns or non-ASCII), unfilled template comments, orphans, TODOs, exact duplicates |
 | `health [--strict] [--dup-threshold 0.93] [--candidates]` | `index` + `check` + zvec near-duplicate detection; `--candidates` also lists related-but-distinct pairs to read for contradictions |
 | `stamp [<dirs>]` | Record the folder's content hash in its summary files after you rewrite them |
 | `commit <op> "<subject>" [--source URL]... [--body ...] [--dry-run]` | Lint-gated commit with structured message |
