@@ -40,6 +40,6 @@ How it maps to OpenViking: `resources/` = resources; `memories/decisions/` = mem
 ## Why
 A project decision and a note on the lint threshold answer different questions and are read by different sessions; mixing them hides the project's own history and makes the plugin's "file back" instruction wrong. Following OpenViking's split keeps the sources, what was learned from them and what was decided as separate, browsable layers. Topic folders keep each catalog readable within its size limit.
 
-Not adopted from OpenViking: its vector-database server, hidden `.abstract.md` files (see [0006](0006-rename-folder-summary-files-and-plain-language.md)), and terms such as "soul", "peers" and "trajectories", which plain-words [0006](0006-rename-folder-summary-files-and-plain-language.md) argues against.
+Not adopted from OpenViking: its server (the wiki still has a vector database, but it is zvec running inside the tool with no server, see [0001](0001-wiki-layout-and-search.md)), hidden `.abstract.md` files (see [0006](0006-rename-folder-summary-files-and-plain-language.md)), and terms such as "soul", "peers" and "trajectories", which plain-words [0006](0006-rename-folder-summary-files-and-plain-language.md) argues against.
 
 Builds on [0001](0001-wiki-layout-and-search.md) and [0004](0004-evidence-tiers-for-fast-moving-vla-sources.md).

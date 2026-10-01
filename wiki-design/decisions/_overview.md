@@ -1,5 +1,5 @@
 ---
-covers: be47a72f36f6
+covers: 440d2b9af248
 ---
 # wiki-design/decisions/
 
