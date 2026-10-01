@@ -6,7 +6,24 @@ sources: [resources/smolvla.md, resources/vla-xpu-characterization.md, resources
 # Edge budget estimate: SmolVLA on a ~10 TOPS device
 
 ## Summary
-**This is an estimate, not a measurement.** A released-config SmolVLA call (3 cameras) costs about 0.8 TFLOP, dominated by the vision encoder (about 0.64 TFLOP), not the LLM or the action expert. On a device with 10 TFLOP/s and 51.2 GB/s the roofline lower bound is about 0.11 s per 50-action chunk (0.09 s with 2 cameras). Realistic software (4–9× above roofline in the sources) gives about 0.4–1 s, which still keeps a 30 Hz robot supplied with actions using chunking and asynchronous execution. Keeping the 100M-parameter expert resident on chip would cut the bound to about 0.08 s.
+**This is an estimate, not a measurement.** A released-config SmolVLA call (3 cameras) costs about 0.8 TFLOP, dominated by the vision encoder (about 0.64 TFLOP), not the LLM or the action expert. On a device with 10 TFLOP/s and 51.2 GB/s the roofline lower bound is about 0.11 s per 50-action chunk (0.09 s with 2 cameras). Realistic software (4–9× above roofline in the sources) gives about 0.4–1 s, which keeps a 30 Hz robot's action queue from running empty using chunking and asynchronous execution (stale-action discarding needs under about 0.8 s, so the slow end of that range fails that stricter test). Keeping the 100M-parameter expert resident on chip would cut the bound to about 0.08 s.
+
+## Diagram
+```text
+Roofline time per chunk (estimate): SmolVLA, 3 cameras, 10 TFLOP/s, 51.2 GB/s
+(1 char = 3 ms; ms per phase in the header)
+                 vision encoder 64 | LLM 8 | expert 39 (or 10 on chip)
+expert streams  |#####################|###|#############|  111 ms
+expert on chip  |#####################|###|###|  82 ms
+
+Latency l against the two supply limits at 30 Hz, n = 50 (1 char = 0.05 s)
+roofline                  |  *  0.11 s
+tuned stack (1.3-1.4x)    |   *  0.15 s
+typical stack (4-9x)      |        ============  0.4 to 1 s
+stale actions dropped: OK |=================  l <= 0.83 s
+queue never empty: OK     |=================================  l <= 1.67 s
+```
+The first drawing is the roofline paragraph below; the second is "Does that keep the robot moving?".
 
 ## Details
 **Inputs and their sources**
@@ -36,7 +53,7 @@ sources: [resources/smolvla.md, resources/vla-xpu-characterization.md, resources
 
 **Does that keep the robot moving?**
 - A 50-action chunk at 30 Hz lasts 1.67 s. SmolVLA's async condition is g ≥ (ℓ/Δt)/n: ℓ = 0.4 s gives g ≥ 0.24; 0.8 s gives 0.48; 1.5 s gives 0.9 ([SmolVLA](../resources/smolvla.md)).
-- [vla.simd](../resources/vla-simd.md) conditions: continuous supply needs ⌈30·ℓ⌉ ≤ 50 (ℓ ≤ 1.67 s); discarding stale actions needs twice that within 50 (ℓ ≤ 0.83 s). So latencies up to about 0.8 s supply actions at 30 Hz; reactivity to new observations is bounded by ℓ ([serving methods](serving-methods.md)).
+- [vla.simd](../resources/vla-simd.md) conditions: continuous supply needs ⌈30·ℓ⌉ ≤ 50 (ℓ ≤ 1.67 s); discarding stale actions needs twice that within 50 (ℓ ≤ 0.83 s). So latencies up to 1.67 s keep the queue from running empty, and up to about 0.8 s the robot is also supplied when stale actions are discarded; the 0.4–1 s range for typical stacks straddles that second limit. Reactivity to new observations is bounded by ℓ ([serving methods](serving-methods.md)).
 
 **A real 6-TOPS NPU:** the RK3588 uses only about 4–19% of its headline TOPS on measured transformer workloads and runs vision encoders in FP16; the SmolVLA estimate there is about 1.0–1.4 s (1 camera) to 2.8–3.2 s (3 cameras), an order of magnitude above this roofline ([RK3588 deployment](rk3588-vla-deployment.md)).
 

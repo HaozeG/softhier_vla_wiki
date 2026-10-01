@@ -15,7 +15,7 @@ VLA-Perf is an analytical, roofline-based latency model for arbitrary VLA archit
 - **Fidelity (Table 1):** on RTX 4090, π0 with 10 flow steps and chunk 63: roofline 14.7 / 22.5 / 30.4 ms vs real Triton 20.0 / 27.3 / 36.8 ms for 1 / 2 / 3 cameras, i.e. 73–83% of roofline.
 - **Baseline π0 (Table 3, 3 cameras of 224×224 at 256 tokens each, 800 total tokens):**
   - Jetson Thor: vision 6.06 ms, VLM 20.30 ms, action 26.20 ms, total 52.57 ms (19.0 Hz).
-  - RTX 4090: 31.06 ms (32.2 Hz). A100: 16.20 ms. H100: 6.15 ms. B100: 3.18 ms.
+  - RTX 4090: vision 4.02 ms, VLM 19.79 ms, action 7.25 ms, total 31.06 ms (32.2 Hz). A100: 16.20 ms. H100: 6.15 ms. B100: 3.18 ms.
 - **Compute vs memory bound (Table 4):** the action expert (operator intensity 54 FLOPs/byte) is memory-bound everywhere; vision (321) and VLM (543) are compute-bound on GPUs, but on Jetson Thor (balance point 1481 FLOPs/byte; LPDDR at 270 GB/s vs 1 TB/s on 4090 and 8 TB/s on B100) all three components are memory-bound. The paper compares this to LLM prefill (compute-bound) vs decode (memory-bound).
 - **Scaling (Table 5):** latency scales about linearly with parameters. π0 (2.7B): 19.0 Hz on Thor. π0-L (9.1B): 3.9 Hz on Thor. π0-XL (16.7B): 2.1 Hz on Thor; out of memory on the 4090. B100 still reaches 9.6 Hz at 81B.
 - **Long context (Table 6):** with a growing VLM KV cache, Thor and 4090 are limited to about 100 past timesteps (about 8 Hz); 1000 steps give 1.3 Hz on Thor.

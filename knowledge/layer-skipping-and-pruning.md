@@ -8,6 +8,23 @@ sources: [resources/smolvla.md, resources/gr00t-n1.md, resources/efficientvla.md
 ## Summary
 VLA backbones are redundant in depth: several groups remove or skip a large fraction of LLM layers with little accuracy loss. **Static** removal (SmolVLA's first half of the LLM, GR00T N1's 12th-layer features, CKA-guided pruning before fine-tuning) gives a smaller fixed graph. **Dynamic** methods (DeeR-VLA, DySL-VLA, MoLe-VLA) skip layers per step but add control flow whose wall-clock gain trails the FLOP reduction. Aggressive weight (width) pruning breaks a VLA completely unless it is recovered by distillation. Removing layers is faster; narrowing them keeps accuracy better.
 
+```text
+shrink the backbone
+|
++-- remove depth                              -> lower latency
+|   +-- static, before deployment
+|   |     SmolVLA first half, GR00T N1 12th-layer features, CLP, EfficientVLA
+|   |     fixed graph; 30-50% of layers is well supported, beyond needs recovery
+|   +-- dynamic, per step
+|         DeeR-VLA exits, DySL-VLA, MoLe-VLA
+|         wall-clock gain trails the FLOP gain (extra control flow)
+|
++-- remove width (prune weights)           -> better accuracy (after recovery)
+      collapses accuracy unless recovered by distillation
+
+either way: the action head (fixed flow steps) sets a latency floor
+```
+
 ## Details
 **Static removal**
 - SmolVLA feeds the expert from LLM layers up to N = L/2 and found this beats a smaller VLM at similar cost; on LIBERO, N = 8 / 16 / 24 / 32 gave 75.0 / 78.5 / 79.5 / 80.3 ([SmolVLA](../resources/smolvla.md)). GR00T N1 uses the 12th LLM layer's features, reporting faster inference and higher success than the last layer ([GR00T N1](../resources/gr00t-n1.md)).

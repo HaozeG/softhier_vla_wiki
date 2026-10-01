@@ -6,7 +6,25 @@ sources: [resources/nvidia-jetson-platform-specs.md, resources/edge-accelerator-
 # Edge hardware and the 10 TOPS gap
 
 ## Summary
-Nearly all measured "edge VLA" results are on Jetson Orin or Thor (tens to hundreds of vendor TOPS, 100–273 GB/s), not on ~10 TOPS parts. Below Orin Nano the sources give only CPU runs (Raspberry Pi 5, desktop CPUs) and one leaderboard plot that includes an Ascend 310B (10 TFLOP/s): it shows ACT at about 10 Hz on that NPU but no bar for SmolVLA or any flow-matching VLA on it. So for a 10 TOPS target, SmolVLA-class models are the plausible fit, but **no flow-matching VLA is measured on a ~10-TOPS-class NPU in these sources** (SmolVLA on the 88 TFLOP/s Ascend 310P is about 2 Hz in a PyTorch baseline); estimates must extrapolate ([edge budget estimate](edge-budget-estimate.md)).
+Nearly all measured "edge VLA" results are on Jetson Orin or Thor (tens to hundreds of vendor TOPS, 100–273 GB/s), not on ~10 TOPS parts. Below Orin Nano the sources give CPU runs (Raspberry Pi 5, desktop CPUs), one leaderboard plot that includes an Ascend 310B (10 TFLOP/s) and one community report on the RK3588 (6 TOPS). The plot shows ACT at about 10 Hz on the 310B but no bar for SmolVLA or any flow-matching VLA on it. So for a 10 TOPS target, SmolVLA-class models are the plausible fit, but **no flow-matching VLA is measured on a 10 TFLOP/s part, and the only flow-matching VLA number on a small NPU is one self-reported community README (SmolVLA about 5 s per chunk on the RK3588)** (SmolVLA on the 88 TFLOP/s Ascend 310P is about 2 Hz in a PyTorch baseline); estimates must extrapolate ([edge budget estimate](edge-budget-estimate.md)).
+
+## Diagram
+```text
+Where VLAs have been measured, by device (vendor compute figures use different
+precisions, so the order is rough)
+
+ device (compute, bandwidth)           flow-matching VLA measured?
+ Thor       (517 FP8 TFLOPS, 273 GB/s) pi0, pi0.5: yes
+ AGX Orin   (275 sparse TOPS, 205 GB/s) pi0, pi0.5: yes
+ Ascend 310P (88 TFLOP/s)              SmolVLA ~2 Hz, pi0 ~1.2 Hz (plot)
+ Orin Nano  (67 sparse TOPS, 102 GB/s) SmolVLA 358-457 ms per chunk
+ - - - - - - - - - - ~10 TOPS class and below - - - - - - - - - - - - - - - - -
+ Hailo-8/8L/10H (13-40 TOPS)           no VLA data
+ Ascend 310B (10 TFLOP/s, 51.2 GB/s)   ACT only (~10 Hz); no SmolVLA bar
+ RK3588     (6 TOPS INT8)              SmolVLA ~5 s per chunk, self-reported
+ CPU only   (Pi 5, i9)                 SmolVLA 8.2 s (Pi 5), 2.1 s (i9)
+```
+Reading rule behind the "10 TOPS gap": the ratio of compute to bandwidth (FLOP/byte), not TOPS, sets which phase limits a device (about 195 for the 310B, 164 for an RTX 4090).
 
 ## Details
 **Hardware classes (vendor figures; precision and sparsity matter)**

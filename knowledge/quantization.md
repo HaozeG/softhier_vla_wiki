@@ -8,6 +8,24 @@ sources: [resources/openvla.md, resources/bitvla.md, resources/quantvla.md, reso
 ## Summary
 Quantization reliably cuts VLA memory (2–11×), but wall-clock gains depend on the kernel and on whether the phase is memory- or compute-bound. Weight-only INT4 helped a 7B autoregressive VLA on GPUs; 8-bit was slower because of dequantization overhead; GGUF 4-bit gave only 1.1× on GR00T-N1.7. The flow/diffusion action head is the most error-sensitive part, so low-bit LLM plus higher-precision expert (or expert MLPs only) is the safe default. Native low-bit training (BitVLA) gives the largest gains but requires a specialised kernel.
 
+```text
+vision encoder        LLM                      action expert (flow / DiT)
+FP16 in RK3588 ports  low-bit works: INT4      most error-sensitive: quantizing
+BitVLA: needed QAT    weights, or W4A8 with    attention projections or whole
++ distillation        calibration              DiT collapsed accuracy; MLPs only
+                                               stayed near baseline; errors
+                                               accumulate over flow steps
+
+does a smaller format make it faster?
+  memory always shrinks (2-11x)
+  native low-bit kernel (tensor-core ternary: ~4x)   -> yes
+  dequantize to bf16 first (8-bit: slower; GGUF 4-bit: 1.1x) -> little or none
+  native int8 path (W8A8 on CPUs: 1.1-2.7x; slower on M4 for some policies)
+  compute-bound phase (vision, prefill)  -> weight-only helps less
+  memory-bound phase (expert loop)       -> helps most, yet it is the phase
+                                            most sensitive to error (inference)
+```
+
 ## Details
 **Evidence by method**
 
@@ -25,6 +43,7 @@ Quantization reliably cuts VLA memory (2–11×), but wall-clock gains depend on
 **Lessons**
 - **Speed needs a kernel.** OpenVLA's 8-bit run dropped to about 1.2 Hz on an A5000 and the success drop was attributed to the resulting slower control rate, not to token accuracy; 4-bit was faster because reduced memory traffic outweighed dequantization cost ([OpenVLA](../resources/openvla.md)). Packed low-bit weights alone leave latency unchanged; tensor-core ternary execution gave 4× ([vla.cpp](../resources/vla-cpp.md)).
 - **Where to quantize.** In π0.5 and GR00T N1.5, quantizing the DiT's attention projections or the whole DiT collapsed accuracy (π0.5 71.6% for DiT only; 76.3% for LLM + full DiT) while LLM + DiT MLP stayed near baseline (95.4%, and 97.6% with calibration) ([QuantVLA](../resources/quantvla.md)). Small errors accumulate over the flow steps.
+- **Tension (inference).** Weight-only quantization helps the memory-bound expert loop most ([inference workload characterization](inference-workload-characterization.md)), yet the expert is the part QuantVLA found most sensitive; so the usual split is low-bit LLM, higher-precision expert attention, and low-bit expert MLPs only after calibration.
 - **Task success is not predicted by action error.** In vla.cpp, Q4_0 had larger fixed-input error than Q8_0 yet similar success, and a one-step solver with a 0.93 action difference still scored 99/100 ([vla.cpp](../resources/vla-cpp.md)); conversely a precision error in SmolVLA's positional-index computation dropped a LIBERO task from 9/10 to 2/10. Validate with rollouts and validate discrete preprocessing.
 - **Interactions:** 4-bit quantization reduces speculative-decoding acceptance and combined methods lost more accuracy than either alone on OpenVLA (spec + cache 68.5%, quant + cache 65.1%) ([XPU](../resources/vla-xpu-characterization.md)).
 - **PTQ versus QAT:** post-training 1-bit conversion of a full-precision backbone is not expected to work; BitVLA needed a native 1-bit LLM and quantization-aware distillation for the vision encoder, and 7 + 14 days of H800 training ([BitVLA](../resources/bitvla.md)).

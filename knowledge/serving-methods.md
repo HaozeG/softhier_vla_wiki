@@ -6,7 +6,39 @@ sources: [resources/smolvla.md, resources/lerobot-async-inference-docs.md, resou
 # Serving methods
 
 ## Summary
-Serving a VLA means keeping a robot supplied with valid actions despite inference latency. Four families of methods stack: (1) faster execution per call (kernels, graphs, runtimes), (2) chunking with asynchronous execution so inference overlaps motion, (3) chunk-stitching or latency-aware decoding so late chunks stay consistent, and (4) placement (on-device, edge server, cloud) and dual-system splits that run only a small model at control rate. Which one matters depends on whether the latency is below or above the control period.
+Serving a VLA means keeping a robot supplied with valid actions despite inference latency. Four families of methods stack: (1) faster execution per call (kernels, graphs, runtimes), (2) chunking with asynchronous execution so inference overlaps motion, (3) chunk-stitching or latency-aware decoding so late chunks stay consistent, and (4) placement (on-device, edge server, cloud) and dual-system splits that run only a small model at control rate. Which one matters depends on where the latency of one model call falls relative to two times: the control period and the chunk duration (actions per chunk times control period).
+
+## Diagram
+```text
+Async chunked execution (families 2 and 3; 1 and 4 act on the model call)
+
+   observation, sent when queue < g * n actions
+  +--------------------------------------------+
+  |                                            v
++---------------+                    +-------------------+
+| robot client  | <--- new chunk --- | model call        |
+| queue of      |  (n actions; late  | latency l         |
+| actions; pops |  ones are stitched | (family 1 shrinks |
+| one per dt    |  in, family 3)     |  it; 4 moves it)  |
++---------------+                    +-------------------+
+```
+
+```text
+Which family helps: latency l of one call vs control period dt and chunk
+duration n*dt  (n = actions per chunk; spacing not to scale)
+
+ 0        dt           n*dt/2              n*dt
+ |--------|-------------|-------------------|--------------------------> l
+     A           B               C                      D
+
+ A  l < dt             : (1) faster execution is enough
+ B  dt <= l <= n*dt/2  : (2) async + (3) stitching; holds even if stale
+                         actions are discarded
+ C  n*dt/2 < l <= n*dt : (2) async + (3) stitching; holds only if late
+                         actions are kept (lagged execution)
+ D  l > n*dt           : (4) shrink the model, or dual system
+```
+The first drawing is family 2 and where the others act; the second is "Choosing a method" below.
 
 ## Details
 **1. Faster execution per call (batch size 1)**
@@ -16,8 +48,8 @@ Serving a VLA means keeping a robot supplied with valid actions despite inferenc
 
 **2. Asynchronous chunked execution**
 - A client executes from an action queue and requests a new chunk when the queue drops below a fraction g of the chunk; near-duplicate observations are filtered and overlapping chunks are aggregated. SmolVLA reports about 30% faster task completion and 2× completions in fixed time, with average success 73.3% vs 78.3% for synchronous (sorting task fell 70 → 50) ([SmolVLA](../resources/smolvla.md), [LeRobot docs](../resources/lerobot-async-inference-docs.md)).
-- Idle-free condition: g ≥ (E[ℓ]/Δt)/n. A complementary view: continuous supply needs d = ⌈f_c ℓ⌉ ≤ H, or 2d ≤ H if stale actions are discarded ([vla.simd](../resources/vla-simd.md)). Neither condition guarantees smoothness or task success.
-- Async raises reaction time to between Δ and Δ + L action steps; long latency makes observations stale ([Jetson-PI](../resources/jetson-pi.md)).
+- Idle-free condition: g ≥ (E[ℓ]/Δt)/n, with ℓ the call latency, Δt the control period and n the chunk length. A complementary view: continuous supply needs d = ⌈f_c ℓ⌉ ≤ H, or 2d ≤ H if stale actions are discarded ([vla.simd](../resources/vla-simd.md)). Neither condition guarantees smoothness or task success.
+- Async makes the reaction time (delay between a change in the scene and the robot's response) fall between Δ and Δ + L action steps, where Δ is the inference latency in action steps and L the number of actions executed per chunk (L = H − Δ for chunk size H in the paper's LIBERO setup); long latency makes observations stale ([Jetson-PI](../resources/jetson-pi.md)).
 
 **3. Keeping late chunks consistent**
 - **Real-time chunking:** freeze actions that will run during the delay and inpaint the rest with guidance; robust to +200 ms injected latency; costs extra compute (76 → 97 ms per chunk in the paper's setup) and needs diffusion/flow heads ([RTC](../resources/real-time-chunking.md)).
@@ -33,7 +65,7 @@ Serving a VLA means keeping a robot supplied with valid actions despite inferenc
 - Power argument for on-board inference: an RTX 4090 cut a robot's battery life by up to 6× relative to Jetson Orin in one estimate ([Jetson-PI](../resources/jetson-pi.md)). A cost-energy-time leaderboard found Thor best on energy for π0.5 and a 4090 best on time ([XPU](../resources/vla-xpu-characterization.md)).
 
 **Choosing a method (inferences)**
-- Latency below the control period: kernel work only. Latency between one control period and the chunk duration: async with chunk stitching. Latency above the chunk duration: shrink the model or move the heavy phase off the control loop (dual system).
+- Latency below the control period: kernel work only. Latency between one control period and the chunk duration: async with chunk stitching; by the conditions above, supply stays continuous up to the chunk duration, but only up to half of it if stale actions are discarded. Latency above the chunk duration: shrink the model or move the heavy phase off the control loop (dual system).
 - Any method that adds compute per call (RTC guidance, VLM re-invocation) must be counted in the latency it is meant to hide.
 
 ## Open questions

@@ -10,6 +10,25 @@ Start with the [edge serving overview](vla-edge-serving-overview.md) for how thi
 
 A vision-language-action (VLA) model maps camera images, a language instruction and (usually) robot state to robot actions using a pretrained vision-language model (VLM) as its core. Designs differ mostly in the **action head** (discrete tokens, parallel regression, diffusion/flow expert) and in how much of the VLM is kept. The trajectory from RT-2 (55B, cloud, 1–3 Hz) to SmolVLA (0.45B) is a move to smaller VLMs, fewer visual tokens, chunked continuous actions from a small expert, and asynchronous execution. Terminology follows [Ma et al.](../resources/survey-vla-embodied-ai-ma.md): VLA originated with RT-2, and models built on large VLMs are sometimes called "large VLAs".
 
+## Diagram
+```text
+Common pipeline and the design axes (Octo is the exception: no VLM)
+
+ images -> vision encoder -> projector --+
+   (SigLIP, or SigLIP + DINOv2)          |
+ text ---------------------------------- +--> LM backbone ---> action head
+ robot state --------------------------- +    whole or cut:     (axis 1)
+                                              SmolVLA: first L/2 layers
+                                              GR00T N1: 12th layer
+
+ axis 1, action head: discrete tokens (RT-2, OpenVLA)
+                      parallel regression (OpenVLA-OFT)
+                      diffusion/flow expert (Octo head, pi0, GR00T N1, SmolVLA)
+ axis 2, expert coupling: shared self-attention (pi0); cross-attention
+                      (GR00T N1); interleaved cross + self (SmolVLA)
+ axis 3, two speeds: slow VLM + fast policy (GR00T N1, Helix)
+```
+
 ## Details
 **Common pipeline.** Vision encoder (SigLIP, or fused SigLIP + DINOv2) → projector → language-model backbone over image, text and state tokens → action head. See [inference workload characterization](inference-workload-characterization.md) for how each stage loads hardware.
 
@@ -21,7 +40,7 @@ A vision-language-action (VLA) model maps camera images, a language instruction 
 - **Where features are taken:** GR00T N1 uses the 12th LLM layer; SmolVLA uses layers up to N = L/2; both report better or equal accuracy and faster inference than the last layer.
 - **Training recipe:** π0.5 pretrains with discrete FAST tokens and post-trains a flow expert; TinyVLA and Octo skip large robot pretraining.
 
-**Reference models**
+**Reference models.** Octo is not VLM-based (see its [note](../resources/octo.md)); it is listed as the small-model reference point the others compare against, so the Summary's "VLM as its core" does not apply to it.
 
 | Model | Params | Backbone | Action head | Reported speed (hardware) |
 |---|---|---|---|---|
@@ -30,7 +49,7 @@ A vision-language-action (VLA) model maps camera images, a language instruction 
 | [Octo](../resources/octo.md) | 27M / 93M | T5 + patch CNN + transformer | diffusion head, 20 steps | not reported |
 | π0 | 3.3B | PaliGemma 3B + 300M expert | flow, 10 steps, H = 50 | 73 ms on-board RTX 4090, 3 cameras |
 | π0-FAST | about 3B (no action expert) | PaliGemma | 30–60 FAST tokens | about 750 ms per chunk, RTX 4090 |
-| OpenVLA-OFT | 7.5B | as OpenVLA | parallel L1 regression, K = 8–25 | 109.7 Hz (K = 8, A100) |
+| OpenVLA-OFT | 7.5B | as OpenVLA | parallel L1 regression, K = 8–25 | 109.7 actions/s (K = 8, A100) |
 | GR00T N1 | 2.2B (1.34B VLM) | Eagle-2 (SmolLM2 + SigLIP-2) | DiT flow, 4 steps, H = 16 | 63.9 ms per chunk, L40, bf16 |
 | SmolVLA | 0.45B | truncated SmolVLM-2 | flow expert (100M), 10 steps, n = 50 | see [SmolVLA](smolvla.md) |
 | [TinyVLA](../resources/tinyvla.md) | 0.42–1.3B | Pythia-based | diffusion head | 14 ms per action, A6000 |

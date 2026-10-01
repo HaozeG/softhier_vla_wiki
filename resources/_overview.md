@@ -1,5 +1,5 @@
 ---
-covers: 12720298b72c
+covers: 867d8ef6df17
 ---
 # resources/
 

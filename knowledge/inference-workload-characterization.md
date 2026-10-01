@@ -8,12 +8,52 @@ sources: [resources/vla-perf.md, resources/realtime-vla.md, resources/vla-xpu-ch
 ## Summary
 A flow-matching VLA call has three phases: vision encoding and VLM prefill (large matrix multiplies over hundreds of tokens, compute-bound on GPUs) and an iterative action-expert loop (few tokens, weights re-read every step, memory-bound). On bandwidth-poor edge devices all three can become memory-bound. Measured latencies sit several times above the roofline unless launch and synchronization overheads are engineered away; autoregressive-action VLAs add a fourth, decode-dominated phase.
 
+## Diagram
+```text
+One flow-matching VLA call (pi0-class), left to right
+
+ images --+     +-----------+     +-----------+     +-----------------+
+ text   --+---> | 1 vision  | --> | 2 VLM     | --> | 3 action expert |-> chunk
+ state  --+     |   encoder |     |   prefill |     | loop of T steps |
+                +-----------+     +-----------+     +-----------------+
+                 many tokens       many tokens       few tokens; weights
+                 per matmul        per matmul        re-read every step
+
+ Autoregressive-action VLAs add a 4th phase after 2: token-by-token decode
+ (OpenVLA 7 tokens, pi0-FAST 30-60 tokens) through the full LLM.
+```
+
+```text
+Which limit applies: operator intensity (FLOP/byte) vs a device's balance point
+(spacing not to scale)
+
+  54          164          321        543               1481
+  |           |            |          |                 |
+  expert      RTX 4090     vision     VLM               Jetson Thor
+              balance                                   balance
+
+  Left of a balance point = memory-bound, right = compute-bound.
+  RTX 4090: expert is memory-bound; vision and VLM are compute-bound.
+  Thor:     all three phases are left of 1481, so all three are memory-bound.
+```
+
+```text
+RTX 4090, pi0, 3 cameras: measured latency vs roofline  (1 # = 3 ms)
+
+  naive PyTorch  113.9 |######################################
+  openpi JAX      67.6 |#######################
+  tuned Triton    36.8 |############
+  roofline        30.4 |##########    VLA-Perf bound
+  roofline        26.7 |#########     Realtime-VLA bound
+```
+The first drawing is the phase structure of the Summary, the second is the first two bullets of Details, and the third is the 4090 row of the table below.
+
 ## Details
 **Phase structure (π0-class, 3 cameras, 800 tokens; [VLA-Perf](../resources/vla-perf.md))**
-- Roofline latency: Jetson Thor vision 6.1 ms + VLM 20.3 ms + action expert 26.2 ms = 52.6 ms (19.0 Hz); RTX 4090 4.0 + 19.8 + 7.3 = 31.1 ms; A100 16.2 ms; H100 6.2 ms.
+- Roofline latency (Table 3: 800 tokens, chunk 50, 10 steps): Jetson Thor vision 6.1 ms + VLM 20.3 ms + action expert 26.2 ms = 52.6 ms (19.0 Hz); RTX 4090 4.0 + 19.8 + 7.3 = 31.1 ms; A100 16.2 ms; H100 6.2 ms. The 30.4 ms in the table below is the same paper's Table 1 (empty prompt, chunk 63), a different configuration.
 - Operator intensity (FLOPs/byte): vision 321, VLM 543, action expert 54. Balance points: 164 (RTX 4090), 1481 (Thor, with 273 GB/s LPDDR5X), so on Thor even the VLM is memory-bound.
 - Other sources report the same shape: VLM decoder layer about 840 FLOPs/byte vs expert 64.5 (ridge points 330 RTX 4090, 208 AGX Orin, 945 Thor in [XPU characterization](../resources/vla-xpu-characterization.md)); prefix 256–530 vs expert about 50 FLOPs/byte in [vla.cpp](../resources/vla-cpp.md). Ridge points differ between papers because each assumes different peak throughput; the ordering is consistent.
-- SM utilization: VLM over 90%, action expert 20–40%, while the expert takes about 2× the VLM's time on the devices they profiled.
+- SM utilization (a measured profile in [XPU characterization](../resources/vla-xpu-characterization.md)): VLM over 90%, action expert 20–40%, and the expert takes about 2× the VLM's latency. This differs from the roofline above, where the expert is shorter than the VLM on the RTX 4090 (7.3 vs 19.8 ms) and 1.3× longer on Thor (26.2 vs 20.3 ms); the profile's device and configuration are not matched to those rows.
 
 **Scaling and knobs ([VLA-Perf](../resources/vla-perf.md))**
 - Latency scales about linearly with parameters per component (π0-L 9.1B: 3.9 Hz on Thor); flow steps scale the expert linearly (10 → 50 steps: 5× expert, 2.15× total); chunk size barely matters; long KV context limits Thor/4090 to about 100 past timesteps.
@@ -27,7 +67,7 @@ A flow-matching VLA call has three phases: vision encoding and VLM prefill (larg
 | Jetson Thor | 52.6 ms | π0: 246 ms baseline, 163 ms compiled ([XPU](../resources/vla-xpu-characterization.md)); 448 ms naive PyTorch ([Jetson-PI](../resources/jetson-pi.md)). π0.5: 458 ms naive, 310 ms after system work (Jetson-PI) | [XPU](../resources/vla-xpu-characterization.md), [Jetson-PI](../resources/jetson-pi.md) |
 | AGX Orin | not modeled | 921 ms (π0 baseline); 1403 ms at 50 W, 2269 ms at 30 W (π0 naive) | XPU, Jetson-PI |
 
-Measured runs use different chunk sizes, camera counts and frameworks; treat the table as an order-of-magnitude picture (naive software 4–9× above roofline; tuned software within 1.3–1.4× on a 4090). VLA-Perf itself reports real Triton at 73–83% of its roofline.
+Measured runs use different chunk sizes, camera counts and frameworks; treat the table as an order-of-magnitude picture (naive software 4–9× above roofline: 113.9 vs 26.7 ms is 4.3× on the 4090 and 448 vs 52.6 ms is 8.5× on Thor; tuned software 36.8 vs 26.7 ms is 1.4× on a 4090). VLA-Perf itself reports real Triton at 73–83% of its roofline.
 
 **Where the software gap comes from (4090, [Realtime-VLA](../resources/realtime-vla.md))**
 - π0 launches over a thousand kernels per call (1378 matmuls). Inter-kernel overhead: 12.9 ms in PyTorch, 1.7 ms with a CUDA graph, 0.9 ms with a software grid barrier. Graph capture alone roughly halved latency (106.5 → 43.5 ms for two views); simplifying the graph, tuned GEMM tiles and fused epilogues took it to 27.3 ms.

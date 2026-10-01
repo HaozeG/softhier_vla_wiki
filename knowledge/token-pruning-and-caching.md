@@ -8,6 +8,23 @@ sources: [resources/vla-cache.md, resources/lightvla.md, resources/efficientvla.
 ## Summary
 Visual tokens dominate a VLA's prefix sequence, so pruning or reusing them is a natural target, but the gains are smaller and more conditional than in VLMs. Methods borrowed from VLMs (FastV, SparseVLM) gave no speedup on OpenVLA and hurt accuracy; VLA-specific methods exploit temporal redundancy (cache static tokens across frames) or learn which tokens matter (LightVLA). Speedup saturates once the LLM becomes memory-bound, and modern small VLAs already use only 64 tokens per frame.
 
+```text
+visual tokens per frame?
+|
++-- 64 (SmolVLA, GR00T N1: pixel shuffle, no tiling)
+|     little left to prune
+|
++-- 256-512 (7B OpenVLA family)
+      +-- attention pruning inside one frame (FastV, SparseVLM)
+      |     about 1.0x or slower; disturbs spatial detail
+      +-- reuse static tokens across frames (VLA-Cache)
+      |     no training; needs a relevance filter
+      +-- learned selection (LightVLA)
+      |     fine-tune; variable length conflicts with static shapes
+      +-- any of them: speedup saturates (tokens alone about 1.23x)
+            once LLM weight reads and the action head set the floor
+```
+
 ## Details
 **Methods and measured results**
 

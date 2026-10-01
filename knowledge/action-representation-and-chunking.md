@@ -8,11 +8,34 @@ sources: [resources/rt-2.md, resources/openvla.md, resources/fast-tokenizer.md, 
 ## Summary
 How a VLA represents actions decides both its accuracy and its serving cost. Per-dimension binning is simple but needs one decode pass per token and fails at high control rates; compression-based tokens (FAST) cut the token count but still decode autoregressively; a parallel regression head (OpenVLA-OFT) or a small flow/diffusion expert removes sequential decoding. **Chunking** (predicting H future actions per call) is what makes a slow model usable, and the execution horizon trades reactivity against compute.
 
+## Diagram
+```text
+Sequential work after the VLM prefix pass, by action representation
+
+ binning (RT-2, OpenVLA)  prefix -> tok -> tok -> ... 7-8 tokens per action
+ FAST tokens              prefix -> tok -> tok -> ... 30-60 tokens per chunk
+ regression (OFT)        prefix + empty action queries -> ONE pass -> D x K
+ flow expert (pi0 ...)   prefix -> expert step x T (4-10) over the whole chunk
+
+ passes after the prefix: 7-8 per action | 30-60 per chunk | T per chunk | 1
+```
+
+```text
+One chunk of H predicted actions (pi0: H = 50, 1.67 s at 30 Hz)
+
+ |<------------------------- H actions ------------------------>|
+ |= executed before the next inference =|... predicted, not executed ....|
+   pi0: 16-25 actions, open loop
+ shorter execution: more reactive, more model calls
+ longer execution: fewer calls, staler actions
+```
+The first drawing is "Representations" below and the second is "Chunk size and horizon".
+
 ## Details
 **Representations**
 - **Binning (RT-2, OpenVLA):** 256 bins per dimension (OpenVLA sets bin edges by 1st–99th quantile); 7–8 tokens per action, decoded one by one. OpenVLA ran at about 6 Hz on an RTX 4090; throughput was too low for 25–50 Hz bimanual control ([OpenVLA](../resources/openvla.md)).
 - **FAST (DCT + BPE):** roughly 30 tokens per chunk per arm; token counts per 1-second chunk fall from 35 to 20 (5 Hz, 7-D) and from 700 to 53 (50 Hz, 14-D). It trains about 5× cheaper than diffusion π0 but serving is slower (about 750 ms vs about 100 ms per chunk on an RTX 4090) because 30–60 tokens are decoded through the full LLM ([FAST](../resources/fast-tokenizer.md)).
-- **Parallel regression (OFT):** empty action queries with bidirectional attention produce all D × K values in one pass with an L1 loss. On LIBERO, continuous actions improved success about 5 points over discrete, and L1 matched diffusion (95.3 vs 95.4) at 109.7 Hz vs 4.2 Hz for diffusion with 50 steps ([OpenVLA-OFT](../resources/openvla-oft.md)). The authors flag that L1 may struggle with truly multimodal demonstrations.
+- **Parallel regression (OFT):** empty action queries with bidirectional attention produce all D × K values in one pass with an L1 loss. On LIBERO, continuous actions improved success about 5 points over discrete, and L1 matched diffusion (95.3 vs 95.4) at 109.7 actions/s vs 4.2 actions/s for diffusion with 50 steps (1.9 s per 8-action call); "Hz" in that table is actions per second, not calls per second ([OpenVLA-OFT](../resources/openvla-oft.md)). The authors flag that L1 may struggle with truly multimodal demonstrations.
 - **Flow/diffusion expert (π0, GR00T N1, SmolVLA):** a 100–300M expert iterates 4–10 steps over the whole chunk with the VLM prefix cached; SmolVLA found flow matching beat L1 regression (80.3 vs 75.3 on LIBERO, Table 10). Cost model in [flow-step reduction](flow-step-reduction.md).
 - **Broader taxonomy:** the [tokenization survey](../resources/survey-vla-action-tokenization.md) lists eight action-token types; raw actions are the ones relevant to serving, with the caveats of data scarcity, latency and weak cross-embodiment transfer.
 

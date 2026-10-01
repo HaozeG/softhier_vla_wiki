@@ -8,13 +8,24 @@ sources: [resources/vla-perf.md, resources/openvla-oft.md, resources/efficientvl
 ## Summary
 In flow- or diffusion-based VLAs the action expert runs 4–10 (Diffusion Policy: up to 100) sequential steps per chunk, each re-reading the expert's weights, so it is often the largest share of latency on bandwidth-limited hardware. Options: fewer steps (with or without distillation), feature caching across steps, a single-pass regression head, or restructuring the loop so steps are amortized across control cycles (streaming). Fewer steps trade accuracy nonlinearly, and evidence differs on whether one step is safe.
 
+```text
+chunk latency = P (vision + prefix, once) + T x E (T expert steps)
+
+ baseline   |-- P --|E|E|E|E|E|E|E|E|E|E|    T = 10
+ fewer      |-- P --|E|E|E|E|E|             T = 5
+ cached     |-- P --|E|e|e|e|e|E|e|e|e|e|    e = reused features
+ regress    |-- P --|E|                      one pass, no steps
+ streaming  each pass advances several chunks at staggered noise levels one
+            step and emits one chunk; the T steps are shared across calls
+```
+
 ## Details
 **Step counts in use:** π0 and SmolVLA 10; GR00T N1 4; RTC and one π0.5 setup 5 ([π0](../resources/pi0.md), [SmolVLA](../resources/smolvla.md), [GR00T N1](../resources/gr00t-n1.md), [RTC](../resources/real-time-chunking.md)). One leaderboard used 4 steps for π0 and 100 for Diffusion Policy ([XPU](../resources/vla-xpu-characterization.md)).
 
 **Cost model:** latency ≈ P + T·E (prefix cost P, per-step expert cost E). vla.cpp fits GR00T-N1.7 on an RTX 3060 as 13.9 + 5.8·T ms for backbone plus head, with vision fixed at about 18.7 ms ([vla.cpp](../resources/vla-cpp.md)). In [VLA-Perf](../resources/vla-perf.md), 10 → 50 steps multiplies expert time by 5× and total by 2.15×; chunk size barely matters.
 
 **Evidence on reducing steps**
-- OpenVLA-OFT with a diffusion head (trained with 50 steps, DDIM at test time), LIBERO-Long: 50 steps 91.1% at 1.9 s; 10 steps 91.0% at 19.3 Hz; 5 steps 90.0% at 35.1 Hz; 2 steps 85.7% at 80.3 Hz; 1 step 0.0% ([OpenVLA-OFT](../resources/openvla-oft.md)). Halving from 10 to 5 costs about a point here; one step fails for this head.
+- OpenVLA-OFT with a diffusion head (trained with 50 steps, DDIM at test time), LIBERO-Long, chunk latency (throughput in actions per second, 8 actions per chunk): 50 steps 91.1% at 1.91 s (4.2/s); 10 steps 91.0% at 0.41 s (19.3/s); 5 steps 90.0% at 0.23 s (35.1/s); 2 steps 85.7% at 0.10 s (80.3/s); 1 step 0.0% at 0.07 s (109.4/s) ([OpenVLA-OFT](../resources/openvla-oft.md)). Halving from 10 to 5 costs about a point here; one step fails for this head.
 - GR00T-N1.7 in vla.cpp: 1 step still 99/100 success with 0.93 maximum action difference from the 4-step output, but the authors caution that success and action error do not track each other ([vla.cpp](../resources/vla-cpp.md)).
 - Regression instead of diffusion: an L1 head matched diffusion (95.3 vs 95.4 on LIBERO) at the speed of a single pass; SmolVLA found flow beat regression (80.3 vs 75.3) with a frozen VLM ([OpenVLA-OFT](../resources/openvla-oft.md), [SmolVLA](../resources/smolvla.md)).
 

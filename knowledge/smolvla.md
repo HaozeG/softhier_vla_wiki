@@ -8,6 +8,18 @@ sources: [resources/smolvla.md, resources/lerobot-async-inference-docs.md, resou
 ## Summary
 SmolVLA is Hugging Face's open 450M-parameter VLA: the first half of a SmolVLM-2 language model, 64 visual tokens per frame, and a 100M flow-matching action expert emitting 50-action chunks in 10 steps. It is the reference "small VLA" for this wiki. Its accuracy claims are on LIBERO, Meta-World and low-cost SO100/SO101 arms; its serving claims come from the paper's asynchronous stack, and measured latencies on other hardware come from third-party runtimes and vary by 10× with implementation quality.
 
+```text
+3 cameras (256x256, padded to 512x512)
+  -> SigLIP -> pixel shuffle -> 64 tokens per frame --+
+language prompt (padded to 48 tokens) --------------+--> LLM, first 16 of 32
+robot state -> 1 token -----------------------------+    layers (N = L/2)
+                                                              |
+                                  features from the N layers  |
+                                                              v
+  flow expert (~100M, 0.75x width): cross-attention to LLM features,
+  alternating with causal self-attention; 10 steps -> chunk of 50 actions
+```
+
 ## Details
 **Architecture (from [the paper](../resources/smolvla.md))**
 - Vision-language trunk: SmolVLM-2 (SigLIP encoder plus SmolLM2 decoder); the action expert reads features from LLM layers up to N = L/2 (16 layers in the released model); no image tiling; images resized to 512×512; 64 visual tokens per frame after pixel shuffle; sensorimotor state projected to one prefix token.
