@@ -12,6 +12,11 @@ Vision-language-action (VLA) models drive robots from images and instructions. E
 ```text
 Reading path (numbers match "Read in this order")
 
++--------------------------+
+| 0 concepts first (terms) |
++--------------------------+
+        |
+        v
 +------------------+    +-------------------------+    +------------------+
 | 1 architecture   |--->| 2 action representation |--->| 3 SmolVLA        |
 +------------------+    +-------------------------+    +------------------+
@@ -38,7 +43,8 @@ Reading path (numbers match "Read in this order")
 Serving cost, per the Summary: vision + prefill (compute-bound), expert loop (memory-bound), software overhead on top.
 
 ## Details
-**Read in this order**
+**Read in this order** (new to the field? start with 0)
+0. [Concepts first](concepts-first.md): plain-words definitions of the terms used below, with a worked memory-bound example.
 1. [VLA architecture overview](vla-architecture-overview.md): what a VLA is and how designs differ.
 2. [Action representation and chunking](action-representation-and-chunking.md): tokens vs regression vs flow; why chunks.
 3. [SmolVLA](smolvla.md): the reference small model and its serving numbers across sources.

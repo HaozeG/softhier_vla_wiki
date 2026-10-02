@@ -44,7 +44,7 @@ What crosses from the backbone to the action head (axes 1 and 2)
 - **Backbone size and depth:** from 55B (RT-2) and 7B (OpenVLA) to 2–3B (π0, GR00T N1) to 0.45B (SmolVLA, which keeps only the first half of the LLM layers) and TinyVLA's 0.4–1.3B.
 - **Visual tokens:** 256 per 224×224 image for SigLIP-style encoders (OpenVLA, π0); 64 per frame with pixel shuffle in SmolVLA and GR00T N1.
 - **Coupling of backbone and action expert:** shared self-attention with separate weights in π0 (blockwise causal mask, prefix KV cached across flow steps); cross-attention in GR00T N1; interleaved cross- and self-attention in SmolVLA.
-- **Where features are taken:** GR00T N1 uses the 12th LLM layer; SmolVLA uses layers up to N = L/2; both report better or equal accuracy and faster inference than the last layer.
+- **Where features are taken:** GR00T N1 uses the 12th LLM layer and reports faster inference and higher success than the last layer; SmolVLA uses layers up to N = L/2 as a speed trade-off: its ablation scores 78.5 at N = 16 against 80.3 at N = 32 on LIBERO (about 2 points lower), for half the layers ([layer skipping and pruning](layer-skipping-and-pruning.md)).
 - **Training recipe:** π0.5 pretrains with discrete FAST tokens and post-trains a flow expert; TinyVLA and Octo skip large robot pretraining.
 
 **Reference models.** Octo is not VLM-based (see its [note](../resources/models/octo.md)); it is listed as the small-model reference point the others compare against, so the Summary's "VLM as its core" does not apply to it.
