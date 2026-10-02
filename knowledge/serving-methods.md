@@ -37,7 +37,7 @@ Action-supply conditions of vla.simd, by latency l of one call
  0                        n*dt/2                       n*dt
  |--------------------------|----------------------------|------------> l
  |<--- 2d <= H holds ------>|
- |<------------------ d <= H holds ------------------->|
+ |<------------------ d <= H holds --------------------->|
                                                              beyond: neither
  2d <= H: supply is continuous even if stale actions are discarded
  d <= H : supply is continuous if late actions are kept (lagged execution)
