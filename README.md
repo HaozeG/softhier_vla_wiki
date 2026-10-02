@@ -3,11 +3,12 @@
 ## What this wiki covers
 The topic is physical AI: robots that perceive and act in the physical world. The first area covered is vision-language-action (VLA) models, programs that read a robot's camera images and a written instruction and answer with the commands that move its arms: how they are built, made efficient and run on robot hardware. The wiki records what the literature says about this for the SoftHier-VLA project (mapping VLA applications for physical AI to a tile-based many-PE chip like SoftHier). Further areas of physical AI get their own notes later.
 
-**New to the field? Read in this order:** this README, then the [glossary](glossary/_overview.md) (plain-words definitions), then [one VLA call, step by step](knowledge/one-vla-call.md) (one picture of what a model does each time the robot asks it), then the [VLA edge serving overview](knowledge/vla-edge-serving-overview.md) (findings and the full reading path). What the project itself is about: [SoftHier and the project](knowledge/softhier-and-the-project.md).
+**Where to start.** You are reading step one, the README. Next read [one VLA call, step by step](knowledge/one-vla-call.md), one picture of what a model does each time the robot asks it. Then read the [VLA edge serving overview](knowledge/vla-edge-serving-overview.md), which holds the findings and the one full reading list. Keep the [glossary](glossary/_overview.md) open alongside ([A to Z index](glossary/a-to-z.md)) for any word that is new. What the project itself is about: [SoftHier and the project](knowledge/softhier-and-the-project.md).
 
+## For maintainers
 Agents should start at [CLAUDE.md](CLAUDE.md), which is the operating manual (note format, commands, workflows, commit format).
 
-## How the wiki is built
+### How the wiki is built
 An LLM-maintained wiki for the SoftHier-VLA project. It combines three ideas:
 
 - **[OpenViking](https://github.com/volcengine/OpenViking)** — filesystem-as-context with tiered per-directory summaries (L0 abstract / L1 overview / L2 notes).
@@ -24,7 +25,7 @@ An LLM-maintained wiki for the SoftHier-VLA project. It combines three ideas:
 | `tools/` | `wiki.py`, note templates (`concept entity paper decision runbook comparison`), commit-msg hook |
 | `.claude/agents/wiki-health.md` | subagent that runs and triages `health` |
 
-## Quick start
+### Quick start
 ```bash
 tools/wiki.py setup          # venv + deps + index + commit hook (once)
 tools/wiki.py find "how do we tile GEMM"
@@ -32,7 +33,7 @@ tools/wiki.py health
 tools/wiki.py log
 ```
 
-## Use from a parent repo (Claude Code plugin)
+### Use from a parent repo (Claude Code plugin)
 `tools/claude-plugin/` is a Claude Code plugin (marketplace: `.claude-plugin/marketplace.json`): a SessionStart hook gives each session the wiki's summary and recent changes, and the `softhier-wiki:wiki` skill covers consulting it before design work and filing outcomes back. Install once per checkout, from the parent repo root (personal `local` scope; nothing to commit):
 ```bash
 softhier_vla_wiki/tools/wiki.py setup
@@ -41,5 +42,5 @@ claude plugin install softhier-wiki@softhier-wiki --scope local
 ```
 Try without installing: `claude --plugin-dir softhier_vla_wiki/tools/claude-plugin`. The `wiki-health` subagent is deliberately not in the plugin; it belongs to sessions started inside this repo.
 
-## Regular health checks
+### Regular health checks
 Invoke the `wiki-health` subagent (e.g. `Agent` with `subagent_type: wiki-health`), schedule it with Claude Code's `/schedule` or `/loop`, or run `tools/wiki.py health --strict` from cron/CI.

@@ -41,16 +41,19 @@ What crosses from the backbone to the action head (axes 1 and 2)
 ## Details
 **Common pipeline.** Vision encoder (SigLIP, or fused SigLIP + DINOv2) → projector → language-model backbone over image, text and state tokens → action head. See [inference workload characterization](inference-workload-characterization.md) for how each stage loads hardware.
 
-**Design axes**
-- **Action decoding:** discrete autoregressive tokens (RT-2, OpenVLA); parallel decoding with a regression head (OpenVLA-OFT); diffusion/flow expert (Octo head, π0, GR00T N1, SmolVLA); two-speed systems (GR00T N1, Helix). Details in [action representation and chunking](action-representation-and-chunking.md).
+**Design axes** (numbered as in the diagram)
+- **Axis 1, action decoding:** discrete autoregressive tokens (RT-2, OpenVLA); parallel decoding with a regression head (OpenVLA-OFT); diffusion/flow expert (Octo head, π0, GR00T N1, SmolVLA). Details in [action representation and chunking](action-representation-and-chunking.md).
+  - **DiT:** GR00T N1's action module is a DiT (diffusion transformer): a transformer that refines noisy actions, alternating cross-attention to the VLM tokens with self-attention over the noisy actions and state ([GR00T N1](../resources/models/gr00t-n1.md)); QuantVLA also calls such a head a DiT action head ([QuantVLA](../resources/compression/quantvla.md)).
+- **Axis 2, coupling of backbone and action expert:** shared self-attention with separate weights in π0 (a blockwise causal mask: images and language, then state, then noisy actions form three blocks, attention is bidirectional inside a block and earlier blocks cannot see later ones, so the prefix keys and values can be cached across flow steps, [π0](../resources/models/pi0.md)); cross-attention in GR00T N1; interleaved cross- and self-attention in SmolVLA.
+- **Axis 3, two speeds:** a slow VLM plus a fast policy (GR00T N1, Helix); see [serving methods](serving-methods.md).
+
+**Other differences between models**
 - **Backbone size and depth:** from 55B (RT-2) and 7B (OpenVLA) to 2–3B (π0, GR00T N1) to 0.45B (SmolVLA, which keeps only the first half of the LLM layers) and TinyVLA's 0.4–1.3B.
-- **Visual tokens:** 256 per 224×224 image for SigLIP-style encoders (OpenVLA, π0); 64 per frame with pixel shuffle in SmolVLA and GR00T N1.
-- **Action expert as a DiT:** GR00T N1's action module is a DiT (diffusion transformer): a transformer that refines noisy actions, alternating cross-attention to the VLM tokens with self-attention over the noisy actions and state ([GR00T N1](../resources/models/gr00t-n1.md)); QuantVLA also calls such a head a DiT action head ([QuantVLA](../resources/compression/quantvla.md)).
-- **Coupling of backbone and action expert:** shared self-attention with separate weights in π0 (blockwise causal mask, prefix KV cached across flow steps); cross-attention in GR00T N1; interleaved cross- and self-attention in SmolVLA.
+- **Visual tokens:** 256 per 224×224 image for SigLIP-style encoders (OpenVLA, π0); 64 per frame in SmolVLA and GR00T N1, where pixel shuffle regroups neighbouring patch tokens into fewer, wider ones.
 - **Where features are taken:** GR00T N1 uses the 12th LLM layer and reports faster inference and higher success than the last layer; SmolVLA uses layers up to N = L/2 as a speed trade-off: its ablation scores 78.5 at N = 16 against 80.3 at N = 32 on LIBERO (about 2 points lower), for half the layers ([layer skipping and pruning](layer-skipping-and-pruning.md)).
 - **Training recipe:** π0.5 pretrains with discrete FAST tokens and post-trains a flow expert; TinyVLA and Octo skip large robot pretraining.
 
-**Reference models.** Octo is not VLM-based (see its [note](../resources/models/octo.md)); it is listed as the small-model reference point the others compare against, so the Summary's "VLM as its core" does not apply to it.
+**Reference models** (skim this table; its numbers come from different papers and are not comparable). Octo is not VLM-based (see its [note](../resources/models/octo.md)); it is listed as the small-model reference point the others compare against, so the Summary's "VLM as its core" does not apply to it.
 
 | Model                                     | Params                      | Backbone                             | Action head                          | Reported speed (hardware)                |
 | ----------------------------------------- | --------------------------- | ------------------------------------ | ------------------------------------ | ---------------------------------------- |
