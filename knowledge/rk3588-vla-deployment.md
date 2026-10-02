@@ -8,7 +8,7 @@ sources: [resources/rk3588/rk3588-platform-specs.md, resources/rk3588/rockchip-r
 ## Summary
 On the RK3588's 6-TOPS NPU the sources report CNN vision, LLM and VLM decoding (5–78 tokens/s, W8A8 only) and small ACT-style policies (about 0.12 s per chunk, self-reported). A SmolVLA-class VLA has one community measurement, about 5 s per 50-action chunk, which the README says exceeds the action-block duration so that the queue starves. The toolchain is the main constraint reported: transformers convert fragilely, only W8A8 is available for the language model, and the vision encoder runs in FP16 through a separate toolchain. Reported practice on these boards includes hardware video paths and running ACT-style policies inline at the control rate.
 
-The picture shows how the toolchain note says a VLA has to be divided (SmolVLA's sizes from its paper); the one SmolVLA port reported used three RKNN modules.
+The picture shows how the toolchain note says a VLA has to be divided (SmolVLA's sizes from its paper); the dotted line is the one step no source verifies, whether keys and values from the language model can reach the expert on the NPU, and the one SmolVLA port reported used three RKNN modules.
 
 ```text
 A VLA SPLIT ACROSS THE RK3588 TOOLCHAINS (the toolchain note)
@@ -23,8 +23,8 @@ camera frames, 1 to 3
 +--------------------------------------+
 | language model: RKLLM, W8A8          |
 +--------------------------------------+
-  |
-  v keys + values of the prefix
+  :
+  ? hand-off of keys + values to the expert: not verified in the sources
 +--------------------------------------+
 | action expert, 10 flow steps:        |---+
 | RKNN graph or CPU; RKLLM             |   | x10: velocity of

@@ -1,4 +1,4 @@
 ---
-covers: 985f16e65bb0
+covers: b56cb527b283
 ---
-Glossary in eight groups: robot loop, model and attention, action generation, hardware and performance, compression, evaluation and models, symbols, project terms. Definitions are looked up on demand: wiki.py glossary "<term>".
+Glossary in nine groups: robot loop, model and attention, action generation, hardware and performance, devices and toolchains, compression, evaluation and models, symbols, project terms. Look terms up: wiki.py glossary "<term>"; A to Z index.

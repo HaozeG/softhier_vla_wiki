@@ -20,22 +20,22 @@ Pipeline (Octo is the exception: no VLM)
    (SigLIP, or SigLIP + DINOv2)               |
  text -------------------------------- tokens +--> LM BACKBONE --> ACTION HEAD
  robot state ------------------------- tokens +
-                                                   LM backbone: whole, or cut:
-                                                   SmolVLA: first L/2 layers
-                                                   GR00T N1: 12th-layer features
 
-What crosses from the backbone to the action head (axes 1 and 2)
+   LM backbone: whole, or cut (L = its number of LLM layers):
+   SmolVLA keeps the first L/2 layers; GR00T N1 uses 12th-layer features
 
- discrete tokens      nothing: the backbone emits 7-8 action
-                      tokens itself (RT-2, OpenVLA)
- parallel decoding    decoder outputs at empty action queries
-                      -> MLP head (OpenVLA-OFT)
- flow: pi0            prefix and action tokens share one attention;
-                      prefix keys and values cached across flow steps
- flow: GR00T N1       cross-attention to the VLM tokens
- flow: SmolVLA        cross-attention to per-layer keys and values,
-                      interleaved with self-attention
- axis 3, two speeds   slow VLM + fast policy (GR00T N1, Helix)
+Where designs differ, by axis (what crosses from the backbone to the head)
+
+ axis 1  discrete tokens    nothing: the backbone emits 7-8 action tokens
+                            itself (RT-2, OpenVLA)
+ axis 1  parallel decoding  decoder outputs at empty action queries -> MLP
+                            head (OpenVLA-OFT)
+ axis 2  flow: pi0          prefix and action tokens share one attention;
+                            prefix keys and values cached
+ axis 2  flow: GR00T N1     cross-attention to the VLM tokens
+ axis 2  flow: SmolVLA      cross-attention to per-layer keys and values,
+                            interleaved with self-attention
+ axis 3  two speeds         slow VLM + fast policy (GR00T N1, Helix)
 ```
 
 ## Details
@@ -50,10 +50,13 @@ What crosses from the backbone to the action head (axes 1 and 2)
 **Other differences between models**
 - **Backbone size and depth:** from 55B (RT-2) and 7B (OpenVLA) to 2–3B (π0, GR00T N1) to 0.45B (SmolVLA, which keeps only the first half of the LLM layers) and TinyVLA's 0.4–1.3B.
 - **Visual tokens:** 256 per 224×224 image for SigLIP-style encoders (OpenVLA, π0); 64 per frame in SmolVLA and GR00T N1, where pixel shuffle regroups neighbouring patch tokens into fewer, wider ones.
-- **Where features are taken:** GR00T N1 uses the 12th LLM layer and reports faster inference and higher success than the last layer; SmolVLA uses layers up to N = L/2 as a speed trade-off: its ablation scores 78.5 at N = 16 against 80.3 at N = 32 on LIBERO (about 2 points lower), for half the layers ([layer skipping and pruning](layer-skipping-and-pruning.md)).
+- **Where features are taken:** GR00T N1 uses the 12th LLM layer and reports faster inference and higher success than the last layer; SmolVLA uses layers up to N = L/2 (L is the number of LLM layers) as a speed trade-off: its ablation scores 78.5 at N = 16 against 80.3 at N = 32 on LIBERO (about 2 points lower), for half the layers ([layer skipping and pruning](layer-skipping-and-pruning.md)).
 - **Training recipe:** π0.5 pretrains with discrete FAST tokens and post-trains a flow expert; TinyVLA and Octo skip large robot pretraining.
 
-**Reference models** (skim this table; its numbers come from different papers and are not comparable). Octo is not VLM-based (see its [note](../resources/models/octo.md)); it is listed as the small-model reference point the others compare against, so the Summary's "VLM as its core" does not apply to it.
+**Convergent efficient recipe (2025–2026):** small or truncated VLM, 64 visual tokens per frame, a small flow-matching expert with a handful of steps, chunked actions, and asynchronous execution. Each element has a measured or ablated justification in the linked notes: [layer skipping and pruning](layer-skipping-and-pruning.md), [token pruning and caching](token-pruning-and-caching.md), [flow-step reduction](flow-step-reduction.md), [serving methods](serving-methods.md).
+
+## Reference models (skim)
+The numbers in this table come from different papers and are not comparable. Octo is not VLM-based (see its [note](../resources/models/octo.md)); it is listed as the small-model reference point the others compare against, so the Summary's "VLM as its core" does not apply to it.
 
 | Model                                     | Params                      | Backbone                             | Action head                          | Reported speed (hardware)                |
 | ----------------------------------------- | --------------------------- | ------------------------------------ | ------------------------------------ | ---------------------------------------- |
@@ -69,8 +72,6 @@ What crosses from the backbone to the action head (axes 1 and 2)
 | Helix (S2 / S1)                           | 7B / 80M                    | open VLM / cross-attn transformer    | 200 Hz S1                            | S2 7–9 Hz, onboard embedded GPUs         |
 
 In the table, Params is the model size in billions (B) or millions (M) of learned numbers (parameters). Speeds come from different hardware, batch sizes and definitions; do not rank models by this column. Per-paper detail (tables, ablations, limitations) lives in the `resources/` notes, for example [SmolVLA paper](../resources/models/smolvla.md) vs the model-centric [SmolVLA](smolvla.md) note; this note only compares designs across them.
-
-**Convergent efficient recipe (2025–2026):** small or truncated VLM, 64 visual tokens per frame, a small flow-matching expert with a handful of steps, chunked actions, and asynchronous execution. Each element has a measured or ablated justification in the linked notes: [layer skipping and pruning](layer-skipping-and-pruning.md), [token pruning and caching](token-pruning-and-caching.md), [flow-step reduction](flow-step-reduction.md), [serving methods](serving-methods.md).
 
 ## Open questions
 - Whether discrete-token pretraining (π0.5, π0-FAST) or flow-only training is the better base for small models; the evidence here comes from PI's own comparisons.

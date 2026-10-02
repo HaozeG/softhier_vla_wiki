@@ -8,26 +8,22 @@ sources: [resources/hardware/nvidia-jetson-platform-specs.md, resources/hardware
 ## Summary
 Nearly all measured "edge VLA" results are on Jetson Orin or Thor (tens to hundreds of vendor TOPS, 100–273 GB/s), not on ~10 TOPS parts. Below Orin Nano the sources give CPU runs (Raspberry Pi 5, desktop CPUs), one leaderboard plot that includes an Ascend 310B (10 TFLOP/s) and one community report on the RK3588 (6 TOPS). The plot shows ACT at about 10 Hz on the 310B but no bar for SmolVLA or any flow-matching VLA on it. So **no flow-matching VLA is measured on a 10 TFLOP/s part, and the only flow-matching VLA number on a small NPU is one self-reported community README (SmolVLA about 5 s per chunk on the RK3588)** (SmolVLA on the 88 TFLOP/s Ascend 310P is about 2 Hz in a PyTorch baseline).
 
-## Diagram
-```text
-Where VLAs have been measured, by device (units as the sources state
-them; they differ, so the order is rough)
+## Devices and what was measured
+Vendor figures use different units and precisions, so the row order is rough.
 
-device          compute as stated       flow-matching VLA measured?
-Thor            517 dense FP8 TFLOPS    pi0, pi0.5: yes
-AGX Orin        275 sparse INT8 TOPS    pi0, pi0.5: yes
-Ascend 310P     88 TFLOP/s BF16/FP16    SmolVLA ~2 Hz, pi0 ~1.2 Hz (plot)
-Orin Nano       67 sparse INT8 TOPS     SmolVLA 358-457 ms per chunk
-- - - - at or below about 40 vendor TOPS (mixed units) - - - - - - - - - - - -
-Hailo-8L/8/10H  13/26/20 INT8 TOPS      no VLA data
-Ascend 310B     10 TFLOP/s BF16/FP16    ACT only (~10 Hz); no SmolVLA bar
-RK3588          6 TOPS INT8 (headline)  SmolVLA ~5 s/chunk, self-reported
-CPU only        none used               SmolVLA 8.2 s (Pi 5), 2.1 s (i9)
-```
-The divider is drawn at about 40 vendor TOPS, the largest figure in the Hailo rows; the glossary's [~10 TOPS class](../glossary/hardware-and-performance.md) (about ten TOPS or less) holds only the Ascend 310B and RK3588 rows. Bandwidths and power are in the table below.
+| Device             | Compute as the source states it | Unit and precision      | Memory bandwidth               | Flow-matching VLA measured?                |
+| ------------------ | ------------------------------- | ----------------------- | ------------------------------ | ------------------------------------------ |
+| Jetson Thor        | 517 dense, 1035 sparse          | TFLOPS, FP8             | 273 GB/s                       | π0, π0.5: yes                              |
+| Jetson AGX Orin    | 275                             | sparse INT8 TOPS        | 204.8 GB/s                     | π0, π0.5: yes                              |
+| Ascend 310P        | 88                              | TFLOP/s, BF16/FP16      | 204.8 GB/s                     | SmolVLA about 2 Hz, π0 about 1.2 Hz (plot) |
+| Jetson Orin Nano   | 67                              | sparse INT8 TOPS        | 102 GB/s                       | SmolVLA 358–457 ms per chunk               |
+| Hailo-8L / 8 / 10H | 13 / 26 / 20 (10H also 40)      | TOPS, INT8 (40 is INT4) | not listed                     | no VLA data                                |
+| Ascend 310B        | 10                              | TFLOP/s, BF16/FP16      | 51.2 GB/s                      | ACT only (about 10 Hz); no SmolVLA bar     |
+| Rockchip RK3588    | 6                               | TOPS, INT8 (headline)   | 21–22 GB/s measured on the CPU | SmolVLA about 5 s per chunk, self-reported |
+| CPU only           | not used                        | not applicable          | not applicable                 | SmolVLA 8.2 s (Pi 5), 2.1 s (i9)           |
 
 ## Details
-The RTX 4090 (a graphics card), A100 and H100 (datacenter GPUs), all from NVIDIA, appear in the sources as reference points, far above the ~10 TOPS class this project targets.
+The RTX 4090 (a graphics card), A100 and H100 (datacenter GPUs), all from NVIDIA, appear in the sources as reference points, far above the small devices in the table above.
 
 **Hardware classes (vendor figures; precision and sparsity matter)**
 

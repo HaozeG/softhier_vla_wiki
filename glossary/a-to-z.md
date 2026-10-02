@@ -12,15 +12,18 @@ Every glossary term in alphabetical order, with its scope and the group file tha
 | Term                                            | Group                                                   | Scope      |
 | ----------------------------------------------- | ------------------------------------------------------- | ---------- |
 | ~10 TOPS class                                  | [Hardware and performance](hardware-and-performance.md) | convention |
+| A40, V100, H20, B100                            | [Devices and toolchains](devices-and-toolchains.md)     | field      |
 | ACT                                             | [Model and attention](model-and-attention.md)           | field      |
 | action                                          | [Robot and control loop](robot-and-control-loop.md)     | field      |
 | action chunk (H, n, K)                          | [Robot and control loop](robot-and-control-loop.md)     | field      |
 | action expert                                   | [Action generation](action-generation.md)               | field      |
 | action head                                     | [Model and attention](model-and-attention.md)           | field      |
+| action queue                                    | [Robot and control loop](robot-and-control-loop.md)     | field      |
 | ALOHA                                           | [Evaluation and models](evaluation-and-models.md)       | field      |
-| Ascend, Hailo                                   | [Hardware and performance](hardware-and-performance.md) | field      |
+| Ascend, Hailo                                   | [Devices and toolchains](devices-and-toolchains.md)     | field      |
 | asynchronous (async) execution                  | [Robot and control loop](robot-and-control-loop.md)     | field      |
 | autoregressive decoding, decode phase           | [Model and attention](model-and-attention.md)           | field      |
+| backbone, VLM, LLM, vision-language trunk       | [Model and attention](model-and-attention.md)           | convention |
 | balance point                                   | [Hardware and performance](hardware-and-performance.md) | convention |
 | batch size                                      | [Hardware and performance](hardware-and-performance.md) | field      |
 | BF16, FP16, FP8, FP4, INT8                      | [Hardware and performance](hardware-and-performance.md) | field      |
@@ -33,10 +36,11 @@ Every glossary term in alphabetical order, with its scope and the group file tha
 | compute-bound                                   | [Hardware and performance](hardware-and-performance.md) | field      |
 | control step, control period (dt), control rate | [Robot and control loop](robot-and-control-loop.md)     | field      |
 | cross-attention                                 | [Model and attention](model-and-attention.md)           | field      |
-| CUDA graph                                      | [Hardware and performance](hardware-and-performance.md) | field      |
+| CUDA graph                                      | [Devices and toolchains](devices-and-toolchains.md)     | field      |
 | D, d, f_c, f_eff, P, E, E[l]                    | [Symbols and conventions](symbols-and-conventions.md)   | convention |
+| DCT and BPE                                     | [Action generation](action-generation.md)               | field      |
 | DDIM                                            | [Action generation](action-generation.md)               | field      |
-| DDS, EtherCAT, CAN-FD, TorchScript              | [Hardware and performance](hardware-and-performance.md) | field      |
+| DDS, EtherCAT, CAN-FD, TorchScript              | [Devices and toolchains](devices-and-toolchains.md)     | field      |
 | dequantization                                  | [Compression](compression.md)                           | field      |
 | diffusion                                       | [Action generation](action-generation.md)               | field      |
 | discrete action tokens (binning)                | [Action generation](action-generation.md)               | field      |
@@ -44,11 +48,12 @@ Every glossary term in alphabetical order, with its scope and the group file tha
 | DiT                                             | [Model and attention](model-and-attention.md)           | field      |
 | dt (Δt)                                         | [Symbols and conventions](symbols-and-conventions.md)   | convention |
 | dual system                                     | [Robot and control loop](robot-and-control-loop.md)     | field      |
-| eager versus compiled execution                 | [Hardware and performance](hardware-and-performance.md) | field      |
+| eager versus compiled execution                 | [Devices and toolchains](devices-and-toolchains.md)     | field      |
 | embodiment, cross-embodiment                    | [Evaluation and models](evaluation-and-models.md)       | field      |
 | episode                                         | [Evaluation and models](evaluation-and-models.md)       | field      |
 | estimate, measured, self-reported               | [Hardware and performance](hardware-and-performance.md) | convention |
 | FAST                                            | [Action generation](action-generation.md)               | field      |
+| FlashVLA                                        | [Evaluation and models](evaluation-and-models.md)       | field      |
 | FLOP, FLOP/s, TFLOP/s                           | [Hardware and performance](hardware-and-performance.md) | field      |
 | flow matching                                   | [Action generation](action-generation.md)               | field      |
 | flow steps (T)                                  | [Action generation](action-generation.md)               | field      |
@@ -56,19 +61,23 @@ Every glossary term in alphabetical order, with its scope and the group file tha
 | FPS                                             | [Hardware and performance](hardware-and-performance.md) | field      |
 | g                                               | [Symbols and conventions](symbols-and-conventions.md)   | convention |
 | Gemini Robotics On-Device                       | [Evaluation and models](evaluation-and-models.md)       | field      |
-| GEMM                                            | [Hardware and performance](hardware-and-performance.md) | field      |
+| GEMM                                            | [Devices and toolchains](devices-and-toolchains.md)     | field      |
 | GGUF                                            | [Compression](compression.md)                           | field      |
 | GPU, NPU                                        | [Hardware and performance](hardware-and-performance.md) | field      |
 | GR00T N1                                        | [Evaluation and models](evaluation-and-models.md)       | field      |
+| Gumbel-softmax                                  | [Compression](compression.md)                           | field      |
 | H, n, K                                         | [Symbols and conventions](symbols-and-conventions.md)   | convention |
 | Helix                                           | [Evaluation and models](evaluation-and-models.md)       | field      |
 | hidden-state distillation                       | [Compression](compression.md)                           | field      |
 | Hz                                              | [Symbols and conventions](symbols-and-conventions.md)   | convention |
+| imitation learning, demonstrations              | [Evaluation and models](evaluation-and-models.md)       | field      |
+| inference                                       | [Robot and control loop](robot-and-control-loop.md)     | field      |
 | inpainting and guidance                         | [Action generation](action-generation.md)               | field      |
 | intensity (FLOP/byte)                           | [Hardware and performance](hardware-and-performance.md) | field      |
-| Jetson Orin Nano, AGX Orin, Thor                | [Hardware and performance](hardware-and-performance.md) | field      |
-| kernel launch overhead                          | [Hardware and performance](hardware-and-performance.md) | field      |
-| kernel, kernel fusion                           | [Hardware and performance](hardware-and-performance.md) | field      |
+| Jetson Orin Nano, AGX Orin, Thor                | [Devices and toolchains](devices-and-toolchains.md)     | field      |
+| Jetson-PI                                       | [Evaluation and models](evaluation-and-models.md)       | field      |
+| kernel launch overhead                          | [Devices and toolchains](devices-and-toolchains.md)     | field      |
+| kernel, kernel fusion                           | [Devices and toolchains](devices-and-toolchains.md)     | field      |
 | keys and values (attention)                     | [Model and attention](model-and-attention.md)           | field      |
 | KV cache                                        | [Model and attention](model-and-attention.md)           | field      |
 | L                                               | [Symbols and conventions](symbols-and-conventions.md)   | convention |
@@ -80,28 +89,31 @@ Every glossary term in alphabetical order, with its scope and the group file tha
 | LIBERO, Meta-World                              | [Evaluation and models](evaluation-and-models.md)       | field      |
 | LM backbone (LLM)                               | [Model and attention](model-and-attention.md)           | field      |
 | LoRA                                            | [Compression](compression.md)                           | field      |
-| LPDDR, DRAM                                     | [Hardware and performance](hardware-and-performance.md) | field      |
-| many-PE chip, tile-based chip                   | [Hardware and performance](hardware-and-performance.md) | field      |
+| LPDDR, DRAM                                     | [Devices and toolchains](devices-and-toolchains.md)     | field      |
+| many-PE chip, tile-based chip                   | [Devices and toolchains](devices-and-toolchains.md)     | field      |
 | mAP                                             | [Evaluation and models](evaluation-and-models.md)       | field      |
 | memory bandwidth (GB/s)                         | [Hardware and performance](hardware-and-performance.md) | field      |
 | memory-bound                                    | [Hardware and performance](hardware-and-performance.md) | field      |
 | MFU (model FLOPs utilization)                   | [Hardware and performance](hardware-and-performance.md) | field      |
-| MLIR                                            | [Hardware and performance](hardware-and-performance.md) | field      |
+| MLIR                                            | [Devices and toolchains](devices-and-toolchains.md)     | field      |
 | MLP                                             | [Model and attention](model-and-attention.md)           | field      |
 | multi-task                                      | [Evaluation and models](evaluation-and-models.md)       | field      |
 | N                                               | [Symbols and conventions](symbols-and-conventions.md)   | convention |
 | noisy chunk, flow time                          | [Action generation](action-generation.md)               | field      |
 | Octo                                            | [Evaluation and models](evaluation-and-models.md)       | field      |
-| ONNX Runtime                                    | [Hardware and performance](hardware-and-performance.md) | field      |
-| ONNX, TensorRT, Triton                          | [Hardware and performance](hardware-and-performance.md) | field      |
+| ONNX Runtime                                    | [Devices and toolchains](devices-and-toolchains.md)     | field      |
+| ONNX, TensorRT, Triton                          | [Devices and toolchains](devices-and-toolchains.md)     | field      |
+| OOM                                             | [Devices and toolchains](devices-and-toolchains.md)     | field      |
 | open loop                                       | [Robot and control loop](robot-and-control-loop.md)     | field      |
 | OpenVLA                                         | [Evaluation and models](evaluation-and-models.md)       | field      |
 | OpenVLA-OFT                                     | [Evaluation and models](evaluation-and-models.md)       | field      |
 | parallel regression                             | [Action generation](action-generation.md)               | field      |
 | parameters (B, M)                               | [Model and attention](model-and-attention.md)           | field      |
-| PE (processing element)                         | [Hardware and performance](hardware-and-performance.md) | field      |
+| PE (processing element)                         | [Devices and toolchains](devices-and-toolchains.md)     | field      |
 | per executed action                             | [Hardware and performance](hardware-and-performance.md) | field      |
+| physical AI                                     | [Evaluation and models](evaluation-and-models.md)       | field      |
 | pixel shuffle                                   | [Model and attention](model-and-attention.md)           | field      |
+| policy                                          | [Model and attention](model-and-attention.md)           | field      |
 | prefill                                         | [Model and attention](model-and-attention.md)           | field      |
 | prefix                                          | [Model and attention](model-and-attention.md)           | field      |
 | pretraining, fine-tuning, frozen, from scratch  | [Evaluation and models](evaluation-and-models.md)       | field      |
@@ -110,47 +122,57 @@ Every glossary term in alphabetical order, with its scope and the group file tha
 | PTQ, QAT                                        | [Compression](compression.md)                           | field      |
 | quantization                                    | [Compression](compression.md)                           | field      |
 | real-time chunking (RTC)                        | [Robot and control loop](robot-and-control-loop.md)     | field      |
-| RK3588                                          | [Hardware and performance](hardware-and-performance.md) | field      |
-| RKNN, RKLLM                                     | [Hardware and performance](hardware-and-performance.md) | field      |
+| RK3588                                          | [Devices and toolchains](devices-and-toolchains.md)     | field      |
+| RKNN, RKLLM                                     | [Devices and toolchains](devices-and-toolchains.md)     | field      |
+| rollout                                         | [Evaluation and models](evaluation-and-models.md)       | field      |
 | roofline                                        | [Hardware and performance](hardware-and-performance.md) | convention |
 | RT-2                                            | [Evaluation and models](evaluation-and-models.md)       | field      |
+| RTC (the paper)                                 | [Evaluation and models](evaluation-and-models.md)       | field      |
 | RTX 4090, A100, H100                            | [Evaluation and models](evaluation-and-models.md)       | field      |
 | s                                               | [Symbols and conventions](symbols-and-conventions.md)   | convention |
 | self-attention                                  | [Model and attention](model-and-attention.md)           | field      |
+| serving                                         | [Robot and control loop](robot-and-control-loop.md)     | field      |
 | SigLIP, DINOv2, PaliGemma, Prismatic            | [Evaluation and models](evaluation-and-models.md)       | field      |
 | SIMPLER                                         | [Evaluation and models](evaluation-and-models.md)       | field      |
-| SM                                              | [Hardware and performance](hardware-and-performance.md) | field      |
+| SM                                              | [Devices and toolchains](devices-and-toolchains.md)     | field      |
 | SM utilization                                  | [Hardware and performance](hardware-and-performance.md) | field      |
 | SmolVLA                                         | [Evaluation and models](evaluation-and-models.md)       | field      |
 | SO100, SO101                                    | [Evaluation and models](evaluation-and-models.md)       | field      |
 | SoftHier                                        | [Project terms](project-terms.md)                       | project    |
 | sparse versus dense                             | [Hardware and performance](hardware-and-performance.md) | field      |
 | speculative decoding                            | [Compression](compression.md)                           | field      |
-| SRAM                                            | [Hardware and performance](hardware-and-performance.md) | field      |
+| SRAM                                            | [Devices and toolchains](devices-and-toolchains.md)     | field      |
 | stale actions                                   | [Robot and control loop](robot-and-control-loop.md)     | convention |
 | streaming decoding                              | [Action generation](action-generation.md)               | field      |
 | success rate                                    | [Evaluation and models](evaluation-and-models.md)       | field      |
+| SVD                                             | [Compression](compression.md)                           | field      |
 | T                                               | [Symbols and conventions](symbols-and-conventions.md)   | convention |
 | tag community                                   | [Evaluation and models](evaluation-and-models.md)       | convention |
 | tag first-party                                 | [Evaluation and models](evaluation-and-models.md)       | convention |
 | tag low-evidence                                | [Evaluation and models](evaluation-and-models.md)       | convention |
 | tag recent                                      | [Evaluation and models](evaluation-and-models.md)       | convention |
 | temporal ensembling                             | [Robot and control loop](robot-and-control-loop.md)     | field      |
-| tensor core versus CUDA core                    | [Hardware and performance](hardware-and-performance.md) | field      |
+| tensor core versus CUDA core                    | [Devices and toolchains](devices-and-toolchains.md)     | field      |
 | ternary                                         | [Compression](compression.md)                           | field      |
-| tile                                            | [Hardware and performance](hardware-and-performance.md) | field      |
+| tile                                            | [Devices and toolchains](devices-and-toolchains.md)     | field      |
 | TinyVLA                                         | [Evaluation and models](evaluation-and-models.md)       | field      |
 | token                                           | [Model and attention](model-and-attention.md)           | field      |
 | token pruning, token caching                    | [Compression](compression.md)                           | field      |
 | tokens per second                               | [Hardware and performance](hardware-and-performance.md) | field      |
 | TOPS                                            | [Hardware and performance](hardware-and-performance.md) | convention |
-| torch.compile                                   | [Hardware and performance](hardware-and-performance.md) | field      |
+| torch.compile                                   | [Devices and toolchains](devices-and-toolchains.md)     | field      |
+| TPU                                             | [Devices and toolchains](devices-and-toolchains.md)     | field      |
 | velocity, Euler step                            | [Action generation](action-generation.md)               | field      |
 | vision encoder                                  | [Model and attention](model-and-attention.md)           | field      |
 | VLA                                             | [Model and attention](model-and-attention.md)           | field      |
+| VLA-Perf                                        | [Evaluation and models](evaluation-and-models.md)       | field      |
+| vla.cpp                                         | [Evaluation and models](evaluation-and-models.md)       | field      |
+| vla.simd                                        | [Evaluation and models](evaluation-and-models.md)       | field      |
+| VLASH                                           | [Evaluation and models](evaluation-and-models.md)       | field      |
 | VLM                                             | [Model and attention](model-and-attention.md)           | field      |
 | W4A8, W8A8                                      | [Compression](compression.md)                           | field      |
 | xN in diagrams                                  | [Symbols and conventions](symbols-and-conventions.md)   | convention |
+| XPU study                                       | [Evaluation and models](evaluation-and-models.md)       | field      |
 | Δ (versus Δt)                                   | [Symbols and conventions](symbols-and-conventions.md)   | convention |
 | π0 (pi0)                                        | [Evaluation and models](evaluation-and-models.md)       | field      |
 | π0.5 (pi0.5)                                    | [Evaluation and models](evaluation-and-models.md)       | field      |

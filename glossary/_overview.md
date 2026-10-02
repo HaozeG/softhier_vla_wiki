@@ -1,5 +1,5 @@
 ---
-covers: 985f16e65bb0
+covers: b56cb527b283
 ---
 # glossary/
 
@@ -22,7 +22,8 @@ Look terms up here while you read; you do not need to read it first. The best or
 - [Robot and control loop](robot-and-control-loop.md) — control step, chunk, latency, async, stale and lagged actions
 - [Model and attention](model-and-attention.md) — VLA, VLM, action head, tokens, prefix, KV cache, keys and values, decoding, attention kinds
 - [Action generation](action-generation.md) — discrete tokens, regression, flow matching, flow steps, inpainting
-- [Hardware and performance](hardware-and-performance.md) — memory-bound versus compute-bound, TOPS, devices, toolchains, tile, PE, SRAM
+- [Hardware and performance](hardware-and-performance.md) — memory-bound versus compute-bound, roofline, TOPS, units and number formats
+- [Devices and toolchains](devices-and-toolchains.md) — Jetson, RK3588, Ascend, Hailo, memory, kernel and graph words, ONNX, TensorRT, RKNN, robot buses, tile, PE, SRAM
 - [Compression](compression.md) — quantization names, pruning, distillation, LoRA, token and step reduction
 - [Evaluation and models](evaluation-and-models.md) — benchmarks, training words, GPUs used as reference, one-line model identities (no sizes or speeds), evidence tags
 - [Symbols and conventions](symbols-and-conventions.md) — H, n, K, T, l, dt, Δ, g, L, N, Hz, and the grouped D, d, f_c, f_eff, P, E

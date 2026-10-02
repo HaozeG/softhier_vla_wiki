@@ -43,7 +43,7 @@ The table is "Representations" below and the bar is "Chunk size and horizon".
 
 **Chunk size and horizon**
 - π0 uses H = 50 and executes 16 actions on its 20 Hz robots and 25 on its 50 Hz robots, open-loop (no new observation is taken while they run), before re-inferring; temporal ensembling hurt performance ([π0](../resources/models/pi0.md)). GR00T N1 uses H = 16; OFT uses K = 8 (LIBERO) and 25 (ALOHA); SmolVLA n = 50.
-- SmolVLA ablation on LIBERO (from scratch, frozen VLM): chunk 1 → 50.0, 10 → 84.0, 30 → 78.5, 50 → 80.3, 100 → 74.5; executing more steps before re-observing lowers success (1 → 80.3, 10 → 82.8, 30 → 70.8, 50 → 51.8) ([SmolVLA](../resources/models/smolvla.md)).
+- SmolVLA ablation on LIBERO (from scratch, frozen VLM): chunk 1 → 50.0, 10 → 84.0, 30 → 78.5, 50 → 80.3, 100 → 74.5; executing more steps before re-observing lowers success (1 → 80.3, 10 → 82.8, 30 → 70.8, 50 → 51.8) ([SmolVLA](../resources/models/smolvla.md)). The paper does not say why n = 50 was chosen, although its ablation scores chunk 10 above chunk 50.
 - In [VLA-Perf](../resources/serving/vla-perf.md), chunk size barely changes latency (50 → 250 adds only 11% end-to-end for π0) because the expert is memory-bound, so a longer chunk is nearly free compute-wise; the cost is staleness and lower reactivity.
 - A chunk lets a slow model keep the robot moving: with 50 actions at 30 Hz a chunk lasts 1.67 s. The feasibility conditions for a given latency are in [serving methods](serving-methods.md).
 

@@ -24,6 +24,8 @@ The ways a VLA turns its features into actions (discrete tokens, parallel regres
 | flow steps (T)                   | The number of refinement steps one call runs; each step calls the expert once, so more steps mean a longer call.                                                                                                                                 | field | [flow-step reduction](../knowledge/flow-step-reduction.md)                               |
 | inpainting and guidance          | Inpainting fills in the part of a sequence that is not fixed while the fixed part stays as given; guidance nudges a generation step toward a target. Real-time chunking uses both to keep a new chunk consistent with actions already committed. | field | [real-time chunking](../resources/serving/real-time-chunking.md)                         |
 | streaming decoding               | Keeping several chunks at different noise levels and advancing all of them by one step per pass, so that each pass finishes one chunk.                                                                                                           | field | [flow-step reduction](../knowledge/flow-step-reduction.md)                               |
+| DCT and BPE                      | DCT, the discrete cosine transform, re-expresses a signal as a sum of waves of different frequencies; BPE, byte-pair encoding, merges frequent symbol pairs into single tokens. FAST uses both to compress an action chunk into fewer tokens.    | field | [FAST](../resources/models/fast-tokenizer.md)                                            |
+
 
 
 ## Flow matching

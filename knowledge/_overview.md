@@ -1,9 +1,9 @@
 ---
-covers: 1de0da204723
+covers: c29e039a4773
 ---
 # knowledge/
 
-Synthesis of what the sources say about physical AI; VLA models are the first covered area (further areas get their own notes), with a focus on how they are built, made efficient and served on robot hardware. Each note cites `resources/` notes. Start order: the README, then the first two notes below (the second holds the full reading list), with the glossary (`../glossary/_overview.md`) open for new words.
+Synthesis of what the sources say about physical AI; VLA models are the first covered area (further areas get their own notes), with a focus on how they are built, made efficient and served on robot hardware. Each note cites `resources/` notes. Start order (reading steps 1 to 3): the README, then the first two notes below (the second holds the full reading list), with the glossary (`../glossary/_overview.md`) open for new words.
 
 - [One VLA call, step by step](one-vla-call.md) — start here: plain-language walkthrough of one call, with one picture
 - [VLA edge serving overview](vla-edge-serving-overview.md) — next: findings, reading path, trust guide

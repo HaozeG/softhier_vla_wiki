@@ -11,7 +11,7 @@ sources: [resources/models/smolvla.md, resources/serving/lerobot-async-inference
 SmolVLA is Hugging Face's open 450M-parameter VLA: the first half of a SmolVLM-2 language model, 64 visual tokens per frame, and a 100M flow-matching action expert emitting 50-action chunks in 10 steps. It is the reference "small VLA" for this wiki. Its accuracy claims are on LIBERO, Meta-World and low-cost SO100/SO101 arms; its serving claims come from the paper's asynchronous stack, and measured latencies on other hardware come from third-party runtimes and vary by 10× with implementation quality.
 
 ```text
-ONCE PER CALL: read the observation with the VLM
+ONCE PER CALL (prefill): read the observation with the VLM
 +-----------------+           +----------------------------------------------+
 | 3 camera images |-- 3x64 -->| VLM (SmolVLM-2)                              |
 +-----------------+           |                                              |
@@ -45,8 +45,10 @@ after step 10 the chunk is the 50 actions
 ```
 
 ## Details
+In the first drawing the "VLM" box contains the vision encoder (SigLIP with pixel shuffle) and the first 16 LLM layers, the same two parts as boxes 1 and 2 of [one VLA call](one-vla-call.md).
+
 **Data flow per call (paper and first-party code, see [the source note](../resources/models/smolvla.md))**
-- **Once per call:** the three camera images (64 visual tokens each after pixel shuffle), the language prompt (padded to 48 tokens) and the robot state (1 token) form a prefix of 3 × 64 + 48 + 1 = 241 tokens. The first 16 LLM layers process it once and keep their keys and values (in attention, each token offers a key to be matched and a value to be read; a token looks at others by matching against their keys and mixing their values), one set per layer (16 sets); these stored keys and values are what the wiki calls the KV cache, the working memory attention reads from.
+- **Once per call, in the prefill (the prefix pass):** the three camera images (64 visual tokens each after pixel shuffle), the language prompt (padded to 48 tokens) and the robot state (1 token) form a prefix of 3 × 64 + 48 + 1 = 241 tokens. The first 16 LLM layers process it once and keep their keys and values (in attention, each token offers a key to be matched and a value to be read; a token looks at others by matching against their keys and mixing their values), one set per layer (16 sets); these stored keys and values are what the wiki calls the KV cache, the working memory attention reads from.
 - **Each of the 10 flow steps:** the 50 noisy action tokens are embedded together with the flow time (a sinusoidal time embedding joined to the action embedding and passed through a small MLP) and run through the expert. In cross-attention layers the keys and values come from the cached VLM layer with the same index, after the expert's own key and value projections (the reference code repeats this projection in every step; only the VLM's keys and values are cached); in self-attention layers (every second layer) the action tokens are causal among themselves and, in the released code, also see the cached prefix. A linear layer turns the output into the velocity, and one Euler step updates the noisy chunk. After step 10 the chunk is the 50 actions.
 - **What crosses from VLM to expert** is therefore keys and values (per layer), not a single feature vector, and not the final-layer output. The paper's wording is ambiguous ("features at the N-th layer" and "all features up to layer N"); the code settles it as per-layer keys and values for the layers used.
 

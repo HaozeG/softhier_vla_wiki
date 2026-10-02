@@ -14,22 +14,21 @@ Serving a VLA means keeping a robot supplied with valid actions despite inferenc
 ```text
 ASYNC EXECUTION OVER TIME (LeRobot async docs, SmolVLA paper)
 
-queue n  |  *****                              *****
-         |       *****                              *****
-         |            *****                              *****
-g*n      |                 *****                              *****
-         |                      *****                              *****
-         |                           *****                              *****
-1        |                                *****                              *
-         |
-         +------------------------------------------------------------> time
-                           R                   C                R
-model call                 [ call 1: latency l ]                [ call 2 ...
+queue n  |  *****                      *****                      *****
+         |       *****                 |    *****                 |    *****
+         |            *****            |         *****            |         **
+g*n      |                 R****       |              R****       |
+         |                      *****  |                   *****  |
+         |                           **C                        **C
+0        |
+         +----------------------------------------------------------> time
+model call                 [== call 1 =]              [== call 2 =]
 robot       pops one action each dt and keeps moving during calls
 
+From R to C a call runs for its latency l.
 R: queue falls to g*n; observation (images, text, state) goes to the model.
-C: chunk of n actions comes back while some of chunk 1 is still queued;
-   overlapping actions are aggregated, the queue is refilled to about n.
+C: chunk of n actions arrives while some actions are still queued (level
+   above 0); overlapping actions are aggregated and the queue refills to n.
 ```
 
 ```text
