@@ -767,16 +767,16 @@ def session_context(project: Path) -> str:
     Nothing is loaded in full: the session reveals definitions, decisions and notes on demand (decision 0012)."""
     tool = os.path.relpath(Path(__file__).resolve(), project)
     wiki = os.path.relpath(ROOT, project)
-    lines = [f"A project wiki (LLM-maintained, git submodule) lives at `{wiki}/`: SoftHier-VLA knowledge, decisions and term definitions.",
+    lines = [f"A project wiki (LLM-maintained, git submodule) lives at `{wiki}/`: knowledge on physical AI (initial focus: VLA models) for SoftHier-VLA, with decisions and term definitions.",
              "Look things up instead of guessing, and reveal only what the task needs:",
              f"- Terms: this project and wiki give some words their own meaning, which overrides general knowledge. Before using one, read its definition: "
              f"`{tool} glossary \"<term>\"` (all groups: `{wiki}/{GLOSSARY_DIR}/`)."]
     names = local_term_names()
     if names:
         lines.append("  Terms defined locally: " + "; ".join(names) + ".")
-    lines += [f"- Design documents: project decisions in `{wiki}/memories/decisions/`, synthesis in `{wiki}/knowledge/`, sources in `{wiki}/resources/<topic>/`. "
+    lines += [f"- Design documents: project decisions in `{wiki}/memories/decisions/`, topic notes in `{wiki}/knowledge/`, sources in `{wiki}/resources/<topic>/`. "
               f"Browse with `{tool} ls <dir>` (one-line summaries), search with `{tool} find \"<question>\"`; cite `wiki://` URIs.",
-              f"- Filing back (decisions, new terms, syntheses): the workflow in `{wiki}/CLAUDE.md` or the `softhier-wiki:wiki` skill; commit only inside the submodule and only when asked."]
+              f"- Filing back (decisions, new terms, notes on what sources say): the workflow in `{wiki}/CLAUDE.md` or the `softhier-wiki:wiki` skill; commit only inside the submodule and only when asked."]
     if not (ROOT / ".venv").exists() or not INDEX.exists():
         lines.append(f"Not set up on this machine yet: run `{tool} setup` once before using it.")
     ab = summary_body(ROOT, "_abstract.md")

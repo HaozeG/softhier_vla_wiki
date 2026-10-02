@@ -1,13 +1,13 @@
 # Wiki conventions (read before editing)
 
-An LLM-maintained wiki for SoftHier-VLA. You (the agent) own the wiki: you write and maintain it, the human curates sources and asks questions. The point is **compounding**: knowledge is synthesized once into linked, structured notes and kept current, not re-derived from raw sources on every question.
+An LLM-maintained wiki on physical AI (robots that perceive and act in the physical world), with initial focus on vision-language-action (VLA) models, for the SoftHier-VLA project ([decision 0013](wiki-design/decisions/0013-scope-and-no-derived-content.md)). You (the agent) own the wiki: you write and maintain it, the human curates sources and asks questions. The point is **compounding**: what the sources say is recorded once in linked, structured notes and kept current, not re-read from raw sources on every question. Notes state what sources say and how things relate; they do not derive estimates, solutions or design implications unless the user asks.
 
 ## Architecture
 | Layer | Where | Rule |
 |---|---|---|
 | Sources | raw files (PDFs, data) you are given; `resources/<topic>/` holds one faithful note per source (topics: models, surveys, serving, compression, rk3588, hardware; add a topic folder when a catalog nears its limit) | Raw files are immutable: read, never modify. Source notes: correct errors, don't editorialize. **A source note records what the source says (summary, claims with section/figure refs, caveats) and never discusses SoftHier-VLA**: no "relevance", "implications" or links into `knowledge/` ([decision 0010](wiki-design/decisions/0010-resources-stay-project-neutral.md)) |
 | Glossary (project side) | `glossary/` (grouped term definitions: scope `field`, `convention`, `project`) | Definitions only, no numbers or findings. The plugin lists the names of convention and project terms at session start and sessions read definitions on demand with `wiki.py glossary "<term>"` ([decision 0012](wiki-design/decisions/0012-glossary-with-on-demand-lookup.md)) |
-| Wiki (project side) | `knowledge/` (synthesis: what the sources mean for SoftHier-VLA, incl. design implications), `memories/decisions/` (project decisions) | You maintain it; every note cross-linked and cited; the only place project discussion lives |
+| Wiki (project side) | `knowledge/` (topic notes: what the sources say and how the parts relate, cited; no derived estimates or implications), `memories/decisions/` (project decisions) | You maintain it; every note cross-linked and cited; the only place project discussion lives |
 | Wiki design (wiki side) | `wiki-design/decisions/` (decisions about the wiki), `wiki-design/runbooks/`, `tools/` | Kept apart from project content ([decision 0009](wiki-design/decisions/0009-separate-project-knowledge-from-wiki-design.md)); changed only by wiki-development sessions |
 | Schema | this file, `tools/templates/`, `tools/wiki.py` (lint) | Follow it; propose changes via a decision record |
 
@@ -31,7 +31,7 @@ Required `##` sections: concept/entity → `Summary`; paper → `Summary`, `Key 
 
 ## The three operations
 - **Ingest** a source → follow `wiki-design/runbooks/ingest-a-source.md`. First tell the user the key takeaways and what you plan to touch. One source touches several notes (often 10–15): source note, the knowledge notes it informs, cross-links, catalog entries, decisions.
-- **Query** → `find "<question>"` (hybrid semantic + keyword), `ls`/`tree` to browse, read L0/L1 then the L2 hits. Answer from the wiki and cite `wiki://` URIs. If the answer is a valuable synthesis, **file it back** as a note (a good answer that stays in chat is lost).
+- **Query** → `find "<question>"` (hybrid semantic + keyword), `ls`/`tree` to browse, read L0/L1 then the L2 hits. Answer from the wiki and cite `wiki://` URIs. If the answer is a valuable summary of what sources say, **file it back** as a note (a good answer that stays in chat is lost).
 - **Lint** → `tools/wiki.py health` (or the `wiki-health` subagent); procedure in `wiki-design/runbooks/review-wiki-health.md`. Covers duplicates, contradictions, stale claims superseded by newer sources, orphans, concepts that deserve their own page, and data gaps. Run after large ingests and periodically.
 
 ## zvec is for what `ls`/`grep` can't do
