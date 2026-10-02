@@ -5,8 +5,8 @@ An LLM-maintained wiki for SoftHier-VLA. You (the agent) own the wiki: you write
 ## Architecture
 | Layer | Where | Rule |
 |---|---|---|
-| Sources | raw files (PDFs, data) you are given; `resources/<topic>/` holds one faithful note per source (topics: models, surveys, serving, compression, rk3588, hardware; add a topic folder when a catalog nears its limit) | Raw files are immutable: read, never modify. Source notes: correct errors, don't editorialize |
-| Wiki (project side) | `knowledge/` (synthesis), `memories/decisions/` (project decisions) | You maintain it; every note cross-linked and cited |
+| Sources | raw files (PDFs, data) you are given; `resources/<topic>/` holds one faithful note per source (topics: models, surveys, serving, compression, rk3588, hardware; add a topic folder when a catalog nears its limit) | Raw files are immutable: read, never modify. Source notes: correct errors, don't editorialize. **A source note records what the source says (summary, claims with section/figure refs, caveats) and never discusses SoftHier-VLA**: no "relevance", "implications" or links into `knowledge/` ([decision 0010](wiki-design/decisions/0010-resources-stay-project-neutral.md)) |
+| Wiki (project side) | `knowledge/` (synthesis: what the sources mean for SoftHier-VLA, incl. design implications), `memories/decisions/` (project decisions) | You maintain it; every note cross-linked and cited; the only place project discussion lives |
 | Wiki design (wiki side) | `wiki-design/decisions/` (decisions about the wiki), `wiki-design/runbooks/`, `tools/` | Kept apart from project content ([decision 0009](wiki-design/decisions/0009-separate-project-knowledge-from-wiki-design.md)); changed only by wiki-development sessions |
 | Schema | this file, `tools/templates/`, `tools/wiki.py` (lint) | Follow it; propose changes via a decision record |
 

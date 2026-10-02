@@ -15,4 +15,4 @@ Google DeepMind announced Gemini Robotics On-Device on 24 June 2025 as a VLA "op
 - **Later releases:** search results list newer "On-Device 2" and "Gemini Robotics 2" pages; these were not opened and are not used here.
 - **Trust level:** marketing-style first-party blog; use only for the existence and positioning of the product.
 
-See also: [Helix](figure-helix.md), [Jetson specs](../hardware/nvidia-jetson-platform-specs.md), [serving methods](../../knowledge/serving-methods.md).
+See also: [Helix](figure-helix.md), [Jetson specs](../hardware/nvidia-jetson-platform-specs.md).

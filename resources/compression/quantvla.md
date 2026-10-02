@@ -18,7 +18,5 @@ QuantVLA claims to be the first post-training quantization framework for VLAs an
 - **Non-DiT model (App. G):** OpenVLA W8A16 gets 86.0% vs 84.7% on LIBERO-Spatial; the DiT-specific calibration does not apply.
 - **What is not shown:** the text read reports memory savings on the quantized components (LLM + DiT), not latency, and does not include the vision encoder. Small LIBERO suites and A100 GPUs only.
 
-## Relevance to SoftHier-VLA
-Shows that the flow/diffusion action head, run for many steps and accumulating error across them, is the most quantization-sensitive part, so a mixed-precision plan (LLM 4-bit weights, action head higher precision or MLP-only) is the safer default. See [quantization](../../knowledge/quantization.md) and [flow-step reduction](../../knowledge/flow-step-reduction.md).
-
+## Related
 See also: [BitVLA](bitvla.md), [vla.cpp](../serving/vla-cpp.md), [OpenVLA](../models/openvla.md).

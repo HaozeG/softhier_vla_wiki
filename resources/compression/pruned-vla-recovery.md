@@ -20,7 +20,5 @@ The paper prunes the Llama-2 7B backbone of OpenVLA-OFT and CogACT by width (att
 - **Real robot (Table III, AgileX PiPER, on-board Jetson Thor):** 72% width-pruned student with distillation 77.5% success vs teacher 65.5% vs supervised-only recovery 59.5%; latency 362 → 162 ms (2.23×), memory 15.0 → 5.7 GiB. The speedup on the robot is about twice the workstation's, which the authors attribute to the bandwidth-limited device benefiting more from smaller weights.
 - **Limitations (§VII):** compression ratios swept only in simulation; both backbones are Prismatic-family; fixed cached observations.
 
-## Relevance to SoftHier-VLA
-Weight-bound devices gain more from parameter reduction than compute-rich GPUs (Thor 2.23× vs H100 1.16× at the same ratio), which supports memory-first optimization for edge targets. It also shows the fixed cost of the action head as a latency floor. See [layer skipping and pruning](../../knowledge/layer-skipping-and-pruning.md).
-
+## Related
 See also: [CLP](clp-layer-pruning.md), [EfficientVLA](efficientvla.md), [OpenVLA-OFT](../models/openvla-oft.md).

@@ -20,7 +20,5 @@ A training-free framework for diffusion-head VLAs that combines three steps: pru
 - **Scaling (Table 3):** speedup grows with a larger action head (CogACT-Large 308M: 2.0×, 76.7 → 76.1).
 - **Limitations (App. C):** only CogACT tested (few open diffusion VLAs at the time); fixed cache interval; training-free methods reach less compression than training-aware ones.
 
-## Relevance to SoftHier-VLA
-Its per-module time/FLOP split is a template for workload analysis, and the memory-bound saturation result is the central caution for token-pruning claims. See [layer skipping and pruning](../../knowledge/layer-skipping-and-pruning.md), [token pruning and caching](../../knowledge/token-pruning-and-caching.md), and [flow-step reduction](../../knowledge/flow-step-reduction.md). Measured on an A40 GPU, not an edge device.
-
+## Related
 See also: [VLA-Cache](vla-cache.md), [CLP](clp-layer-pruning.md), [pruned-VLA recovery](pruned-vla-recovery.md), [OpenVLA-OFT](../models/openvla-oft.md), and the surveys [Yu et al.](../surveys/survey-efficient-vla-yu.md) and [Guan et al.](../surveys/survey-efficient-vla-guan.md).

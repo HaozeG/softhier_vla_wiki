@@ -20,7 +20,5 @@ OpenVLA is a 7B-parameter open VLA built from the Prismatic-7B VLM (fused SigLIP
 - **Quantization (Table 2, BridgeData V2, 8 tasks):** bf16 71.3% at 16.8 GB; int8 58.1% at 10.2 GB; int4 71.9% at 7.0 GB. int8 was slower (1.2 Hz on an A5000) because of dequantization overhead, and that slowdown, not token accuracy, caused the success drop; int4 ran at about 3 Hz on the A5000 (§5.4, footnote and Appendix D.4).
 - **Limitations (§6):** single-image input; throughput too low for 50 Hz setups such as ALOHA; success typically under 90%. Authors suggest action chunking and speculative decoding.
 
-## Relevance to SoftHier-VLA
-OpenVLA is the canonical autoregressive baseline. Its int8-vs-int4 result is a concrete warning that weight quantization only helps when the kernel is memory-bound and dequantization is cheap; see [quantization](../../knowledge/quantization.md). Its speed limits motivated [OpenVLA-OFT](openvla-oft.md).
-
+## Related
 See also: [RT-2](rt-2.md), [OpenVLA-OFT](openvla-oft.md), [TinyVLA](tinyvla.md), [BitVLA](../compression/bitvla.md).

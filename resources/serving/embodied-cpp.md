@@ -20,7 +20,5 @@ A C++ runtime for VLA models and world-action models built around a five-layer s
 - **World-action models (Table 4):** Cosmos3 49% → 48% success, VRAM 21.8 → 19.5 GB; LingBot-VA 100% → 98%, 24.75 → 16.4 GB.
 - **What it does not give:** absolute latencies, hardware named per row, or any NPU result; the RK-board mention is motivation only.
 
-## Relevance to SoftHier-VLA
-Confirms the runtime pattern (C++ graphs, fused batch-1 execution, plugin heads) that [vla.cpp](vla-cpp.md) and [Jetson-PI](jetson-pi.md) use, and gives one more quantization data point where 4-bit hurt π0.5 (0.70 relative success) while GR00T N1.7 held (0.96). See [quantization](../../knowledge/quantization.md) and [serving methods](../../knowledge/serving-methods.md).
-
-See also: [vla.cpp](vla-cpp.md), [RK3588 deployment note](../../knowledge/rk3588-vla-deployment.md).
+## Related
+See also: [vla.cpp](vla-cpp.md).

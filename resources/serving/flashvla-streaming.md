@@ -21,7 +21,5 @@ FlashVLA changes how a flow-matching action expert is run: instead of ten denois
 - **Real robot:** Franka with an RTX A4000: 67.3 ms latency, 30 Hz control with two-step asynchronous delay; average task score 84.4% vs 80.0% for synchronous π0.5.
 - **Limitations:** requires fine-tuning; inherits the independent-chunk pretraining objective; cold-start overhead per episode.
 
-## Relevance to SoftHier-VLA
-An example of amortizing the flow loop across control steps (a scheduling change rather than a smaller model), which turns the memory-bound expert into a steady pipeline. See [flow-step reduction](../../knowledge/flow-step-reduction.md) and [serving methods](../../knowledge/serving-methods.md). Only tested on GPUs from RTX A4000 upward.
-
+## Related
 See also: [RTC](real-time-chunking.md), [Realtime-VLA](realtime-vla.md), [Jetson-PI](jetson-pi.md), [OpenVLA-OFT](../models/openvla-oft.md).

@@ -17,7 +17,5 @@ RTC is an inference-time algorithm for asynchronous execution of diffusion/flow 
 - **Real world (6 tasks, 480 episodes, Fig. 6):** RTC has the best average throughput at all delays, with no degradation under injected delay; synchronous degrades roughly linearly; both TE variants triggered the robot's protective stop at +100/+200 ms.
 - **Limitations (§6):** significant compute overhead over sampling directly from the base policy; only diffusion/flow policies.
 
-## Relevance to SoftHier-VLA
-RTC is the reference algorithm for hiding latency when a chunk takes longer than the control period, which is the regime an edge accelerator will be in. Its extra backpropagation through the action expert adds compute (76 → 97 ms in the paper's setup), which an accelerator must support. Compared with alternatives in [serving methods](../../knowledge/serving-methods.md).
-
+## Related
 See also: [Jetson-PI](jetson-pi.md), [FlashVLA](flashvla-streaming.md), [LeRobot async docs](lerobot-async-inference-docs.md), [π0.5](../models/pi05.md).

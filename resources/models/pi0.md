@@ -18,7 +18,5 @@ Black, Brown, Driess, et al. (Physical Intelligence), arXiv 2410.24164 (v4, Jan 
 - **Data (§V):** about 10,000 hours from 7 robot configurations and 68 tasks plus Open X-Embodiment (22 robots); open data is 9.1% of the mixture. Pre-train on broad data, then post-train on curated data.
 - **Baselines:** π0-small (470M, no VLM initialisation), OpenVLA (cannot chunk) and Octo (93M) are all beaten on out-of-box tasks, and π0 beats them at compute parity.
 
-## Relevance to SoftHier-VLA
-π0's latency table is the most cited first-party breakdown, showing the vision, prefill and 10-step action loop split. See [inference workload characterization](../../knowledge/inference-workload-characterization.md) and [VLA architecture overview](../../knowledge/vla-architecture-overview.md). At 3.3B parameters it is above the size of a 10 TOPS-class deployment; see [edge hardware and the 10 TOPS gap](../../knowledge/edge-hardware-and-the-10-tops-gap.md).
-
+## Related
 Successor: [π0.5](pi05.md) keeps π0's architecture dimensions but pretrains with FAST tokens before adding the flow expert, and adds hierarchical subtask inference; π0 itself is flow-only and prompt-conditioned. Related: [FAST](fast-tokenizer.md), [GR00T N1](gr00t-n1.md), [OpenVLA](openvla.md).

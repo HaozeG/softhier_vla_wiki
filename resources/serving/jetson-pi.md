@@ -20,7 +20,5 @@ Jetson-PI targets π0/π0.5-style VLAs on low-power Jetson Orin and Thor. It com
 - **Real robot:** X2-W robot with an XR-1 model on Orin (three 224×224 cameras, 15 Hz): picking 10/10, folding 8/10, placing 9/10, vs naive async on Orin 6/10, 0/10, 5/10.
 - **Limitation (§7):** on-board compute and bandwidth remain far below GPU servers; gains may not scale with larger models.
 
-## Relevance to SoftHier-VLA
-Grounds the edge discussion in measured numbers: a 3B VLA is about 1.4 s per chunk on Orin at 50 W even after the model's own design tricks, and system-level graph optimization alone gives about 3× ([edge hardware and the 10 TOPS gap](../../knowledge/edge-hardware-and-the-10-tops-gap.md)). Its action-expert time (536.8 ms of 1420.8 ms) shows the flow loop as a major cost on bandwidth-limited devices. See [serving methods](../../knowledge/serving-methods.md).
-
+## Related
 See also: [vla.cpp](vla-cpp.md), [RTC](real-time-chunking.md), [FlashVLA](flashvla-streaming.md), [VLA-Perf](vla-perf.md), [XPU study](vla-xpu-characterization.md).

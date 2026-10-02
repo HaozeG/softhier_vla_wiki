@@ -44,4 +44,4 @@ Rockchip publishes RKLLM benchmarks for language models and a few vision-languag
 
 **Caveats:** the Rockchip tables are first-party and were measured at maximum clocks; the fetched page gave the column header but not the RKLLM version for the LLM table; community numbers are single runs on unspecified boards and thermal states.
 
-See also: [Rockchip toolchain](rockchip-rknn-rkllm-toolchain.md), [platform specs](rk3588-platform-specs.md), [RK3588 robot-policy reports](rk3588-robot-policy-reports.md), [RK3588 deployment note](../../knowledge/rk3588-vla-deployment.md).
+See also: [Rockchip toolchain](rockchip-rknn-rkllm-toolchain.md), [platform specs](rk3588-platform-specs.md), [RK3588 robot-policy reports](rk3588-robot-policy-reports.md).

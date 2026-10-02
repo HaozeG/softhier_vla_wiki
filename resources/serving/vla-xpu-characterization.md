@@ -22,7 +22,5 @@ A cross-accelerator benchmark of VLA models (ACT, Diffusion Policy, SmolVLA, GR0
 - **Headline claim:** up to 2.9× speedup on GPUs and 6× on edge NPUs (abstract); NPU detail was not in the parts read.
 - **Caveats:** preprint; success rates reported are hardware-independent by construction (same precision); "π0 with 4 denoising steps" differs from the 10-step official setting.
 
-## Relevance to SoftHier-VLA
-The only source here that includes a 10 TFLOP/s-class accelerator (Ascend 310B) and quantifies which models the "Basic" tier can run. It also confirms the compute-bound-VLM / memory-bound-expert split on real devices, complementing [VLA-Perf](vla-perf.md). See [edge hardware and the 10 TOPS gap](../../knowledge/edge-hardware-and-the-10-tops-gap.md).
-
+## Related
 See also: [edge bottleneck study](vla-edge-bottleneck-characterization.md), [VLA-Perf](vla-perf.md), [Jetson specs](../hardware/nvidia-jetson-platform-specs.md), [Sub-20-TOPS parts](../hardware/edge-accelerator-datasheets.md).

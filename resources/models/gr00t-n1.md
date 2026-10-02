@@ -19,7 +19,5 @@ GR00T N1 is a dual-system VLA. System 2 is the Eagle-2 VLM (SmolLM2 + SigLIP-2),
 - **Data pyramid (§2.2, §3):** web and human video at the base; synthetic simulation and neural-video trajectories in the middle (in-house teleoperation grown about 10× from 88 to 827 hours with generated neural trajectories); real robot data at the top. Latent actions from a VQ-VAE inverse-dynamics model label action-free videos.
 - **Limitations (§4.6):** short-horizon tabletop manipulation; synthetic data quality and diversity.
 
-## Relevance to SoftHier-VLA
-GR00T N1 is a second data point (after [SmolVLA](smolvla.md)) for "middle-layer VLM features plus 64 tokens per frame plus few-step flow" as the efficient recipe. Its dual-system split is the design analysed in [serving methods](../../knowledge/serving-methods.md) and in [VLA-Perf](../serving/vla-perf.md).
-
+## Related
 See also: [π0](pi0.md), [π0.5](pi05.md), [Octo](octo.md), [SmolVLA](smolvla.md).

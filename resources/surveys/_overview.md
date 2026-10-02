@@ -1,5 +1,5 @@
 ---
-covers: a2a82424f6b1
+covers: 83cf6add9edb
 ---
 # resources/surveys/
 

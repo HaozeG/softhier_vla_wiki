@@ -1,5 +1,5 @@
 ---
-covers: eacac8f5146c
+covers: aed22618e99b
 ---
 # resources/compression/
 

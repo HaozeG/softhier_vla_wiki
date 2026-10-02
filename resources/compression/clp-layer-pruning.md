@@ -20,7 +20,5 @@ CKA-guided Layer Pruning (CLP) removes redundant transformer layers from a pretr
 - **Limitations (§7):** a global criterion that ignores modality-specific token dynamics; studied only for post-pretraining fine-tuning, not pretraining.
 - **Caveat:** SmolVLA's baseline here (77.15% on LIBERO) is far below the 87.3% the SmolVLA paper reports for the 0.45B model (88.75% is the 2.25B variant), so comparisons across papers need the same training and evaluation protocol.
 
-## Relevance to SoftHier-VLA
-A static, hardware-friendly compression (fewer layers, same shapes) for the models this wiki cares about, including SmolVLA. Because the pruning happens before fine-tuning, it changes the model you deploy, not the run-time control flow. See [layer skipping and pruning](../../knowledge/layer-skipping-and-pruning.md); compare [pruned-VLA recovery](pruned-vla-recovery.md) (width vs depth).
-
+## Related
 See also: [EfficientVLA](efficientvla.md), [DeeR-VLA](deer-vla.md), [DySL-VLA](dysl-vla.md), [SmolVLA](../models/smolvla.md).

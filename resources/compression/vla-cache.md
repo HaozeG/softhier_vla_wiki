@@ -20,7 +20,5 @@ A training-free, plug-and-play method that reuses cached key/value entries of vi
 - **Limitations (App. A):** gains shrink in dynamic scenes; only Llama-2-decoder VLAs tested; π0's Gemma backbone untried.
 - **Caveat from a later paper:** [EfficientVLA](efficientvla.md) reports that on CogACT VLA-Cache yields only 1.38× because it does not touch the LLM's memory-bound cost or the action head.
 
-## Relevance to SoftHier-VLA
-The cleanest example of exploiting temporal redundancy. It skips prefill compute for cached tokens, so it maps to a hardware-friendly "partial prefill" and requires storing per-layer KV for the previous frame. See [token pruning and caching](../../knowledge/token-pruning-and-caching.md).
-
+## Related
 See also: [LightVLA](lightvla.md), [EfficientVLA](efficientvla.md), [OpenVLA-OFT](../models/openvla-oft.md).

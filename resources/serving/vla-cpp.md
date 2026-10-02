@@ -23,7 +23,5 @@ vla.cpp is a C++ inference runtime (built on ggml/llama.cpp, GGUF weights, no Py
 - **Where time goes (RTX 5070, §IV-E):** SmolVLA vision 38% + backbone 14%; π0 vision 21% + backbone 54%; the action expert takes nearly half of SmolVLA and GR00T-N1.6 time even with cached features. Roofline ridge points: 71 (RTX 3060) and 104 FLOP/byte (AGX Orin); prefix intensity 256–530, expert about 50.
 - **Numerical pitfall (§IV-F):** computing SmolVLA vision positional indices at the wrong precision moved patch coordinates across an index boundary, dropping LIBERO-Object task-0 success from 9/10 to 2/10 with a gripper-channel action error of about 1.97.
 
-## Relevance to SoftHier-VLA
-The most useful public data for sub-Thor devices, including SmolVLA on an 8 GB Orin Nano and CPU-only latencies. It also demonstrates that weight-only quantization brings small speedups (1.08–1.14×) unless there is a native low-bit datapath, and that discrete preprocessing (index precision) must be validated. See [edge hardware and the 10 TOPS gap](../../knowledge/edge-hardware-and-the-10-tops-gap.md), [quantization](../../knowledge/quantization.md) and [serving methods](../../knowledge/serving-methods.md).
-
+## Related
 See also: [vla.simd](vla-simd.md) (same group, CPU), [Jetson-PI](jetson-pi.md), [BitVLA](../compression/bitvla.md), [VLA-Perf](vla-perf.md), [LiteVLA-Edge](litevla-edge.md).

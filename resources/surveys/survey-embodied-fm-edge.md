@@ -17,7 +17,5 @@ A survey that frames edge deployment of embodied foundation models as a systems 
 - **Unified memory (§3.2.3, §3.3):** CPU, GPU, NPU and sensor DMA share LPDDR channels, so inference competes with perception traffic; moving high-resolution features between CPU and NPU can add 4–15 ms (cited).
 - **Thermal (§3.2.4, §3.4):** mixed-workload saturation was reported to cut steady-state throughput by up to 60% against cold start (cited); an extra 10–15 W of accelerator load can cost a drone several minutes of endurance.
 
-## Relevance to SoftHier-VLA
-Generic support for the failure modes seen on the RK3588: fragmented graphs, shared-DRAM contention and throttling ([RK3588 deployment note](../../knowledge/rk3588-vla-deployment.md)). Use it as a checklist, not as evidence for a specific device.
-
+## Related
 See also: [Yu et al.](survey-efficient-vla-yu.md), [edge bottleneck study](../serving/vla-edge-bottleneck-characterization.md).

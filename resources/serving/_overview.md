@@ -1,5 +1,5 @@
 ---
-covers: 35c97d50bae9
+covers: d97ea5ed1052
 ---
 # resources/serving/
 

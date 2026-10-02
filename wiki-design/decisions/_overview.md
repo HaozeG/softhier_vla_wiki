@@ -1,5 +1,5 @@
 ---
-covers: 440d2b9af248
+covers: 234e0136cee1
 ---
 # wiki-design/decisions/
 
@@ -12,3 +12,4 @@ covers: 440d2b9af248
 - [0007 ASCII diagrams as a logic check](0007-ascii-diagrams-as-logic-check.md) — structural notes carry one plain-text diagram that must match the prose; drawing it is a second check on the text.
 - [0008 Obsidian-padded tables](0008-obsidian-padded-tables.md) — tables stored padded like Obsidian so opening notes there causes no diffs; `wiki.py fmt` and a `TABLEFMT` warning enforce it.
 - [0009 separate project knowledge from wiki design](0009-separate-project-knowledge-from-wiki-design.md) — project content and wiki design in separate folders, following OpenViking's resource / memory / skill split; resources grouped by topic.
+- [0010 resources stay project-neutral](0010-resources-stay-project-neutral.md) — source notes record what a source says; what it means for SoftHier-VLA lives in `knowledge/`, links run one way.

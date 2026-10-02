@@ -26,11 +26,9 @@ SmolVLA is a 450M-parameter VLA: a truncated SmolVLM-2 backbone plus a roughly 1
 - **Compute (§4.3):** about 30k GPU hours for the whole project; pretraining used 4 GPUs but fits on one. Compared with π0 (3.3B), SmolVLA is about 40% faster to train and uses 6× less memory (§4.5). Training used bf16 and `torch.compile`.
 - **Real-world results (Table 5, SO100):** pretrained multi-task 78.3% avg vs non-pretrained multi-task 51.7% vs single-task 40%.
 - **Async inference (§3.3, §4.6, Algorithm 1):** a RobotClient sends an observation to a (possibly remote) PolicyServer when the action queue falls below a fraction g of the chunk. Near-duplicate observations are filtered in joint space. Overlapping chunks are aggregated. An idle queue is avoided when g ≥ (E[ℓ_S]/Δt)/n, with Δt = 33 ms at 30 fps. Sync vs async on real tasks: avg success 78.3 vs 73.3 (sorting fell 70 → 50); task time 13.75 s vs 9.7 s (about 30% faster); 9 vs 19 cubes in a fixed time.
-- **Not reported in the text read:** absolute on-device latency, Hz or power. The "runs on CPU/consumer GPU/MacBook" claim is qualitative; see [SmolVLA entity](../../knowledge/smolvla.md) for what can be derived.
+- **Not reported in the text read:** absolute on-device latency, Hz or power. The "runs on CPU/consumer GPU/MacBook" claim is qualitative.
 - **Limitations (§5.1):** pretraining data is a single robot type (SO100); no long-horizon reasoning; dataset diversity; the VLM backbone was pretrained mainly on document and OCR tasks, and its suitability for robotics is untested.
-- **Released config (first-party, `lerobot/smolvla_base`):** backbone `SmolVLM2-500M-Video-Instruct`, `num_vlm_layers` 16, three cameras resized with padding to 512×512, language padded to 48 tokens, chunk 50, 10 steps, expert width multiplier 0.75; used in [edge budget estimate](../../knowledge/edge-budget-estimate.md).
+- **Released config (first-party, `lerobot/smolvla_base`):** backbone `SmolVLM2-500M-Video-Instruct`, `num_vlm_layers` 16, three cameras resized with padding to 512×512, language padded to 48 tokens, chunk 50, 10 steps, expert width multiplier 0.75.
 
-## Relevance to SoftHier-VLA
-SmolVLA is the reference small VLA for this wiki: its layer counts, token counts, expert size and 10 flow steps give the inputs for the FLOP estimate in [edge-budget-estimate](../../knowledge/edge-budget-estimate.md). Its layer skipping motivates [layer skipping and pruning](../../knowledge/layer-skipping-and-pruning.md); its async stack is a serving method in [serving methods](../../knowledge/serving-methods.md).
-
+## Related
 See also: [FlashVLA](../serving/flashvla-streaming.md) and [CLP](../compression/clp-layer-pruning.md) (applied to SmolVLA), [vla.cpp](../serving/vla-cpp.md) and [vla.simd](../serving/vla-simd.md) (measured latencies), [OpenVLA](openvla.md) and [π0](pi0.md) (baselines), [LeRobot async docs](../serving/lerobot-async-inference-docs.md).

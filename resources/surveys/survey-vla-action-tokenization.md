@@ -16,7 +16,5 @@ The survey unifies VLAs as chains of "VLA modules" that produce "action tokens":
 - **Reasoning and language plans:** improve action generation and long-horizon planning but add latency (Table 1).
 - **Trends (§13):** the authors expect hierarchical architectures (language plans and code on top; affordance, trajectory and goal-state prediction in the middle; raw-action policy at the bottom), with reasoning integrated as needed; learning from imitation toward RL; and co-evolution of model, data and hardware.
 
-## Relevance to SoftHier-VLA
-Frames why serving workloads differ: raw-action VLAs (π0, SmolVLA, OpenVLA) are the target here, whereas language-plan and reasoning tokens add long decode phases ([edge bottleneck characterization](../serving/vla-edge-bottleneck-characterization.md)). See [action representation and chunking](../../knowledge/action-representation-and-chunking.md). It is a secondary source and has no hardware data.
-
+## Related
 See also: [Ma et al.](survey-vla-embodied-ai-ma.md), [FAST](../models/fast-tokenizer.md), [Yu et al.](survey-efficient-vla-yu.md).

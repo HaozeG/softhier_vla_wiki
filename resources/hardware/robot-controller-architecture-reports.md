@@ -14,4 +14,4 @@ Two secondary sources describe how robot makers divide compute. A market-researc
 - **RK3588 control-board blog (Dusun IoT, vendor):** CPU for general control and data processing (about 93K DMIPS claimed), NPU for inference (YOLOv8n at 59.6 fps), Mali GPU for vision, CAN for actuators, up to eight MIPI camera inputs, RGMII Ethernet for LiDAR, PCIe 3.0. It mentions an asymmetric multiprocessing design for real-time behaviour but describes no separate MCU and does not address Linux real-time limits.
 - **Trust level:** low to medium; the release summarizes a paid report and the blog is a product pitch. The chip lists cannot be checked against the report itself.
 
-See also: [Unitree compute](unitree-robot-compute.md), [AgiBot compute](agibot-robot-compute.md), [RK3588 platform](../rk3588/rk3588-platform-specs.md), [robot compute partitioning](../../knowledge/robot-compute-partitioning.md).
+See also: [Unitree compute](unitree-robot-compute.md), [AgiBot compute](agibot-robot-compute.md), [RK3588 platform](../rk3588/rk3588-platform-specs.md).

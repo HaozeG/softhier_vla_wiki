@@ -23,7 +23,5 @@ VLA-Perf is an analytical, roofline-based latency model for arbitrary VLA archit
 - **Dual system (Table 9):** async System 1 / System 2 gives 1.46× (5 Hz S2 cap) or 1.30× (10 Hz cap) on Thor; up to 2.24× on B100 with 10G Ethernet; only 1.05× over 5G.
 - **Placement (takeaways 13–15):** Thor reaches 10 Hz for π0 but 100 Hz needs about 5× more (smaller model, fewer flow steps, lower precision). Edge-server 4090 achieves 10 Hz even over 4G; 100 Hz needs datacenter GPUs and fast networks. Cloud reaches 100 Hz only with async inference.
 
-## Relevance to SoftHier-VLA
-This is the best available public model for reasoning about where a VLA is bound. Its memory-bound action expert and bandwidth-limited edge GPU are the central inputs to [inference workload characterization](../../knowledge/inference-workload-characterization.md) and [edge hardware and the 10 TOPS gap](../../knowledge/edge-hardware-and-the-10-tops-gap.md). Note it models only Thor-class edge devices and assumes BF16; nothing near 10 TOPS is evaluated.
-
+## Related
 See also: corroborating measurements in [vla.cpp](vla-cpp.md), [XPU study](vla-xpu-characterization.md) and [Jetson-PI](jetson-pi.md); validation source [Realtime-VLA](realtime-vla.md); device specs in [Jetson specs](../hardware/nvidia-jetson-platform-specs.md).

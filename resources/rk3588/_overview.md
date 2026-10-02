@@ -1,5 +1,5 @@
 ---
-covers: a441f8ca1dca
+covers: 3717a61e2824
 ---
 # resources/rk3588/
 

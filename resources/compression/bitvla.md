@@ -21,7 +21,5 @@ BitVLA is a natively ternary ({−1, 0, +1}) VLA built on the BitNet b1.58 2B4T 
 - **Limitations (§VI):** needs quantization-aware training (not a drop-in conversion of an existing FP backbone); pretraining scale is small (about 1M samples).
 - **Energy argument (§VI):** ternary-by-INT8 linear layers reduce to integer additions, so the authors argue for dedicated 1-bit VLA accelerators. Not measured.
 
-## Relevance to SoftHier-VLA
-The only work here that directly motivates custom low-bit datapaths: a ternary×INT8 multiply-accumulate needs no multipliers. Latency gains depend on a specialised kernel; on a generic accelerator without ternary support the benefit would be memory only. See [quantization](../../knowledge/quantization.md).
-
+## Related
 See also: [OpenVLA](../models/openvla.md), [OpenVLA-OFT](../models/openvla-oft.md), [vla.cpp](../serving/vla-cpp.md) (ternary kernels), [QuantVLA](quantvla.md).

@@ -19,7 +19,5 @@ DySL-VLA keeps a small set of informative "static" LLM layers always on and lets
 - **Ablation (Table 4):** removing pre-skip prediction drops length 2.89 → 2.42; removing dynamic-static split gives 1.87 at 27.6 ms; removing two-stage distillation leaves controllers closed and latency at 74.0 ms.
 - **Stated limitation:** OpenVLA-OFT has less redundancy, so speedup is 1.93–1.96× vs 3.75× on RoboFlamingo.
 
-## Relevance to SoftHier-VLA
-A dynamic-depth method with a measured Jetson Orin point. As with [DeeR-VLA](deer-vla.md), run-time control flow must be honoured by the mapping. Its finding that per-layer controllers add serial latency is a caution for dynamic schemes on statically scheduled hardware. See [layer skipping and pruning](../../knowledge/layer-skipping-and-pruning.md).
-
+## Related
 See also: [DeeR-VLA](deer-vla.md), [CLP](clp-layer-pruning.md), [Jetson-PI](../serving/jetson-pi.md) (same group).

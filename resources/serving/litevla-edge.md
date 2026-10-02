@@ -17,7 +17,5 @@ Fine-tunes a distilled SmolVLM-256M backbone to emit discrete velocity-command t
 - **Comparison table (Table I):** lists OpenVLA (about 5 Hz, RTX 4090) and EdgeVLA (about 10 Hz, A100) but the paper itself notes cross-paper comparisons are not like-for-like.
 - **Prior work by the same group:** "Lite VLA" ran on a Raspberry Pi 4 with multi-second to multi-minute inference (as cited in [vla.simd](vla-simd.md)).
 
-## Relevance to SoftHier-VLA
-Illustrates the cheapest end of the design space (a 256M autoregressive policy at 4-bit) and how thinly evidenced many "edge VLA" claims are: no task success and an unclear device. Use only as a feasibility anecdote; prefer [vla.cpp](vla-cpp.md) for measured edge numbers. See [edge hardware and the 10 TOPS gap](../../knowledge/edge-hardware-and-the-10-tops-gap.md).
-
+## Related
 See also: [vla.cpp](vla-cpp.md), [vla.simd](vla-simd.md), [SmolVLA](../models/smolvla.md).

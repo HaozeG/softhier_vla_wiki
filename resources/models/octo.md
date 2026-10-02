@@ -17,7 +17,5 @@ Octo is a transformer policy pretrained from scratch on 800k Open X-Embodiment e
 - **Ablations (Table II, WidowX):** Octo-Small 83%; discretized action heads 18%; MSE heads 35%; single-robot data 43%; ResNet-50 + transformer 70%. Diffusion decoding beat both alternatives.
 - **Noted negatives (App. E):** proprioceptive input seemed to hurt; ResNet encoders were better than ViTs from scratch on small data but scaled worse; halving patch size to 16 improved grasping at 4× tokens.
 
-## Relevance to SoftHier-VLA
-Shows that a 27–93M policy with a cheap diffusion head is a viable lower bound on compute: the backbone cost is one pass over a few hundred tokens. It has no web-scale VLM pretraining, so its semantic generalization is weaker (see [OpenVLA](openvla.md) and [π0](pi0.md)). See [VLA architecture overview](../../knowledge/vla-architecture-overview.md).
-
+## Related
 See also: [TinyVLA](tinyvla.md), [OpenVLA](openvla.md), [π0](pi0.md), [GR00T N1](gr00t-n1.md), [SmolVLA](smolvla.md).

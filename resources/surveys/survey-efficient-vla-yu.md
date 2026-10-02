@@ -19,7 +19,5 @@ The first survey dedicated to efficient VLAs, covering the whole model-training-
 - **Training and data (§4–5):** LoRA, distillation, RL fine-tuning, data-efficient pretraining, latent actions, simulation and human-in-the-loop data.
 - **Naming caveat:** the survey lists a "FlashVLA" that reuses actions based on token stability; a different paper with the same name ([FlashVLA, streaming decoding](../serving/flashvla-streaming.md)) exists, and [Guan et al.](survey-efficient-vla-guan.md) describe yet another SVD-based token-pruning "FlashVLA". Check the arXiv ID before citing.
 
-## Relevance to SoftHier-VLA
-Use as the taxonomy backbone for [VLA efficiency taxonomy](../../knowledge/vla-efficiency-taxonomy.md). It is a secondary source: verify numbers against the primary papers in this wiki before relying on them. It does not contain a hardware-level latency analysis; that comes from [VLA-Perf](../serving/vla-perf.md).
-
+## Related
 See also: [Guan et al.](survey-efficient-vla-guan.md), [Ma et al.](survey-vla-embodied-ai-ma.md), [Zhong et al.](survey-vla-action-tokenization.md), [VLA-Perf](../serving/vla-perf.md).

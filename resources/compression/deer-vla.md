@@ -20,7 +20,5 @@ DeeR adds intermediate exits to the LLM of a robot MLLM (OpenFlamingo-based Robo
 - **Quantization (Table 6):** float32 6 GB / len 4.13; float16 3 GB / 4.12; int4 1.7 GB / 3.91.
 - **Limitations (§5):** simulation only; counts only LLM cost while the vision encoder is also significant.
 
-## Relevance to SoftHier-VLA
-The canonical dynamic-depth method. Its wall-clock shortfall versus the FLOP reduction (68% vs 81%) is a reminder that dynamic control flow costs efficiency on real hardware, which matters for a statically scheduled many-PE mapping. See [layer skipping and pruning](../../knowledge/layer-skipping-and-pruning.md). It predates flow-matching VLAs and uses an LSTM head, so it does not directly apply to [SmolVLA](../models/smolvla.md)-style experts.
-
+## Related
 See also: [DySL-VLA](dysl-vla.md), [vla.cpp](../serving/vla-cpp.md), [Guan et al.](../surveys/survey-efficient-vla-guan.md).

@@ -19,7 +19,5 @@ Using OpenVLA as the base, the paper compares action decoding (autoregressive vs
 - **Related-work claim (§I):** FAST tokenization gives 2–13× speedups for autoregressive VLAs but with about 750 ms latency between chunks.
 - **Limitations (§VIII):** L1 regression may struggle with truly multimodal demonstrations; untested for pretraining.
 
-## Relevance to SoftHier-VLA
-Shows that the biggest lever for a 7B VLA is removing sequential decode passes, not raw FLOPs: one prefill pass with a regression head. Feeds [action representation and chunking](../../knowledge/action-representation-and-chunking.md) and [flow-step reduction](../../knowledge/flow-step-reduction.md) (the step-count vs success table above).
-
+## Related
 See also: [FAST](fast-tokenizer.md), [FlashVLA](../serving/flashvla-streaming.md), [LightVLA](../compression/lightvla.md), [VLA-Cache](../compression/vla-cache.md), [BitVLA](../compression/bitvla.md); all build on or compare against OFT.

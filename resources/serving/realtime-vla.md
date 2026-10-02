@@ -20,7 +20,5 @@ A systems paper showing that a π0-class VLA can run at camera frame rate on one
 - **Real-world test (§1):** 100% success on a falling-pen catch task with π0; a small proof of concept.
 - **Future work (§9):** low-precision quantization (all results use BF16), 60–120 FPS, 7B models.
 
-## Relevance to SoftHier-VLA
-Shows how much of VLA latency on a GPU is launch and synchronization overhead (about 4× between naive and tuned), and provides the per-GEMM shape list of π0 that a many-PE mapping must schedule. See [inference workload characterization](../../knowledge/inference-workload-characterization.md). It is the source the [VLA-Perf](vla-perf.md) roofline is validated against.
-
+## Related
 See also: [FlashVLA](flashvla-streaming.md), [Jetson-PI](jetson-pi.md), [π0](../models/pi0.md).

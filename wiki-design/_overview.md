@@ -1,5 +1,5 @@
 ---
-covers: 62365c513b54
+covers: 77dbbcda3ef5
 ---
 # wiki-design/
 

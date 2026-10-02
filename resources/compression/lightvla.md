@@ -19,7 +19,5 @@ LightVLA prunes visual tokens inside a fine-tuned OpenVLA-OFT using parameter-fr
 - **Variants (§V):** learnable-query LightVLA* pruning at the vision encoder or LLM layer 1–3 also improves on the baseline (96.2–97.0).
 - **Limitations:** LIBERO only, no real-robot evaluation, requires fine-tuning.
 
-## Relevance to SoftHier-VLA
-Learned token counts imply variable sequence lengths at run time, which conflicts with static tile schedules unless padded or bucketed. See [token pruning and caching](../../knowledge/token-pruning-and-caching.md).
-
+## Related
 See also: [VLA-Cache](vla-cache.md), [EfficientVLA](efficientvla.md), [pruned-VLA recovery](pruned-vla-recovery.md).

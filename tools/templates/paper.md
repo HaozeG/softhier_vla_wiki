@@ -13,5 +13,5 @@ sources: []
 ## Key claims
 <!-- - Claim, with the section/figure/table it comes from. -->
 
-## Relevance to SoftHier-VLA
-<!-- How this bears on our work; link the `knowledge/` notes it informs. -->
+## Related
+<!-- Optional. See-also links to other `resources/` notes only. No discussion of our project here: that goes in `knowledge/` (decision 0010). -->

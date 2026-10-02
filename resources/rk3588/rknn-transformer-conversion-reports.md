@@ -14,7 +14,6 @@ Community reports show that vision transformers are the fragile part of a VLA on
 - **Silent wrong outputs (rknn-toolkit2 issue 460):** a ViT-based tracker converted on RK3588 with toolkit 2.3.2 at FP16 (203 ONNX operators reduced to 83 RKNN operators, including 12 fused scaled-dot-product attention and 14 fused norm operators) produced degraded results versus the ONNX model; the reporter suspected FP16 rounding in fused Erf/Softmax/ReduceMean/Pow/Sqrt. No maintainer response was recorded.
 - **CNN contrast (rknn_model_zoo issue 454, community benchmark on a Vicharak Axon RK3588):** YOLOv8n INT8 with three cores runs 199 / 330 / 649 FPS at 640 / 480 / 320 input; INT8 costs 0.5–1.5 mAP against FP32 on CPU (for example YOLOv8n 35.9 vs 37.3 at 640), with zero-copy input and hardware decode and resize.
 - **Related pitfalls from the SO-ARM101 ACT port:** LayerNorm-fusion crashes and silent input reordering ([robot-policy reports](rk3588-robot-policy-reports.md)).
-- **Relevance:** SmolVLA's vision tower is a SigLIP; the fp16 vision path used by Rockchip and community VLM ports ([measurements](rk3588-vlm-llm-measurements.md)) avoids the INT8 outlier problem at the cost of speed. Validate every converted graph against ONNX Runtime before trusting latency.
 - **Trust level:** low; single engineer's blog and user-filed issues.
 
-See also: [Rockchip toolchain](rockchip-rknn-rkllm-toolchain.md), [RK3588 deployment note](../../knowledge/rk3588-vla-deployment.md).
+See also: [Rockchip toolchain](rockchip-rknn-rkllm-toolchain.md).

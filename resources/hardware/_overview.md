@@ -1,5 +1,5 @@
 ---
-covers: 6da99b3c5c85
+covers: 7daf33a65ecc
 ---
 # resources/hardware/
 

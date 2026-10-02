@@ -19,7 +19,5 @@ A CPU inference engine (SIMD micro-kernels, per-process weight packing, per-epis
 - **Real robots:** SmolVLA served from an Apple M4 or a Ryzen on a UR10e: 12/20 successes each, with round-trip times 1177 and 2343 ms (about 0.5–1.0 s above engine latency due to transport).
 - **Limitations (§VIII):** models up to 450M; no GPU, NPU, ONNX Runtime or OpenVINO comparison; medians rather than tails; one 90 s thermal soak; one LIBERO seed.
 
-## Relevance to SoftHier-VLA
-Provides the lowest-compute measured point in this wiki for SmolVLA (8.2 s per 50-action chunk on a Pi 5 CPU) and a simple feasibility rule for chunked policies. It shows the action-supply view: a slow query can still sustain control if the chunk is long enough. See [edge hardware and the 10 TOPS gap](../../knowledge/edge-hardware-and-the-10-tops-gap.md) and [serving methods](../../knowledge/serving-methods.md).
-
+## Related
 See also: [vla.cpp](vla-cpp.md), [SmolVLA](../models/smolvla.md), [LeRobot async docs](lerobot-async-inference-docs.md).

@@ -19,7 +19,5 @@ TinyVLA is one of the first explicit efforts at a small, fast VLA. It builds sub
 - **Ablation (Table V):** diffusion head 86–98% vs ACT head 8–23% vs MLP head 0%.
 - **Limitations implied:** evaluations are task-specific fine-tunes on a handful of tasks; no cross-embodiment pretraining, which SmolVLA later cites as limiting generalization.
 
-## Relevance to SoftHier-VLA
-Historical precursor to [SmolVLA](smolvla.md) and evidence that a decode-free action head, not just a smaller LLM, dominates the latency win. See [VLA architecture overview](../../knowledge/vla-architecture-overview.md).
-
+## Related
 See also: [Octo](octo.md), [OpenVLA](openvla.md), [SmolVLA](smolvla.md).

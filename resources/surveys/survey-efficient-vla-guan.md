@@ -18,8 +18,7 @@ A survey of VLA efficiency organized along the inference pipeline: model archite
 - **Inference (§6.2):** autoregressive decoding is sequential; diffusion needs many denoising steps. Parallel/NAR alternatives: OpenVLA-OFT (bidirectional attention, continuous L1 regression), Spec-VLA (relaxed speculative decoding), PD-VLA (Jacobi), CEED-VLA (consistency distillation and early exit).
 - **Cloud-edge partitioning (§3):** future designs should consider lightweight fast subsystems locally and heavy reasoning in the cloud, accounting for latency, bandwidth and privacy.
 - **Stated gap (§6.3):** most VLA efficiency methods are borrowed from VLM work and rarely address robotics-specific needs (temporal consistency, execution latency).
+- **Source type:** secondary survey; numbers should be checked against the primary papers.
 
-## Relevance to SoftHier-VLA
-Cross-check for [VLA efficiency taxonomy](../../knowledge/vla-efficiency-taxonomy.md). Complements [Yu et al.](survey-efficient-vla-yu.md); the two overlap heavily, so cite primary papers for any number. Its claim that most latency sits in the LLM is refined by [VLA-Perf](../serving/vla-perf.md), which shows the action expert dominating on Jetson Thor for π0.
-
+## Related
 See also: [Yu et al.](survey-efficient-vla-yu.md), [Ma et al.](survey-vla-embodied-ai-ma.md), [Zhong et al.](survey-vla-action-tokenization.md).

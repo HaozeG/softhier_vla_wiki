@@ -18,7 +18,5 @@ RT-2 co-fine-tunes large pretrained VLMs (PaLI-X 5B/55B, PaLM-E 12B) on web visi
 - **Chain of thought (§4.4):** adding a natural-language "Plan" before the action tokens (fine-tuned for a few hundred steps) gives qualitative multi-stage reasoning.
 - **Limitations (§5):** the robot gains no new motion skills beyond the robot data; real-time inference is a bottleneck for high-frequency control; the authors name quantization and distillation as directions for lower-cost hardware.
 
-## Relevance to SoftHier-VLA
-RT-2 defines the first generation of VLA serving: cloud inference at low Hz. It is the historical origin of the discrete-token action design described in [VLA architecture overview](../../knowledge/vla-architecture-overview.md) and [action representation and chunking](../../knowledge/action-representation-and-chunking.md).
-
+## Related
 See also: [OpenVLA](openvla.md), [Octo](octo.md), [Ma et al.](../surveys/survey-vla-embodied-ai-ma.md).

@@ -17,7 +17,5 @@ FAST compresses an action chunk with a discrete cosine transform per dimension, 
 - **Training efficiency (§VI-F):** π0-FAST matches diffusion π0 across generalist tasks (including laundry folding) with about 5× fewer GPU hours; on the large bussing dataset it reaches high performance with 3× fewer steps.
 - **Inference cost (§VI-E):** diffusion π0 predicts a 1 s chunk in about 100 ms on an RTX 4090; π0-FAST needs about 750 ms because it decodes 30–60 tokens through the 2B LLM instead of 10 steps through a 300M expert. The authors defer speculative decoding, quantization and custom kernels to future work.
 
-## Relevance to SoftHier-VLA
-FAST is the reason π0.5 is pretrained with discrete tokens and then switched to a flow-matching expert for inference: cheap training, cheap serving ([π0.5](pi05.md)). For a serving accelerator the take-away is that autoregressive action decoding is dominated by memory-bound decode passes over the full LLM. See [action representation and chunking](../../knowledge/action-representation-and-chunking.md).
-
+## Related
 See also: [OpenVLA](openvla.md), [π0](pi0.md), [OpenVLA-OFT](openvla-oft.md), [Zhong et al.](../surveys/survey-vla-action-tokenization.md).

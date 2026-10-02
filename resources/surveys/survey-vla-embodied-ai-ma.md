@@ -17,7 +17,5 @@ A broad survey that organizes VLA research into three lines: components of VLAs 
 - **Control policies (§III-B):** from CLIPort and BC-Z through transformer policies (RT-1 lineage) to diffusion and large VLAs.
 - **Challenges (§VI):** real-time responsiveness: "current VLA models ... face a tradeoff between speed and capacity" and inference that cannot keep pace generates stale actions; also data scarcity, safety, multi-agent systems and applications.
 
-## Relevance to SoftHier-VLA
-Background reading and the standard reference for terminology used in [VLA architecture overview](../../knowledge/vla-architecture-overview.md). It predates most efficiency and edge-serving work, so use it for concepts, not for numbers. It is a secondary source.
-
+## Related
 See also: [Zhong et al.](survey-vla-action-tokenization.md), [Yu et al.](survey-efficient-vla-yu.md), [Guan et al.](survey-efficient-vla-guan.md).

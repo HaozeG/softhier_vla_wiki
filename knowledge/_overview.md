@@ -1,11 +1,12 @@
 ---
-covers: 451bd7eeed6c
+covers: 38d374e4bb24
 ---
 # knowledge/
 
 Synthesis for VLA serving on edge hardware, each note citing `resources/` notes. Start with the overview.
 
 - [VLA edge serving overview](vla-edge-serving-overview.md) — start here: findings, reading path, trust guide
+- [Implications for SoftHier-VLA](softhier-design-implications.md) — what the sources mean for our design: mapping, precision, serving, targets
 - [VLA architecture overview](vla-architecture-overview.md) — components, action heads, reference models
 - [Action representation and chunking](action-representation-and-chunking.md) — tokens vs regression vs flow; chunk size
 - [SmolVLA](smolvla.md) — the reference small VLA and its measured latencies

@@ -24,4 +24,4 @@ Unitree's public pages describe the compute of its quadruped (Go2) and humanoid 
 - **What PC2 hosts (`xr_teleoperate`, first-party).** Teleoperation runs on a host PC with a default `--frequency` of 30 Hz; PC2 (192.168.123.164) runs the camera image service (`teleimager`, with a WebRTC option) and hand-control services (Inspire, BrainCo, Dex1-1 gripper); a `--headless` option is for running the program on PC2 itself. With `--motion` the teleoperation program runs alongside the robot's own motion control program (Regular mode only), otherwise the robot is in debug mode.
 - **Not found in these sources:** the built-in controller's own loop rate, NPU capability of the built-in processor (a third-party teardown names the RK3588S for the Go2), and any rate for the Go2 (the examples read cover the G1, H1 and H1_2).
 
-See also: [AgiBot compute](agibot-robot-compute.md), [robot compute partitioning](../../knowledge/robot-compute-partitioning.md), [RK3588 platform](../rk3588/rk3588-platform-specs.md).
+See also: [AgiBot compute](agibot-robot-compute.md), [RK3588 platform](../rk3588/rk3588-platform-specs.md).
