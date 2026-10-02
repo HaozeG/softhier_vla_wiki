@@ -13,19 +13,27 @@ The figures are approximate and illustrative: they are those of SmolVLA, a small
 ## Diagram
 ```text
 ONE CALL (repeats whenever the queue runs low)
-+--------------------------+                  +------------------------------+
-| ROBOT                    |  images, text,   | 1. PREFIX PASS, once         |
-| 3 camera images          |  ------------->  | model makes 241 tokens:      |
-| instruction, joint state |  joint state     | 3x64 + 48 + 1                |
-+--------------------------+                  | 16 LLM layers: keys+values   |
-        ^                                     +------------------------------+
-        |                                                     |
-        | 1 action per step                                   | keys + values
-        |                                                     v
++--------------------------+                  +----------------------------+
+| ROBOT                    |                  | VISION ENCODER             |
+| 3 camera images          | -- 3 images -->  | 64 tokens per image        |
+| instruction, joint state |                  |                            |
++--------------------------+                  +----------------------------+
+  ^           |                                             |
+  |           |                                             | 3 x 64 tokens
+  |           |                                             v
+  |           |                               +----------------------------+
+  |           +-- text 48 + state 1 tokens -->| 1. PREFIX PASS, once       |
+  |                                           | 241 tokens in:             |
+  | 1 action per step                         | 3x64 + 48 + 1              |
+  |                                           | 16 LLM layers: keys+values |
+  |                                           +----------------------------+
+  |                                                         |
+  |                                                         | keys + values
+  |                                                         v
 +--------------------------+                +-----------------------+
-| 3. ACTION QUEUE          |  50 actions    | 2. EXPERT STEP        |---+
-| 50 actions, ~1.7 s       |  <-----------  | 50 noisy actions in,  |   | x10
-| at 30 Hz                 |                | better 50 actions out |<--+
+| 3. ACTION QUEUE          |                | 2. EXPERT STEP        |---+
+| 50 actions, ~1.7 s       | 50 actions     | 50 noisy actions in,  |   | x10
+| at 30 Hz                 | <-----------   | better 50 actions out |<--+
 +--------------------------+                +-----------------------+
 
 While the queue drains the robot keeps moving; the next call starts

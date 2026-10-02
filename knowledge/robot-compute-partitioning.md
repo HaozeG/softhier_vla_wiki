@@ -6,27 +6,36 @@ sources: [resources/hardware/unitree-robot-compute.md, resources/hardware/agibot
 # Robot compute partitioning: what runs where on commercial robots
 
 ## Summary
-Commercial robots that publish their hardware separate the fast, deterministic joint control from heavier AI, and the split follows model size. Most published designs use a CPU-class control side (an 8-core CPU on Unitree; dual RK3588 on AgiBot's X2, though sources disagree on their role) and put large AI models on a separate NVIDIA Jetson (Orin NX, AGX Orin, or Thor), optional on Unitree's EDU models and standard on AgiBot's research and next-generation robots. Small walking policies do not need the second tier: AgiBot's open X1 runs its walking policy and its 1 kHz joint drivers in one process on one x86 controller, and Unitree's examples run the policy on a plain computer. The RK3588's 6-TOPS NPU is best evidenced for CNN vision, small language models and ACT-style policies, not for a full VLA. Marketing pages give no software map or control rates, but the vendors' open code does. Unitree has two separate examples: an SDK example that sends motor commands every 2 ms, and a walking-policy example that runs at 50 Hz. AgiBot's open X1 stack uses a 1 kHz control setting on an x86 controller. AgiBot's GO-1 manipulation model is offered as a remote policy server because robots "may not have powerful GPUs". These are example-code settings for the G1, H1, H1_2 and X1, not measurements of the shipped controllers, and they do not show which processor closes the joint loop on a Unitree robot.
+Commercial robots that publish their hardware separate fast, deterministic joint control from heavier AI. The control side is a CPU-class unit (an 8-core CPU on Unitree, dual RK3588 on AgiBot's X2), and large models sit on a separate NVIDIA Jetson or on a remote server. Small walking policies run beside the joint drivers or on a plain computer, so they do not need the second tier.
+- Marketing pages give no software map or control rates; the vendors' open code does.
+- Unitree's examples send motor commands every 2 ms (SDK) and run a walking policy at 50 Hz (training repository).
+- AgiBot's open X1 runs its walking policy and its 1 kHz joint drivers in one process; its GO-1 manipulation model is offered as a remote policy server because robots "may not have powerful GPUs".
+- The RK3588's 6-TOPS NPU is best evidenced for CNN vision, small language models and ACT-style policies, not for a full VLA.
+- All rates are example-code settings for the G1, H1, H1_2 and X1, not measurements of shipped controllers, and they do not show which processor closes the joint loop on a Unitree robot.
 
 ```text
-+--------------------------------------------------------------------------+
-| AI TIER: large perception, language and VLA models, low rate             |
-| Jetson Orin NX / AGX Orin / Thor,  or  a remote GPU server (GO-1 option) |
-| GO-1: one chunk of 30 actions per call                                   |
-+--------------------------------------------------------------------------+
-                                      |
-                                      |  action chunks (inferred interface),
-                                      |  about one call per second in GO-1
-                                      v
-+--------------------------------------------------------------------------+
-| CONTROL SIDE: deterministic, low latency, small policies (example rates) |
-| 8-core CPU, RK3588 (<= 6 TOPS NPU), or x86 real-time controller          |
-|   walking policy    50 Hz   (Unitree example, on an external computer)   |
-|   motor commands    every 2 ms (Unitree G1 SDK example)                  |
-|   joint drivers     up to 1 kHz                                          |
-| AgiBot X1: policy and 1 kHz drivers share one process on one x86 box     |
-+--------------------------------------------------------------------------+
+What the open code reports between parts (example settings)
+
+Unitree G1 (DDS message bus)
++-------------------------+                        +-------------------------+
+| host computer or PC2    | rt/lowcmd: motor       | motion-control computer |
+| walking policy, 50 Hz   | commands, 2 ms ->      | (PC1, closed program)   |
++-------------------------+ <- rt/lowstate: state  +-------------------------+
+
+AgiBot X1
++-------------------------+                        +-------------------------+
+| x86 main controller     | EtherCAT; joint        | domain control units    |
+| policy and joint drivers| commands, 1 kHz ->     | 3 CAN-FD buses each     |
+| in one process          |                        |                         |
++-------------------------+                        +-------------------------+
+
+AgiBot GO-1
++-------------------------+                        +-------------------------+
+| robot                   | <- chunk of H = 30     | remote policy server    |
++-------------------------+                        | (RTX 4090 example)      |
+                                                   +-------------------------+
 ```
+The drawing shows what the open code reports between parts, with the rates above; it is not a complete architecture. Sources: [Unitree](../resources/hardware/unitree-robot-compute.md), [AgiBot](../resources/hardware/agibot-robot-compute.md).
 
 ## Details
 **Pattern by vendor (see the source notes for the caveats)**

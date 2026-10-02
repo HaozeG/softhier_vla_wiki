@@ -9,19 +9,18 @@ sources: [resources/models/smolvla.md, resources/models/gr00t-n1.md, resources/c
 VLA backbones are redundant in depth: several groups remove or skip a large fraction of LLM layers with little accuracy loss. **Static** removal (SmolVLA's first half of the LLM, GR00T N1's 12th-layer features, CKA-guided pruning before fine-tuning) gives a smaller fixed graph. **Dynamic** methods (DeeR-VLA, DySL-VLA, MoLe-VLA) skip layers per step but add control flow whose wall-clock gain trails the FLOP reduction. Aggressive weight (width) pruning breaks a VLA completely unless it is recovered by distillation. Removing layers is faster; narrowing them keeps accuracy better.
 
 ```text
-shrink the backbone
-+-- remove depth  -> lower latency
-|   +-- static, before deployment
-|   |     SmolVLA first half, GR00T N1 12th-layer features, CLP,
-|   |     EfficientVLA; fixed graph; 30-50% of layers is well
-|   |     supported, beyond that it needs recovery
-|   +-- dynamic, per step
-|         DeeR-VLA exits, DySL-VLA, MoLe-VLA
-|         wall-clock gain trails the FLOP gain (extra control flow)
-+-- remove width (prune weights)  -> better accuracy (after recovery)
-      collapses accuracy unless recovered by distillation
+shrink the backbone (what each branch acts on, then what is reported)
++-- remove depth (layers)
+|   +-- static, before deployment: SmolVLA, GR00T N1, CLP, EfficientVLA
+|   |     reported: fixed graph; CLP success flat to about half the layers
+|   +-- dynamic, per input: DeeR-VLA, DySL-VLA, MoLe-VLA
+|         reported: wall-clock gain below the FLOP gain (control flow)
++-- remove width (prune weights inside layers): pruned-VLA recovery
+      reported: accuracy collapses at heavy pruning without distillation;
+      with recovery, higher success than depth removal at equal cut,
+      but a smaller speedup
 
-either way: the action head (fixed flow steps) sets a latency floor
+in both: the action head's fixed flow steps set a latency floor
 ```
 
 ## Details
@@ -40,10 +39,10 @@ either way: the action head (fixed flow steps) sets a latency floor
 - Width vs depth at matched compression: width gives 2.8–33 points higher success; depth gives lower latency (1.31–1.66× vs 1.14–1.18× on an H100). On Jetson Thor the 72%-width-pruned model ran 2.23× faster than the teacher (362 → 162 ms) and used 62% less memory ([pruned VLA recovery](../resources/compression/pruned-vla-recovery.md)).
 - Other pruning-recovery work (RLRC: pruning plus supervised and RL recovery; GLUESTICK: training-free low-rank correction) is cited by the surveys and by [pruned VLA recovery](../resources/compression/pruned-vla-recovery.md) but was not read here.
 
-**Practical reading**
-- Redundant layers exist in π0, GR00T-N1.5 and SmolVLA, so up to about 30–50% depth reduction is a well-supported starting point; beyond that, recovery training is required.
+**What the sources report overall**
+- Redundant layers are reported in π0, GR00T-N1.5 and SmolVLA: CLP finds success flat up to about half the layers pruned before fine-tuning; for width pruning, hidden-state distillation matters beyond heavy pruning (see above).
 - The action head sets a latency floor: with a fixed number of DDIM steps, latency stopped falling after 72% backbone reduction ([pruned VLA recovery](../resources/compression/pruned-vla-recovery.md)); see [flow-step reduction](flow-step-reduction.md).
-- For statically scheduled hardware, prefer static depth or width reduction over dynamic exits; dynamic schemes need batching-free control flow and were measured only on GPUs.
+- Dynamic schemes were measured only on GPUs, and their wall-clock gain trails their FLOP gain (DeeR-VLA, DySL-VLA above).
 - Most experiments use LIBERO/CALVIN/SIMPLER, one seed for some, and 7B backbones; real-robot evidence is small (10–200 episodes).
 
 ## Open questions

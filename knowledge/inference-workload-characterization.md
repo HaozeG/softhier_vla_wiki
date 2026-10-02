@@ -70,6 +70,10 @@ RTX 4090, pi0, 3 cameras: measured latency vs roofline  (1 # = 3 ms)
 The first drawing is the phase structure of the Summary, the second is the first two bullets of Details, and the third is the 4090 row of the table below.
 
 ## Details
+**Why the phases differ.** In every flow step the expert re-reads all of its weights but applies them to only the short action chunk (50 action tokens in SmolVLA), so few tokens share each weight read and the arithmetic per byte is low. The prefix pass applies each weight it reads to all image and text tokens at once (hundreds of tokens, for example the prefix described in [SmolVLA](smolvla.md)), so the arithmetic per byte is high. In VLA-Perf's π0 numbers this is an intensity of about 54 for the expert against 321 for vision and 543 for the vision-language model (below).
+
+**Which phase is longest depends on the device and the model.** In VLA-Perf's roofline for π0 the expert is shorter than the vision-language model on an RTX 4090 and longer on Jetson Thor; in the XPU study's measured profile the expert takes about twice the vision-language model's time. The numbers are in the bullets below; the cases differ in model, device and method and are not reconciled here.
+
 **Phase structure (π0-class, 3 cameras, 800 tokens; [VLA-Perf](../resources/serving/vla-perf.md))**
 - Roofline latency (Table 3: 800 tokens, chunk 50, 10 steps): Jetson Thor vision 6.1 ms + VLM 20.3 ms + action expert 26.2 ms = 52.6 ms (19.0 Hz); RTX 4090 4.0 + 19.8 + 7.3 = 31.1 ms; A100 16.2 ms; H100 6.2 ms. The 30.4 ms in the table below is the same paper's Table 1 (empty prompt, chunk 63), a different configuration.
 - Operator intensity (FLOPs/byte): vision 321, VLM 543, action expert 54. Balance points: 164 (RTX 4090), 1481 (Thor, with 273 GB/s LPDDR5X), so on Thor even the VLM is memory-bound.

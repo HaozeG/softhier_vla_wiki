@@ -10,30 +10,27 @@ How a VLA represents actions decides both its accuracy and its serving cost. Per
 
 ## Diagram
 ```text
-Sequential work after the VLM prefix pass, by action representation
+Sequential passes after the VLM prefix pass, per chunk
 
- representation            work after the prefix       passes
- binning (RT-2, OpenVLA)   prefix -> tok -> tok -> ... 7-8 per action
- FAST tokens               prefix -> tok -> tok -> ... 30-60 per chunk
- regression (OFT)          prefix + empty action       1 per chunk (D x K)
-                           queries -> one pass
- flow expert (pi0 ...)     prefix -> expert step x T   T = 4-10 per chunk
+representation            tokens per action  sequential passes
+binning (RT-2, OpenVLA)   7-8                one per token, per action
+FAST tokens               not applicable     one per token: 30-60 per chunk
+regression (OFT)          not applicable     1 per chunk (all D x K values)
+flow expert (pi0 ...)     not applicable     T = 4-10 per chunk
+
+One chunk of H = 50 predicted actions (pi0; 1 char = 1 action)
+
+|================---------.........................|
+                ^        ^
+              16       25
+
+= executed in all pi0 setups (16 actions; 20 Hz robots), open loop
+- also executed in the 50 Hz setups (25 actions in all)
+. predicted, not executed
+shorter execution: more reactive, more model calls; longer: fewer calls,
+staler actions
 ```
-
-```text
-One chunk of H predicted actions (pi0: H = 50, 1.67 s at 30 Hz; 1 char = 1)
-
- |<-------- H = 50 actions ------------------------->|
- |=========================.........................|
-                 ^        ^
-                 16       25
-
-  = executed before the next inference; pi0 executes 16-25 actions, open loop
-  . predicted, not executed
-  shorter execution: more reactive, more model calls
-  longer execution: fewer calls, staler actions
-```
-The first drawing is "Representations" below and the second is "Chunk size and horizon".
+The table is "Representations" below and the bar is "Chunk size and horizon".
 
 ## Details
 **Representations**
@@ -45,7 +42,7 @@ The first drawing is "Representations" below and the second is "Chunk size and h
 - **Broader taxonomy:** the [tokenization survey](../resources/surveys/survey-vla-action-tokenization.md) lists eight action-token types; raw actions are the ones relevant to serving, with the caveats of data scarcity, latency and weak cross-embodiment transfer.
 
 **Chunk size and horizon**
-- π0 uses H = 50 and executes 16–25 actions open-loop (no new observation is taken while they run) before re-inferring; temporal ensembling hurt performance ([π0](../resources/models/pi0.md)). GR00T N1 uses H = 16; OFT uses K = 8 (LIBERO) and 25 (ALOHA); SmolVLA n = 50.
+- π0 uses H = 50 and executes 16 actions on its 20 Hz robots and 25 on its 50 Hz robots, open-loop (no new observation is taken while they run), before re-inferring; temporal ensembling hurt performance ([π0](../resources/models/pi0.md)). GR00T N1 uses H = 16; OFT uses K = 8 (LIBERO) and 25 (ALOHA); SmolVLA n = 50.
 - SmolVLA ablation on LIBERO (from scratch, frozen VLM): chunk 1 → 50.0, 10 → 84.0, 30 → 78.5, 50 → 80.3, 100 → 74.5; executing more steps before re-observing lowers success (1 → 80.3, 10 → 82.8, 30 → 70.8, 50 → 51.8) ([SmolVLA](../resources/models/smolvla.md)).
 - In [VLA-Perf](../resources/serving/vla-perf.md), chunk size barely changes latency (50 → 250 adds only 11% end-to-end for π0) because the expert is memory-bound, so a longer chunk is nearly free compute-wise; the cost is staleness and lower reactivity.
 - A chunk lets a slow model keep the robot moving: with 50 actions at 30 Hz a chunk lasts 1.67 s. The feasibility conditions for a given latency are in [serving methods](serving-methods.md).

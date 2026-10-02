@@ -115,6 +115,7 @@ Every glossary term in alphabetical order, with its scope and the group file tha
 | roofline                                        | [Hardware and performance](hardware-and-performance.md) | convention |
 | RT-2                                            | [Evaluation and models](evaluation-and-models.md)       | field      |
 | RTX 4090, A100, H100                            | [Evaluation and models](evaluation-and-models.md)       | field      |
+| s                                               | [Symbols and conventions](symbols-and-conventions.md)   | convention |
 | self-attention                                  | [Model and attention](model-and-attention.md)           | field      |
 | SigLIP, DINOv2, PaliGemma, Prismatic            | [Evaluation and models](evaluation-and-models.md)       | field      |
 | SIMPLER                                         | [Evaluation and models](evaluation-and-models.md)       | field      |
