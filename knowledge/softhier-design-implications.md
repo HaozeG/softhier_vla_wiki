@@ -9,17 +9,18 @@ sources: [resources/compression/efficientvla.md, resources/compression/clp-layer
 This note collects what the ingested sources mean for our project: designing a VLA serving mapping for SoftHier. The source notes in `resources/` only record what each source says; the reading for SoftHier-VLA is done here, grouped by design question. Five conclusions carry most of the weight: (1) the action-expert loop and decode phases are memory-bound, so memory-first optimization is the safer default; (2) run-time control flow (dynamic depth, learned token counts) conflicts with statically scheduled tile mappings unless padded or bucketed; (3) weight-only low-bit quantization gains little without a native low-bit datapath; (4) the action head should stay at higher precision than the language model; (5) no source measures a flow-matching VLA on a 10 TOPS-class device, so any budget there is an estimate.
 ## Diagram
 ```text
-Source finding                     Design question it feeds
----------------------------------  ----------------------------------
-phase timings, roofline, Jetson    where is time spent?  -> memory-first
-  and XPU measurements                                      mapping
-token pruning, caching, dynamic    run-time control flow  -> static tile
-  depth, static pruning               vs fixed shapes          schedules
-quantization results               datapath and precision -> low-bit
-                                                              support?
-async, chunk stitching, streaming  serving schedule       -> latency
-                                                              hiding
-model recipes and sizes            reference workload     -> SmolVLA-class
+source finding                design question it feeds    leads to
+-------------------------- -- ------------------------ -- ----------------------
+phase timings, roofline,   -> where is time spent?     -> memory-first mapping
+Jetson and XPU
+measurements
+token pruning, caching,    -> run-time control flow    -> static tile schedules
+dynamic depth,                vs fixed shapes
+static pruning
+quantization results       -> datapath and precision   -> low-bit support?
+async, chunk stitching,    -> serving schedule         -> latency hiding
+streaming
+model recipes and sizes    -> reference workload       -> SmolVLA-class
 ```
 
 ## Details

@@ -11,10 +11,10 @@ In flow- or diffusion-based VLAs the action expert runs 4–10 (Diffusion Policy
 ```text
 chunk latency = P (vision + prefix, once) + T x E (T expert steps)
 
- baseline   |-- P --|E|E|E|E|E|E|E|E|E|E|    T = 10
- fewer      |-- P --|E|E|E|E|E|             T = 5
- cached     |-- P --|E|e|e|e|e|E|e|e|e|e|    e = reused features
- regress    |-- P --|E|                      one pass, no steps
+ baseline   |-- P --|E|E|E|E|E|E|E|E|E|E|           T = 10
+ fewer      |-- P --|E|E|E|E|E|                     T = 5
+ cached     |-- P --|E|e|e|e|e|E|e|e|e|e|           e = reused features
+ regress    |-- P --|E|                             one pass, no steps
  streaming  each pass advances several chunks at staggered noise levels one
             step and emits one chunk; the T steps are shared across calls
 ```

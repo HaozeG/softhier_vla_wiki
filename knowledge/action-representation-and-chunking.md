@@ -12,22 +12,26 @@ How a VLA represents actions decides both its accuracy and its serving cost. Per
 ```text
 Sequential work after the VLM prefix pass, by action representation
 
- binning (RT-2, OpenVLA)  prefix -> tok -> tok -> ... 7-8 tokens per action
- FAST tokens              prefix -> tok -> tok -> ... 30-60 tokens per chunk
- regression (OFT)        prefix + empty action queries -> ONE pass -> D x K
- flow expert (pi0 ...)   prefix -> expert step x T (4-10) over the whole chunk
-
- passes after the prefix: 7-8 per action | 30-60 per chunk | T per chunk | 1
+ representation            work after the prefix       passes
+ binning (RT-2, OpenVLA)   prefix -> tok -> tok -> ... 7-8 per action
+ FAST tokens               prefix -> tok -> tok -> ... 30-60 per chunk
+ regression (OFT)          prefix + empty action       1 per chunk (D x K)
+                           queries -> one pass
+ flow expert (pi0 ...)     prefix -> expert step x T   T = 4-10 per chunk
 ```
 
 ```text
-One chunk of H predicted actions (pi0: H = 50, 1.67 s at 30 Hz)
+One chunk of H predicted actions (pi0: H = 50, 1.67 s at 30 Hz; 1 char = 1)
 
- |<------------------------- H actions ------------------------>|
- |= executed before the next inference =|... predicted, not executed ....|
-   pi0: 16-25 actions, open loop
- shorter execution: more reactive, more model calls
- longer execution: fewer calls, staler actions
+ |<-------- H = 50 actions ------------------------->|
+ |=========================.........................|
+                 ^        ^
+                 16       25
+
+  = executed before the next inference; pi0 executes 16-25 actions, open loop
+  . predicted, not executed
+  shorter execution: more reactive, more model calls
+  longer execution: fewer calls, staler actions
 ```
 The first drawing is "Representations" below and the second is "Chunk size and horizon".
 

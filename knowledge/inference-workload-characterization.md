@@ -44,10 +44,10 @@ tokens, pi0-FAST 30-60 tokens).
 Which limit applies: operator intensity (FLOP/byte) vs a device's balance point
 (spacing not to scale)
 
-  54          164          321        543               1481
-  |           |            |          |                 |
-  expert      RTX 4090     vision     VLM               Jetson Thor
-              balance                                   balance
+  54            164           321           543           1481
+  |             |             |             |             |
+  expert        RTX 4090      vision        VLM           Jetson Thor
+                balance                                   balance
 
   Left of a balance point = memory-bound, right = compute-bound.
   RTX 4090: expert is memory-bound; vision and VLM are compute-bound.
@@ -57,11 +57,11 @@ Which limit applies: operator intensity (FLOP/byte) vs a device's balance point
 ```text
 RTX 4090, pi0, 3 cameras: measured latency vs roofline  (1 # = 3 ms)
 
-  naive PyTorch  113.9 |######################################
-  openpi JAX      67.6 |#######################
-  tuned Triton    36.8 |############
-  roofline        30.4 |##########    VLA-Perf bound
-  roofline        26.7 |#########     Realtime-VLA bound
+  naive PyTorch 113.9 |######################################
+  openpi JAX     67.6 |#######################
+  tuned Triton   36.8 |############
+  roofline       30.4 |##########    VLA-Perf bound
+  roofline       26.7 |#########    Realtime-VLA bound
 ```
 The first drawing is the phase structure of the Summary, the second is the first two bullets of Details, and the third is the 4090 row of the table below.
 
@@ -73,6 +73,7 @@ The first drawing is the phase structure of the Summary, the second is the first
 - SM utilization (a measured profile in [XPU characterization](../resources/serving/vla-xpu-characterization.md)): VLM over 90%, action expert 20–40%, and the expert takes about 2× the VLM's latency. This differs from the roofline above, where the expert is shorter than the VLM on the RTX 4090 (7.3 vs 19.8 ms) and 1.3× longer on Thor (26.2 vs 20.3 ms); the profile's device and configuration are not matched to those rows.
 
 **Scaling and knobs ([VLA-Perf](../resources/serving/vla-perf.md))**
+- The step count T of the expert loop ranges from 4 (GR00T N1) to 10 (π0, SmolVLA) ([flow-step reduction](flow-step-reduction.md)). In π0 the prefix keys and values are computed once and reused by every step ([architecture overview](vla-architecture-overview.md)).
 - Latency scales about linearly with parameters per component (π0-L 9.1B: 3.9 Hz on Thor); flow steps scale the expert linearly (10 → 50 steps: 5× expert, 2.15× total); chunk size barely matters; long KV context limits Thor/4090 to about 100 past timesteps.
 - Split of time varies by model: on an RTX 5070, SmolVLA vision 38% + backbone 14%; π0 vision 21% + backbone 54%; expert nearly half of SmolVLA and GR00T-N1.6 time even with cached features ([vla.cpp](../resources/serving/vla-cpp.md)). For a 7B CogACT profile on an A40: LLM 134.5 ms, DiT 51.5 ms, vision 24.9 ms ([EfficientVLA](../resources/compression/efficientvla.md)).
 

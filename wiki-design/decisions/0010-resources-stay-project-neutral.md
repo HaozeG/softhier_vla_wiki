@@ -10,13 +10,21 @@ Every paper-type source note carried a `## Relevance to SoftHier-VLA` section (3
 
 ## Decision
 ```text
-resources/<topic>/       what the source says (summary, claims, caveats)
-        |                no SoftHier-VLA discussion, no links to knowledge/
++--------------------------------------------------------------------------+
+| resources/<topic>/  what the source says (summary, claims, caveats)      |
+| no SoftHier-VLA discussion, no links to knowledge/                       |
++--------------------------------------------------------------------------+
+        |
         v  cited by
-knowledge/               what the sources mean for SoftHier-VLA
-        |                (incl. softhier-design-implications.md)
++--------------------------------------------------------------------------+
+| knowledge/  what the sources mean for SoftHier-VLA                       |
+| (incl. softhier-design-implications.md)                                  |
++--------------------------------------------------------------------------+
+        |
         v  informs
-memories/decisions/      what we chose
++--------------------------------------------------------------------------+
+| memories/decisions/  what we chose                                       |
++--------------------------------------------------------------------------+
 ```
 - A `resources/` note holds only the source's own content: `Summary`, `Key claims` (with section, figure or table refs), and its scope caveats (device, precision, evidence tier). It may link to other `resources/` notes under `## Related`.
 - It contains no "relevance", "implications" or "for us" text and no links into `knowledge/`; links run one way, from `knowledge/` to `resources/`.

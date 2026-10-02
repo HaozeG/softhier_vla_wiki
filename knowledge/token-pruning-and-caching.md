@@ -10,19 +10,17 @@ Visual tokens dominate a VLA's prefix sequence, so pruning or reusing them is a 
 
 ```text
 visual tokens per frame?
-|
 +-- 64 (SmolVLA, GR00T N1: pixel shuffle, no tiling)
 |     little left to prune
-|
 +-- 256-512 (7B OpenVLA family)
-      +-- attention pruning inside one frame (FastV, SparseVLM)
-      |     about 1.0x or slower; disturbs spatial detail
-      +-- reuse static tokens across frames (VLA-Cache)
-      |     no training; needs a relevance filter
-      +-- learned selection (LightVLA)
-      |     fine-tune; variable length conflicts with static shapes
-      +-- any of them: speedup saturates (tokens alone about 1.23x)
-            once LLM weight reads and the action head set the floor
+    +-- attention pruning inside one frame (FastV, SparseVLM)
+    |     about 1.0x or slower; disturbs spatial detail
+    +-- reuse static tokens across frames (VLA-Cache)
+    |     no training; needs a relevance filter
+    +-- learned selection (LightVLA)
+    |     fine-tune; variable length conflicts with static shapes
+    +-- any of them: speedup saturates (tokens alone about 1.23x)
+          once LLM weight reads and the action head set the floor
 ```
 
 ## Details

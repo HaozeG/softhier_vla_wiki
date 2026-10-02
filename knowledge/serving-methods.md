@@ -32,16 +32,16 @@ The request repeats whenever the queue runs low; actions keep popping meanwhile.
 Which family helps: latency l of one call vs control period dt and chunk
 duration n*dt  (n = actions per chunk; spacing not to scale)
 
- 0        dt           n*dt/2              n*dt
- |--------|-------------|-------------------|--------------------------> l
-     A           B               C                      D
+ 0          dt              n*dt/2                n*dt
+ |----------|---------------|---------------------|------------------------> l
+      A             B                  C                       D
 
- A  l < dt             : (1) faster execution is enough
- B  dt <= l <= n*dt/2  : (2) async + (3) stitching; holds even if stale
+ A  l < dt               (1) faster execution is enough
+ B  dt <= l <= n*dt/2    (2) async + (3) stitching; holds even if stale
                          actions are discarded
- C  n*dt/2 < l <= n*dt : (2) async + (3) stitching; holds only if late
+ C  n*dt/2 < l <= n*dt   (2) async + (3) stitching; holds only if late
                          actions are kept (lagged execution)
- D  l > n*dt           : (4) shrink the model, or dual system
+ D  l > n*dt             (4) shrink the model, or dual system
 ```
 The first drawing is family 2 and where the others act; the second is "Choosing a method" below.
 

@@ -13,16 +13,16 @@ Nearly all measured "edge VLA" results are on Jetson Orin or Thor (tens to hundr
 Where VLAs have been measured, by device (vendor compute figures use different
 precisions, so the order is rough)
 
- device (compute, bandwidth)           flow-matching VLA measured?
- Thor       (517 FP8 TFLOPS, 273 GB/s) pi0, pi0.5: yes
- AGX Orin   (275 sparse TOPS, 205 GB/s) pi0, pi0.5: yes
- Ascend 310P (88 TFLOP/s)              SmolVLA ~2 Hz, pi0 ~1.2 Hz (plot)
- Orin Nano  (67 sparse TOPS, 102 GB/s) SmolVLA 358-457 ms per chunk
- - - - - - - - - - - ~10 TOPS class and below - - - - - - - - - - - - - - - - -
- Hailo-8/8L/10H (13-40 TOPS)           no VLA data
- Ascend 310B (10 TFLOP/s, 51.2 GB/s)   ACT only (~10 Hz); no SmolVLA bar
- RK3588     (6 TOPS INT8)              SmolVLA ~5 s per chunk, self-reported
- CPU only   (Pi 5, i9)                 SmolVLA 8.2 s (Pi 5), 2.1 s (i9)
+device          compute, bandwidth           flow-matching VLA measured?
+Thor            517 FP8 TFLOPS, 273 GB/s     pi0, pi0.5: yes
+AGX Orin        275 sparse TOPS, 204.8 GB/s  pi0, pi0.5: yes
+Ascend 310P     88 TFLOP/s                   SmolVLA ~2 Hz, pi0 ~1.2 Hz (plot)
+Orin Nano       67 sparse TOPS, 102 GB/s     SmolVLA 358-457 ms per chunk
+- - - - - - - - - - - ~10 TOPS class and below - - - - - - - - - - - - - - - -
+Hailo-8/8L/10H  13-40 TOPS                   no VLA data
+Ascend 310B     10 TFLOP/s, 51.2 GB/s        ACT only (~10 Hz); no SmolVLA bar
+RK3588          6 TOPS INT8                  SmolVLA ~5 s/chunk, self-reported
+CPU only        Pi 5, i9                     SmolVLA 8.2 s (Pi 5), 2.1 s (i9)
 ```
 Reading rule behind the "10 TOPS gap": the ratio of compute to bandwidth (FLOP/byte), not TOPS, sets which phase limits a device (about 195 for the 310B, 164 for an RTX 4090).
 

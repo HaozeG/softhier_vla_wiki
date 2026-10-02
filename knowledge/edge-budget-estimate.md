@@ -11,15 +11,17 @@ sources: [resources/models/smolvla.md, resources/serving/vla-xpu-characterizatio
 ## Diagram
 ```text
 Roofline time per chunk (estimate): SmolVLA, 3 cameras, 10 TFLOP/s, 51.2 GB/s
-(1 char = 3 ms; ms per phase in the header)
-                 vision encoder 64 | LLM 8 | expert 39 (or 10 on chip)
-expert streams  |#####################|###|#############|  111 ms
-expert on chip  |#####################|###|###|  82 ms
+(1 char = 3 ms)
+
+expert streams   |#####################|###|#############|  111 ms
+expert on chip   |#####################|###|###|  82 ms
+segments: vision encoder 64 ms | LLM 8 ms | expert 39 ms (10 ms on chip)
 
 Latency l against the two supply limits at 30 Hz, n = 50 (1 char = 0.05 s)
+                           0         0.5 s     1 s       1.5 s
 roofline                  |  *  0.11 s
 tuned stack (1.3-1.4x)    |   *  0.15 s
-typical stack (4-9x)      |        ============  0.4 to 1 s
+typical stack (4-9x)      |        =============  0.4 to 1 s
 stale actions dropped: OK |=================  l <= 0.83 s
 queue never empty: OK     |=================================  l <= 1.67 s
 ```

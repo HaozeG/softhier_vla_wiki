@@ -10,16 +10,15 @@ VLA backbones are redundant in depth: several groups remove or skip a large frac
 
 ```text
 shrink the backbone
-|
-+-- remove depth                              -> lower latency
++-- remove depth  -> lower latency
 |   +-- static, before deployment
-|   |     SmolVLA first half, GR00T N1 12th-layer features, CLP, EfficientVLA
-|   |     fixed graph; 30-50% of layers is well supported, beyond needs recovery
+|   |     SmolVLA first half, GR00T N1 12th-layer features, CLP,
+|   |     EfficientVLA; fixed graph; 30-50% of layers is well
+|   |     supported, beyond that it needs recovery
 |   +-- dynamic, per step
 |         DeeR-VLA exits, DySL-VLA, MoLe-VLA
 |         wall-clock gain trails the FLOP gain (extra control flow)
-|
-+-- remove width (prune weights)           -> better accuracy (after recovery)
++-- remove width (prune weights)  -> better accuracy (after recovery)
       collapses accuracy unless recovered by distillation
 
 either way: the action head (fixed flow steps) sets a latency floor

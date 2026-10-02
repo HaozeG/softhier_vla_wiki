@@ -12,20 +12,28 @@ Vision-language-action (VLA) models drive robots from images and instructions. E
 ```text
 Reading path (numbers match "Read in this order")
 
- 1 architecture --> 2 action representation --> 3 SmolVLA
-                                                   |
-                                                   v
- 5 serving methods <-- 4 inference workload (where time goes)
-        |
-        v
- 6 optimization: layer skipping | token pruning | quantization | flow steps
-   (summary table: technique comparison)
-        |
-        v
- 7 hardware: edge hardware and 10 TOPS gap -> edge budget estimate
-             RK3588 deployment, robot compute partitioning
++------------------+    +-------------------------+    +------------------+
+| 1 architecture   |--->| 2 action representation |--->| 3 SmolVLA        |
++------------------+    +-------------------------+    +------------------+
+                                                               |
+                                                               v
+                         +--------------------+    +----------------------+
+                         | 5 serving methods  |<---| 4 inference workload |
+                         +--------------------+    +----------------------+
+                                    |
+                                    v
++------------------------------------------------------------------------------+
+| 6 optimization: layer skipping, token pruning, quantization, flow steps      |
+| (summary table: technique comparison)                                        |
++------------------------------------------------------------------------------+
+                                    |
+                                    v
++------------------------------------------------------------------------------+
+| 7 hardware: edge hardware and 10 TOPS gap -> edge budget estimate            |
+| RK3588 deployment, robot compute partitioning                                |
++------------------------------------------------------------------------------+
 
- 8 taxonomy: maps survey categories onto notes 5 and 6
+8 taxonomy: maps survey categories onto notes 5 and 6
 ```
 Serving cost, per the Summary: vision + prefill (compute-bound), expert loop (memory-bound), software overhead on top.
 

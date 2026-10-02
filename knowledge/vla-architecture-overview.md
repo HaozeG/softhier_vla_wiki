@@ -14,24 +14,26 @@ A vision-language-action (VLA) model maps camera images, a language instruction 
 ```text
 Pipeline (Octo is the exception: no VLM)
 
- images --> vision encoder --> projector --+ visual tokens
-   (SigLIP, or SigLIP + DINOv2)            |
- text --------------------------- tokens --+--> LM backbone ---> action head
- robot state -------------------- tokens --+    whole, or cut:
-                                               SmolVLA: first L/2 layers
-                                               GR00T N1: 12th-layer features
+ images --> vision encoder --> projector -----+ visual tokens
+   (SigLIP, or SigLIP + DINOv2)               |
+ text -------------------------------- tokens +--> LM BACKBONE --> ACTION HEAD
+ robot state ------------------------- tokens +
+                                                   LM backbone: whole, or cut:
+                                                   SmolVLA: first L/2 layers
+                                                   GR00T N1: 12th-layer features
 
 What crosses from the backbone to the action head (axes 1 and 2)
- discrete tokens    nothing: the backbone emits 7-8 action tokens itself
-                    (RT-2, OpenVLA)
- parallel decoding  decoder outputs at empty action queries -> MLP head
-                    (OpenVLA-OFT)
- flow expert        pi0: prefix and action tokens share one attention;
-                         prefix keys and values cached across flow steps
-                    GR00T N1: cross-attention to the VLM tokens
-                    SmolVLA: cross-attention to per-layer keys and values,
-                         interleaved with self-attention
- axis 3, two speeds: slow VLM + fast policy (GR00T N1, Helix)
+
+ discrete tokens      nothing: the backbone emits 7-8 action
+                      tokens itself (RT-2, OpenVLA)
+ parallel decoding    decoder outputs at empty action queries
+                      -> MLP head (OpenVLA-OFT)
+ flow: pi0            prefix and action tokens share one attention;
+                      prefix keys and values cached across flow steps
+ flow: GR00T N1       cross-attention to the VLM tokens
+ flow: SmolVLA        cross-attention to per-layer keys and values,
+                      interleaved with self-attention
+ axis 3, two speeds   slow VLM + fast policy (GR00T N1, Helix)
 ```
 
 ## Details

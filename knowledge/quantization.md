@@ -29,11 +29,14 @@ WHERE TO QUANTIZE (what each part tolerates)
 does a smaller format make it faster?
   memory always shrinks (2-11x)
   native low-bit kernel (tensor-core ternary: ~4x)   -> yes
-  dequantize to bf16 first (8-bit: slower; GGUF 4-bit: 1.1x) -> little or none
-  native int8 path (W8A8 on CPUs: 1.1-2.7x; slower on M4 for some policies)
-  compute-bound phase (vision, prefill)  -> weight-only helps less
-  memory-bound phase (expert loop)       -> helps most, yet it is the phase
-                                            most sensitive to error (inference)
+  dequantize to bf16 first                           -> little or none
+    (8-bit: slower; GGUF 4-bit: 1.1x)
+  native int8 path (W8A8 on CPUs: 1.13-2.7x;         -> yes, mostly
+    slower on M4 for some policies)
+  compute-bound phase (vision, prefill)              -> weight-only helps less
+  memory-bound phase (expert loop)                   -> helps most, yet it is
+                                                        the phase most sensitive
+                                                        to error (inference)
 ```
 
 ## Details

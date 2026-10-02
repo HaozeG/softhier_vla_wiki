@@ -37,6 +37,46 @@ class Canvas:
         for y in range(y0, y1):
             self.put(x, y, ch)
 
+    def lines(self, x, y, lines):
+        """Several text rows starting at column x, row y; returns the next free row."""
+        for j, line in enumerate(lines):
+            self.put(x, y + j, line)
+        return y + len(lines)
+
+    def table(self, x, y, rows, widths, gap=2):
+        """Columns at computed positions. A cell is a string or a list of lines (wrapped cell).
+        Returns the next free row."""
+        for row in rows:
+            cells = [c if isinstance(c, list) else [c] for c in row]
+            for j in range(max(len(c) for c in cells)):
+                cx = x
+                for k, c in enumerate(cells):
+                    if j < len(c):
+                        self.put(cx, y + j, c[j])
+                    cx += widths[k] + gap
+            y += max(len(c) for c in cells)
+        return y
+
+    def bar(self, x, y, value, per_char, ch="#"):
+        """Horizontal bar, one `ch` per `per_char` units (rounded)."""
+        self.put(x, y, ch * round(value / per_char))
+
+    def tree(self, x, y, node):
+        """node = (label, notes, children); notes are lines under the label, children are nodes.
+        Returns the next free row."""
+        def walk(node, indent, last, root, y):
+            label, notes, children = node
+            self.put(x, y, indent + ("" if root else "+-- ") + label)
+            y += 1
+            for n in notes:
+                self.put(x, y, indent + ("" if root else ("|" if not last else " ") + "     ") + n)
+                y += 1
+            child_indent = indent if root else indent + ("|   " if not last else "    ")
+            for i, ch in enumerate(children):
+                y = walk(ch, child_indent, i == len(children) - 1, False, y)
+            return y
+        return walk(node, "", True, True, y)
+
     def render(self):
         rows = max(y for _, y in self.cells) + 1
         return "\n".join("".join(self.cells.get((x, y), " ") for x in range(self.width)).rstrip() for y in range(rows))
