@@ -1,7 +1,7 @@
 # Wiki for SoftHier-VLA
 
 ## What this wiki covers
-Robots can now be steered by a vision-language-action (VLA) model: a program that reads camera images and a written instruction and answers with the commands that move the robot's arms. The wiki records what the literature says about running such models fast enough on the small chips inside robots, and what that means for mapping them onto SoftHier, a tile-based many-PE accelerator platform.
+The topic is physical AI: robots that perceive and act in the physical world. The first area covered is vision-language-action (VLA) models, programs that read a robot's camera images and a written instruction and answer with the commands that move its arms: how they are built, made efficient and run on robot hardware. The wiki records what the literature says about this for the SoftHier-VLA project (mapping VLA applications for physical AI to a tile-based many-PE chip like SoftHier). Further areas of physical AI get their own notes later.
 
 **New to the field? Read in this order:** this README, then the [glossary](glossary/_overview.md) (plain-words definitions), then [one VLA call, step by step](knowledge/one-vla-call.md) (one picture of what a model does each time the robot asks it), then the [VLA edge serving overview](knowledge/vla-edge-serving-overview.md) (findings and the full reading path). What the project itself is about: [SoftHier and the project](knowledge/softhier-and-the-project.md).
 

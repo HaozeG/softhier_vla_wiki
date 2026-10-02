@@ -8,7 +8,7 @@ sources: [resources/models/smolvla.md, resources/serving/lerobot-async-inference
 ## Summary
 (Short forms of the terms in this note are in the glossary ([robot and control loop](../glossary/robot-and-control-loop.md), [symbols](../glossary/symbols-and-conventions.md)); the full meanings are given under "Terms used here" below.)
 
-Serving a VLA means keeping a robot supplied with valid actions despite inference latency. Four families of methods stack: (1) faster execution per call (kernels, graphs, runtimes), (2) chunking with asynchronous execution so inference overlaps motion, (3) chunk-stitching or latency-aware decoding so late chunks stay consistent, and (4) placement (on-device, edge server, cloud) and dual-system splits that run only a small model at control rate. Which one matters depends on where the latency of one model call falls relative to two times: the control period and the chunk duration (actions per chunk times control period).
+Serving a VLA means keeping a robot supplied with valid actions despite inference latency. Four families of methods stack: (1) faster execution per call (kernels, graphs, runtimes), (2) chunking with asynchronous execution so inference overlaps motion, (3) chunk-stitching or latency-aware decoding so late chunks stay consistent, and (4) placement (on-device, edge server, cloud) and dual-system splits that run only a small model at control rate. The sources relate the latency of one model call to two times: the control period and the chunk duration (actions per chunk times control period).
 
 ## Diagram
 ```text
@@ -31,21 +31,19 @@ The request repeats whenever the queue runs low; actions keep popping meanwhile.
 ```
 
 ```text
-Which family helps: latency l of one call vs control period dt and chunk
-duration n*dt  (n = actions per chunk; spacing not to scale)
+Action-supply conditions of vla.simd, by latency l of one call
+(n = actions per chunk, dt = control period, n*dt = chunk duration)
 
- 0          dt              n*dt/2                n*dt
- |----------|---------------|---------------------|------------------------> l
-      A             B                  C                       D
-
- A  l < dt               (1) faster execution is enough
- B  dt <= l <= n*dt/2    (2) async + (3) stitching; holds even if stale
-                         actions are discarded
- C  n*dt/2 < l <= n*dt   (2) async + (3) stitching; holds only if late
-                         actions are kept (lagged execution)
- D  l > n*dt             (4) shrink the model, or dual system
+ 0                        n*dt/2                       n*dt
+ |--------------------------|----------------------------|------------> l
+ |<--- 2d <= H holds ------>|
+ |<------------------ d <= H holds ------------------->|
+                                                             beyond: neither
+ 2d <= H: supply is continuous even if stale actions are discarded
+ d <= H : supply is continuous if late actions are kept (lagged execution)
+ (d = latency in control steps, rounded up; H = n = actions per chunk)
 ```
-The first drawing is family 2 and where the others act; the second is "Choosing a method" below.
+The first drawing is family 2 and where the others act; the second shows the two action-supply conditions of [vla.simd](../resources/serving/vla-simd.md) quoted under family 2.
 
 ## Details
 **Terms used here**
@@ -77,10 +75,6 @@ The first drawing is family 2 and where the others act; the second is "Choosing 
 - Gemini Robotics On-Device is offered as a fully local VLA with no published latency or hardware figures ([Gemini On-Device](../resources/models/gemini-robotics-on-device.md)).
 - GR00T N1 runs its VLM at about 10 Hz and DiT at 120 Hz; Helix runs a 7B VLM at 7–9 Hz and an 80M policy at 200 Hz on embedded GPUs ([GR00T N1](../resources/models/gr00t-n1.md), [Helix](../resources/models/figure-helix.md)).
 - Power argument for on-board inference: an RTX 4090 cut a robot's battery life by up to 6× relative to Jetson Orin in one estimate ([Jetson-PI](../resources/serving/jetson-pi.md)). A cost-energy-time leaderboard found Thor best on energy for π0.5 and a 4090 best on time ([XPU](../resources/serving/vla-xpu-characterization.md)).
-
-**Choosing a method (inferences)**
-- Latency below the control period: kernel work only. Latency between one control period and the chunk duration: async with chunk stitching; by the conditions above, supply stays continuous up to the chunk duration, but only up to half of it if stale actions are discarded. Latency above the chunk duration: shrink the model or move the heavy phase off the control loop (dual system).
-- Any method that adds compute per call (RTC guidance, VLM re-invocation) must be counted in the latency it is meant to hide.
 
 ## Open questions
 - Head-to-head comparison of RTC, VLASH, Jetson-PI and FlashVLA under one protocol on the same edge device is not available.

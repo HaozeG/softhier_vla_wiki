@@ -42,7 +42,7 @@ replace phase 3 with token-by-token decode through the full LLM (OpenVLA 7
 tokens, pi0-FAST 30-60 tokens).
 ```
 
-**In plain words.** Every phase of a call needs arithmetic and memory reads, and whichever takes longer sets that phase's time. A phase's *intensity* is its arithmetic per byte read (FLOP/byte); a chip's *balance point* is its arithmetic speed divided by its memory speed. A phase below the balance point is *memory-bound*: it waits for memory, so more arithmetic speed does not help. A phase above it is *compute-bound*: it waits for arithmetic. The terms are defined in the [glossary: hardware and performance](../glossary/hardware-and-performance.md); the arithmetic for one SmolVLA flow step is in the [edge budget estimate](edge-budget-estimate.md).
+**In plain words.** Every phase of a call needs arithmetic and memory reads, and whichever takes longer sets that phase's time. A phase's *intensity* is its arithmetic per byte read (FLOP/byte); a chip's *balance point* is its arithmetic speed divided by its memory speed. A phase below the balance point is *memory-bound*: it waits for memory, so more arithmetic speed does not help. A phase above it is *compute-bound*: it waits for arithmetic. The terms are defined in the [glossary: hardware and performance](../glossary/hardware-and-performance.md).
 
 ```text
 Which limit applies: operator intensity (FLOP/byte) vs a device's balance point
@@ -105,11 +105,6 @@ Measured runs use different chunk sizes, camera counts and frameworks; treat the
 - For a reasoning VLA (MolmoAct-7B) generation was about 75% of latency, and Thor's 5× compute over Orin gave only 1.4× speedup ([edge bottleneck characterization](../resources/serving/vla-edge-bottleneck-characterization.md)).
 
 **Memory footprints:** OpenVLA 15 GB in bf16; π0 about 14 GB; SmolVLA about 2 GB ([LeRobot docs](../resources/serving/lerobot-async-inference-docs.md)); KV cache for one frame set is small (0.01 GB in VLA-Perf's π0 model) but grows linearly with history.
-
-**Implications for accelerator design (inferences from the data above)**
-- The prefill phase needs high dense-MAC throughput and benefits from token-count reductions only while compute-bound ([token pruning and caching](token-pruning-and-caching.md)).
-- The expert loop is limited by re-reading its weights each step; keeping expert weights resident in fast on-chip memory across steps addresses this directly ([edge budget estimate](edge-budget-estimate.md)).
-- Shapes are static (fixed tokens, steps and chunk), so whole-graph static scheduling is possible; dynamic schemes need care ([layer skipping and pruning](layer-skipping-and-pruning.md)).
 
 ## Open questions
 - No source gives a per-operator profile for SmolVLA on an accelerator; the vision-encoder share for 512×512 inputs is not reported in the papers read.

@@ -40,9 +40,9 @@ visual tokens per frame?
 - **Small VLAs start low:** SmolVLA and GR00T N1 use 64 tokens per frame by design (pixel shuffle, no tiling), which leaves little to prune ([SmolVLA](../resources/models/smolvla.md), [GR00T N1](../resources/models/gr00t-n1.md)); pruning helped most on 7B models with 256–512 tokens.
 - **Benchmarks:** most results are LIBERO/SIMPLER with a 7B Llama-2 backbone; π0's Gemma backbone was untested by VLA-Cache, and in [CLP](../resources/compression/clp-layer-pruning.md)'s comparison table the token methods scored 88.9–94.4% vs 96.6% for OpenVLA-OFT (FastV 93.3%, EfficientVLA 88.9%, ADP 94.4%).
 
-**Implementation considerations (inferences)**
+**Implementation points reported**
 - Attention-score-based pruning is incompatible with fused attention kernels that do not expose scores; LightVLA and the SVD-based FlashVLA variant avoid them ([Guan et al.](../resources/surveys/survey-efficient-vla-guan.md)).
-- Caching needs per-layer KV for the previous frame (storage) and variable-length gathers; learned pruning yields variable sequence lengths (90 ± 15 tokens on LIBERO-Spatial), which conflicts with static shapes and CUDA-graph or static tile schedules unless padded to a maximum.
+- Caching needs per-layer KV for the previous frame (storage) and variable-length gathers ([VLA-Cache](../resources/compression/vla-cache.md)); learned pruning yields variable sequence lengths (90 ± 15 tokens on LIBERO-Spatial) ([LightVLA](../resources/compression/lightvla.md)).
 - The [surveys](../resources/surveys/survey-efficient-vla-yu.md) list further caching schemes (HybridVLA, CronusVLA, FlashVLA action reuse, EfficientVLA feature caching) that were not read here.
 
 ## Open questions

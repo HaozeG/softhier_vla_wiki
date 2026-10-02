@@ -1,5 +1,5 @@
 ---
-covers: e4e271a6f640
+covers: f6ff14fec7aa
 ---
 # wiki-design/runbooks/
 

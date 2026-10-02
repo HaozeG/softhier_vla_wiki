@@ -51,7 +51,7 @@ after step 10 the chunk is the 50 actions
 - **What crosses from VLM to expert** is therefore keys and values (per layer), not a single feature vector, and not the final-layer output. The paper's wording is ambiguous ("features at the N-th layer" and "all features up to layer N"); the code settles it as per-layer keys and values for the layers used.
 
 **Architecture (from [the paper](../resources/models/smolvla.md))**
-- Vision-language trunk: SmolVLM-2 (SigLIP encoder plus SmolLM2 decoder); the action expert reads features from LLM layers up to N = L/2 (16 layers in the released model); no image tiling (a large image is not cut into several crops that are encoded separately: only the whole image is used); images resized to 512×512; 64 visual tokens per frame after pixel shuffle (which regroups neighbouring patch tokens into fewer, wider ones; 1024 patches become 64 tokens, see [edge budget estimate](edge-budget-estimate.md)); sensorimotor state projected to one prefix token.
+- Vision-language trunk: SmolVLM-2 (SigLIP encoder plus SmolLM2 decoder); the action expert reads features from LLM layers up to N = L/2 (16 layers in the released model); no image tiling (a large image is not cut into several crops that are encoded separately: only the whole image is used); images resized to 512×512; 64 visual tokens per frame after pixel shuffle (which regroups neighbouring patch tokens into fewer, wider ones); sensorimotor state projected to one prefix token.
 - Action expert: about 100M parameters, hidden size 0.75× the VLM's, alternating cross-attention and causal self-attention, flow matching, chunk n = 50, 10 integration steps at inference.
 - Whole model 450M parameters; bf16 and `torch.compile` in training; the VLM stays frozen during pretraining; about 30k GPU-hours for the whole project.
 - Sizes: the paper evaluates 0.24B, 0.45B and 2.25B variants in simulation; the released base checkpoint uses `SmolVLM2-500M-Video-Instruct` truncated to 16 of 32 LLM layers (3 cameras, language padded to 48 tokens), and real-world results are 0.45B only. Check which size any quoted number refers to.
@@ -81,7 +81,7 @@ The 10× spread across sources on similar GPUs (10–20 ms vs 65–200 ms) is an
 
 **Device context:** hardware classes, and what is and is not measured below Orin, are in [edge hardware and the 10 TOPS gap](edge-hardware-and-the-10-tops-gap.md); this note is model-centric while that one is device-centric.
 
-**Memory:** about 2 GB at inference per the [LeRobot docs](../resources/serving/lerobot-async-inference-docs.md), vs 14 GB for π0. Serving arithmetic for a 10-TOPS-class device is in [edge budget estimate](edge-budget-estimate.md).
+**Memory:** about 2 GB at inference per the [LeRobot docs](../resources/serving/lerobot-async-inference-docs.md), vs 14 GB for π0.
 
 ## Open questions
 - Cross-embodiment generalization beyond SO100 arms (the paper's own limitation).

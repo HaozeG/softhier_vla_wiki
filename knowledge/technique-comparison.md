@@ -41,6 +41,6 @@ Notes: speedups use each paper's own baseline (often naive PyTorch); accuracy de
 - Baselines differ (eager PyTorch, compiled, tuned), so a technique measured against a weak baseline looks better; see the spread for SmolVLA in [SmolVLA](smolvla.md).
 - Efficiency methods are seldom compared on the same model and device; combinations reported by [XPU characterization](../resources/serving/vla-xpu-characterization.md) lost more accuracy than either method alone.
 - Rows from recently posted papers (Jetson-PI, FlashVLA, pruned-VLA recovery, vla.cpp) have not been independently reproduced.
-- On ≤10-TOPS hardware nothing here is measured; see [edge hardware and the 10 TOPS gap](edge-hardware-and-the-10-tops-gap.md) and [edge budget estimate](edge-budget-estimate.md).
+- On ≤10-TOPS hardware nothing here is measured; see [edge hardware and the 10 TOPS gap](edge-hardware-and-the-10-tops-gap.md).
 - The baselines these speedups are measured against are described in [inference workload characterization](inference-workload-characterization.md).
 - Related notes: [layer skipping and pruning](layer-skipping-and-pruning.md), [token pruning and caching](token-pruning-and-caching.md), [quantization](quantization.md), [flow-step reduction](flow-step-reduction.md), [serving methods](serving-methods.md).

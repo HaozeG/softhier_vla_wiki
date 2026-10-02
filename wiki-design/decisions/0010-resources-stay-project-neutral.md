@@ -18,7 +18,7 @@ Every paper-type source note carried a `## Relevance to SoftHier-VLA` section (3
         v  cited by
 +--------------------------------------------------------------------------+
 | knowledge/  what the sources mean for SoftHier-VLA                       |
-| (incl. softhier-design-implications.md)                                  |
+| (project readings of sources)                                            |
 +--------------------------------------------------------------------------+
         |
         v  informs
@@ -29,7 +29,7 @@ Every paper-type source note carried a `## Relevance to SoftHier-VLA` section (3
 - A `resources/` note holds only the source's own content: `Summary`, `Key claims` (with section, figure or table refs), and its scope caveats (device, precision, evidence tier). It may link to other `resources/` notes under `## Related`.
 - It contains no "relevance", "implications" or "for us" text and no links into `knowledge/`; links run one way, from `knowledge/` to `resources/`.
 - The `paper` template's `## Relevance to SoftHier-VLA` section is replaced by an optional `## Related`.
-- Project readings of sources live in `knowledge/`; `knowledge/softhier-design-implications.md` collects the design implications per question, citing the source notes.
+- Project readings of sources live in `knowledge/`, citing the source notes. (The design-implications note this decision first named was removed by [0013](0013-scope-and-no-derived-content.md).)
 - The health review checks the separation with `grep` (runbook step 10).
 
 ## Why

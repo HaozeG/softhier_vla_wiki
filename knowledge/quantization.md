@@ -35,10 +35,6 @@ does a smaller format make it faster?
     (8-bit: slower; GGUF 4-bit: 1.1x)
   native int8 path (W8A8 on CPUs: 1.13-2.7x;         -> yes, mostly
     slower on M4 for some policies)
-  compute-bound phase (vision, prefill)              -> weight-only helps less
-  memory-bound phase (expert loop)                   -> helps most, yet it is
-                                                        the phase most sensitive
-                                                        to error (inference)
 ```
 
 ## Details
@@ -58,7 +54,6 @@ does a smaller format make it faster?
 **Lessons**
 - **Speed needs a kernel.** OpenVLA's 8-bit run dropped to about 1.2 Hz on an A5000 and the success drop was attributed to the resulting slower control rate, not to token accuracy; 4-bit was faster because reduced memory traffic outweighed dequantization cost ([OpenVLA](../resources/models/openvla.md)). Packed low-bit weights alone leave latency unchanged; tensor-core ternary execution gave 4× ([vla.cpp](../resources/serving/vla-cpp.md)).
 - **Where to quantize.** In π0.5 and GR00T N1.5, quantizing the DiT's attention projections or the whole DiT collapsed accuracy (π0.5 71.6% for DiT only; 76.3% for LLM + full DiT) while LLM + DiT MLP stayed near baseline (95.4%, and 97.6% with calibration) ([QuantVLA](../resources/compression/quantvla.md)). Small errors accumulate over the flow steps.
-- **Tension (inference).** Weight-only quantization helps the memory-bound expert loop most ([inference workload characterization](inference-workload-characterization.md)), yet the expert is the part QuantVLA found most sensitive; so the usual split is low-bit LLM, higher-precision expert attention, and low-bit expert MLPs only after calibration.
 - **Task success is not predicted by action error.** In vla.cpp, Q4_0 had larger fixed-input error than Q8_0 yet similar success, and a one-step solver with a 0.93 action difference still scored 99/100 ([vla.cpp](../resources/serving/vla-cpp.md)); conversely a precision error in SmolVLA's positional-index computation dropped a LIBERO task from 9/10 to 2/10. Validate with rollouts and validate discrete preprocessing.
 - **Interactions:** 4-bit quantization reduces speculative-decoding acceptance and combined methods lost more accuracy than either alone on OpenVLA (spec + cache 68.5%, quant + cache 65.1%) ([XPU](../resources/serving/vla-xpu-characterization.md)).
 - **PTQ versus QAT:** post-training 1-bit conversion of a full-precision backbone is not expected to work; BitVLA needed a native 1-bit LLM and quantization-aware distillation for the vision encoder, and 7 + 14 days of H800 training ([BitVLA](../resources/compression/bitvla.md)).

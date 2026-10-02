@@ -63,11 +63,6 @@ Commercial robots that publish their hardware separate the fast, deterministic j
 - Language and vision-language models through RKLLM at W8A8: Qwen2/2.5/3, Llama-family, Gemma, ChatGLM3, plus VLMs such as Qwen2-VL, MiniCPM-V, InternVL2/3-1B and SmolVLM; decode from 78 tokens/s (SmolVLM-256M) to 5 tokens/s (6B), with the vision encoder in FP16 and taking 0.8–3.3 s per image in the published rows ([measurements](../resources/rk3588/rk3588-vlm-llm-measurements.md)).
 - Robot policies: an ACT-style policy at about 121 ms per chunk (self-reported); SmolVLA at about 5 s per chunk ([policy reports](../resources/rk3588/rk3588-robot-policy-reports.md), details in [RK3588 deployment](rk3588-vla-deployment.md)).
 
-**Implications for a ~10 TOPS VLA design (inference, not source claims)**
-1. Commercial designs put VLA-scale models on an AI tier one to two orders of magnitude above 10 TOPS (or on a remote GPU server, in AgiBot's open GO-1 code), and keep the fast joint loop on a real-time controller. A single ~10-TOPS chip serving a full VLA has no commercial precedent in these sources.
-2. A robot with an RK3588-class controller and no Jetson can host detection, speech and a small VLM but must treat a VLA as an off-loop, low-rate model or replace it with an ACT-class policy ([serving methods](serving-methods.md)).
-3. If a 10-TOPS accelerator is meant to serve the VLA, the VLA must not share the joint loop's deadline: the sources put a large model on its own module or server, and only a small policy (the X1) shares a real-time controller with the joint drivers. The VLA's action chunks (about one model call per second in GO-1's setting) are the interface to the fast loop.
-
 **Evidence quality:** vendor product pages are marketing-level and omit software, while the open repositories (first-party code and docs) give rates and placement for specific robots; the Go2's RK3588S identification and the G1 EDU two-computer layout are third-party; the AgiBot X2 role assignment is contradictory between sources; the market summary is a press release. Nothing here is a measured latency of a VLA on a commercial robot.
 
 ## Open questions

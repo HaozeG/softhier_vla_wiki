@@ -1,43 +1,37 @@
 ---
 type: concept
-tags: [rk3588, rockchip, npu, deployment, smolvla, act, practices, estimate]
+tags: [rk3588, rockchip, npu, deployment, smolvla, act, practices]
 sources: [resources/rk3588/rk3588-platform-specs.md, resources/rk3588/rockchip-rknn-rkllm-toolchain.md, resources/rk3588/rk3588-vlm-llm-measurements.md, resources/rk3588/rk3588-robot-policy-reports.md, resources/rk3588/rknn-transformer-conversion-reports.md, resources/serving/embodied-cpp.md, resources/surveys/survey-embodied-fm-edge.md, resources/serving/vla-simd.md, resources/models/smolvla.md]
 ---
 # RK3588 deployment: practices and evidence for VLAs
 
 ## Summary
-On the RK3588's 6-TOPS NPU, what is well evidenced is CNN vision, LLM and VLM decoding (5–78 tokens/s, W8A8 only) and small ACT-style policies (about 0.12 s per chunk, self-reported). A SmolVLA-class VLA has one community measurement, about 5 s per 50-action chunk, and component data from Rockchip implies about 1–1.4 s with one camera and about 2.8–3.2 s with three. A chunk of 50 actions lasts 1.67 s at 30 Hz, so the released three-camera configuration cannot keep a 30 Hz robot supplied, and one camera is borderline (it fails if stale actions are dropped, which needs under 0.83 s). The NPU is used at about 4–19% of its headline TOPS in the measured transformer workloads, and the toolchain is the main risk: transformers convert fragilely, only W8A8 is available for the language model, and the vision encoder runs in FP16 through a separate toolchain. Practice on these boards is therefore ACT-class policies at control rate, VLMs off the control loop, and hardware video paths.
+On the RK3588's 6-TOPS NPU the sources report CNN vision, LLM and VLM decoding (5–78 tokens/s, W8A8 only) and small ACT-style policies (about 0.12 s per chunk, self-reported). A SmolVLA-class VLA has one community measurement, about 5 s per 50-action chunk, which the README says exceeds the action-block duration so that the queue starves. The toolchain is the main constraint reported: transformers convert fragilely, only W8A8 is available for the language model, and the vision encoder runs in FP16 through a separate toolchain. Reported practice on these boards includes hardware video paths and running ACT-style policies inline at the control rate.
+
+The picture shows how the toolchain note says a VLA has to be divided (SmolVLA's sizes from its paper); the one SmolVLA port reported used three RKNN modules.
 
 ```text
-ONE SMOLVLA CALL ON RK3588 (estimate)
-  1-3 camera frames
-        |
-        v
-+----------------------+    RKNN, FP16: 0.84 s per camera
-| vision encoder       |    (SmolVLM-256M as proxy)
-+----------------------+
-        |
-        | 64 tokens per camera
-        v
-+----------------------+    RKLLM, W8A8: 0.10-0.22 s
-| LLM prefix           |    (scaled from the 77 ms row)
-+----------------------+
-        |
-        | keys + values of the prefix (241 tokens, 3 cameras)
-        v
-+----------------------+
-| flow expert          |<--+   RKNN graph or CPU (RKLLM cannot convert it)
-| 10 steps             |   |   0.08-0.5 s over the 10 steps
-|                      |---+   velocity of 50 action tokens per step
-+----------------------+
-        |
-        v  chunk of 50 actions
-
-chunk lasts 1.67 s at 30 Hz.  Estimated chunk latency per camera count:
-  1 camera    1.0-1.4 s   below 1.67 s: supplies actions, borderline
-                          (dropping stale actions needs < 0.83 s: fails)
-  2 cameras   1.9-2.3 s   above 1.67 s: queue starves
-  3 cameras   2.8-3.2 s   above 1.67 s: queue starves (community: 5.05 s)
+A VLA SPLIT ACROSS THE RK3588 TOOLCHAINS (the toolchain note)
+camera frames, 1 to 3
+  |
+  v
++--------------------------------------+
+| vision encoder: RKNN, FP16           |
++--------------------------------------+
+  |
+  v 64 visual tokens per camera
++--------------------------------------+
+| language model: RKLLM, W8A8          |
++--------------------------------------+
+  |
+  v keys + values of the prefix
++--------------------------------------+
+| action expert, 10 flow steps:        |---+
+| RKNN graph or CPU; RKLLM             |   | x10: velocity of
+| cannot convert it                    |<--+ 50 action tokens
++--------------------------------------+
+  |
+  v chunk of 50 actions
 ```
 
 ## Details
@@ -57,31 +51,9 @@ chunk lasts 1.67 s at 30 Hz.  Estimated chunk latency per camera count:
 - **Validate every conversion against ONNX Runtime.** LayerNorm fusion crashes, silently reordered inputs for same-shaped camera images, NHWC defaults, and fused attention producing wrong outputs at FP16 were all reported ([robot-policy reports](../resources/rk3588/rk3588-robot-policy-reports.md), [transformer reports](../resources/rk3588/rknn-transformer-conversion-reports.md)). Pin toolkit, runtime library and driver versions; an RKLLM model must match its runtime.
 - **Treat SigLIP-class encoders carefully.** One engineer needed manual tiling, 26 shards across the three NPU cores and input rescaling to make a SigLIP run in INT8 within accuracy; Rockchip's own ports keep the encoder in FP16 ([transformer reports](../resources/rk3588/rknn-transformer-conversion-reports.md)).
 - **Use the hardware media path.** MPP decode, RGA resize and zero-copy input kept CPU use under 10% while recording and gave the 640×640 YOLO numbers; software resizing would compete with the policy for the same DRAM ([robot-policy reports](../resources/rk3588/rk3588-robot-policy-reports.md), [community benchmark](../resources/rk3588/rknn-transformer-conversion-reports.md)).
-- **Match policy class to latency.** ACT-style single-pass policies fit (inference inline when the action queue empties, no threads needed); autoregressive or multi-stage VLAs need a dual-system split with the slow model off the control loop ([serving methods](serving-methods.md)).
+- **What the policy READMEs report.** The ACT-style policy runs inference inline when the action queue empties, with no threads needed; the SmolVLA port's README says its inference time exceeds the action-block duration, causing queue starvation ([robot-policy reports](../resources/rk3588/rk3588-robot-policy-reports.md)).
 - **Watch shared DRAM and heat.** Concurrent sessions each dropped to 40–65% of single-session throughput; CPU, GPU, NPU and sensors share LPDDR, and mixed-load throttling was reported to cut throughput by up to 60% in cited work ([platform](../resources/rk3588/rk3588-platform-specs.md), [edge survey](../resources/surveys/survey-embodied-fm-edge.md)).
 - **Budget model size.** About 2–3 GB of models is the practical range on 8–16 GB boards; the Qwen3-VL-2B port used 3.1 GB ([measurements](../resources/rk3588/rk3588-vlm-llm-measurements.md)).
-
-**Utilization of the 6 TOPS (derived from Rockchip's tables; parameter counts are nominal)**
-- Decode: weight traffic implied by memory × tokens/s is 24–30 GB/s across nine models, i.e. memory-bound near practical DRAM bandwidth.
-- Prefill: 0.73–1.15 TFLOP/s effective, 12–19% of 6 TOPS. Vision encoder (SmolVLM-256M at 512×512): about 0.25 TFLOP/s, about 4%. These are the numbers to use instead of the headline when sizing a model ([edge budget estimate](edge-budget-estimate.md) uses the headline as a roofline).
-
-**Estimate for a SmolVLA-class call on RK3588 (derived; not a measurement)**
-- Inputs: vision per camera about 0.84 s (SmolVLM-256M as proxy; the tower dimensions match SmolVLA's, depth may differ); the prefix is 64 visual tokens per camera plus 48 language tokens and 1 state token (113 to 241 tokens for 1 to 3 cameras, see [SmolVLA](smolvla.md)), and the flow expert runs 10 steps over a 50-token action chunk, each step giving a velocity of that shape; LLM prefix scaled from the 77 ms / 128-token row by parameters (157M vs about 106M non-embedding) and tokens (113–241) gives 0.10–0.22 s; expert 10 steps at 0.2 GB FP16 weights per step over about 25 GB/s gives at least 0.08 s, up to about 0.5 s with graph-split overhead (assumed).
-
-| Cameras              | Estimated chunk latency | 30 Hz chunk (1.67 s)         | Comment                                                     |
-| -------------------- | ----------------------- | ---------------------------- | ----------------------------------------------------------- |
-| 1                    | about 1.0–1.4 s         | supplies actions, borderline | discarding stale actions needs under 0.83 s: fails          |
-| 2                    | about 1.9–2.3 s         | starves                      |                                                             |
-| 3 (released default) | about 2.8–3.2 s         | starves                      | consistent with the reported 5.05 s given unknown overheads |
-
-- The action-supply conditions are from [serving methods](serving-methods.md). Compared with the 0.11 s roofline for a generic 10-TFLOP/s device, the RK3588 estimate is 10–30× slower, from low NPU utilization and FP16 vision.
-
-**Options, unproven on this hardware (hypotheses)**
-1. One camera and a shared encoder result cached while the scene is static (as in [token pruning and caching](token-pruning-and-caching.md)).
-2. Lower-resolution vision input or a smaller encoder, which needs fine-tuning because SmolVLA is trained at 512×512.
-3. INT8 vision with outlier handling (input rescaling) after checking task success, not just cosine similarity.
-4. Replace the flow expert with an ACT-style or regression head over cached VLM features, or run the VLM at low rate beside an ACT policy at control rate ([action representation and chunking](action-representation-and-chunking.md)).
-5. Play chunks back slower than the training rate (15 Hz gives a 3.3 s chunk); this changes dynamics and was not tested in any source.
 
 **Evidence quality:** Rockchip's numbers are first-party and reproducible; every VLA-specific number here is a single community README. No source reports task success for a policy running on the RK3588 NPU. [Embodied.cpp](../resources/serving/embodied-cpp.md) names RK boards as a target but reports none.
 

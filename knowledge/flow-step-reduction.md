@@ -35,9 +35,8 @@ chunk latency = P (vision + prefix, once) + T x E (T expert steps)
 - Concurrency: running expert steps alongside the next VLM pass uses idle compute during the memory-bound expert (26.3 vs 27.3 ms for π0 on a 4090) ([Realtime-VLA](../resources/serving/realtime-vla.md)).
 - Latency floor: when the backbone is shrunk, the fixed T-step expert cost dominates; CogACT stopped improving at 85 ms with 10 DDIM steps ([pruned VLA recovery](../resources/compression/pruned-vla-recovery.md)).
 
-**Rules of thumb**
-- 4–5 steps is the common operating range for continuous experts; below that, test per task and per head. Distilled or consistency-trained heads are not covered by these sources beyond citations in the surveys.
-- Because the expert phase is memory-bound, a step's cost is set mostly by expert weight bytes, not chunk length; keeping the expert on chip or quantizing it is a lever alongside step reduction ([edge budget estimate](edge-budget-estimate.md)).
+**Step counts reported**
+- Reported step counts for continuous experts run from 4 to 10 (see above); distilled or consistency-trained heads are not covered by these sources beyond citations in the surveys.
 
 ## Open questions
 - Systematic study of step count versus success on physical robots; the numbers above are LIBERO or simulation.
