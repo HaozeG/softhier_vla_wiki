@@ -1,5 +1,5 @@
 ---
-covers: 234e0136cee1
+covers: 895d84ed96bd
 ---
 # wiki-design/decisions/
 
@@ -13,3 +13,4 @@ covers: 234e0136cee1
 - [0008 Obsidian-padded tables](0008-obsidian-padded-tables.md) — tables stored padded like Obsidian so opening notes there causes no diffs; `wiki.py fmt` and a `TABLEFMT` warning enforce it.
 - [0009 separate project knowledge from wiki design](0009-separate-project-knowledge-from-wiki-design.md) — project content and wiki design in separate folders, following OpenViking's resource / memory / skill split; resources grouped by topic.
 - [0010 resources stay project-neutral](0010-resources-stay-project-neutral.md) — source notes record what a source says; what it means for SoftHier-VLA lives in `knowledge/`, links run one way.
+- [0011 diagrams show parts, data and repetition](0011-diagrams-show-parts-data-and-repetition.md) — a diagram must answer: what are the parts, what data passes between them and how big, what repeats; built with `tools/diagram.py`, box alignment linted.

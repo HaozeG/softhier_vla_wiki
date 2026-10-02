@@ -1,7 +1,7 @@
 ---
 type: paper
 tags: [vla, smolvla, edge, flow-matching, layer-skipping, async-inference]
-sources: [arxiv:2506.01844, https://arxiv.org/abs/2506.01844, https://huggingface.co/blog/smolvla]
+sources: [arxiv:2506.01844, https://arxiv.org/abs/2506.01844, https://huggingface.co/blog/smolvla, https://github.com/huggingface/lerobot/blob/main/src/lerobot/policies/smolvla/modeling_smolvla.py, https://github.com/huggingface/lerobot/blob/main/src/lerobot/policies/smolvla/smolvlm_with_expert.py]
 ---
 # SmolVLA: A vision-language-action model for affordable and efficient robotics
 
@@ -29,6 +29,7 @@ SmolVLA is a 450M-parameter VLA: a truncated SmolVLM-2 backbone plus a roughly 1
 - **Not reported in the text read:** absolute on-device latency, Hz or power. The "runs on CPU/consumer GPU/MacBook" claim is qualitative.
 - **Limitations (§5.1):** pretraining data is a single robot type (SO100); no long-horizon reasoning; dataset diversity; the VLM backbone was pretrained mainly on document and OCR tasks, and its suitability for robotics is untested.
 - **Released config (first-party, `lerobot/smolvla_base`):** backbone `SmolVLM2-500M-Video-Instruct`, `num_vlm_layers` 16, three cameras resized with padding to 512×512, language padded to 48 tokens, chunk 50, 10 steps, expert width multiplier 0.75.
+- **Reference code (first-party, `lerobot` main branch: `policies/smolvla/modeling_smolvla.py`, `smolvlm_with_expert.py`):** `sample_actions` embeds images, language and state into one prefix, runs it through the VLM layers once and keeps the per-layer keys and values (`use_cache` defaults to true), then calls `denoise_step` `num_steps` = 10 times inside an Euler integrator. Each step embeds the noisy chunk (`chunk_size` 50 tokens): a linear projection, joined to a sinusoidal embedding of the flow time and passed through a two-layer SiLU MLP. Cross-attention layer i of the expert reads the cached keys and values of VLM layer i and applies the expert's own key and value projections (inside every step, so the projected prefix is not itself cached); every second layer (`self_attn_every_n_layers` 2) is self-attention, where the action tokens are causal among themselves and the cached prefix is also visible (the paper text mentions only attention among action tokens). A linear layer maps the expert output to the velocity; the cache is cropped back to the prefix after each step. Read from the main branch at the time of writing; the code can change.
 
 ## Related
 See also: [FlashVLA](../serving/flashvla-streaming.md) and [CLP](../compression/clp-layer-pruning.md) (applied to SmolVLA), [vla.cpp](../serving/vla-cpp.md) and [vla.simd](../serving/vla-simd.md) (measured latencies), [OpenVLA](openvla.md) and [π0](pi0.md) (baselines), [LeRobot async docs](../serving/lerobot-async-inference-docs.md).

@@ -25,3 +25,4 @@ Prose can hide a gap that a picture exposes (a missing branch, two steps that ca
 Builds on [0002](0002-lint-and-git-as-log.md).
 
 See also [0008](0008-obsidian-padded-tables.md): tables are stored padded like Obsidian.
+See also [0011](0011-diagrams-show-parts-data-and-repetition.md): diagrams must also show the data between parts and what repeats.

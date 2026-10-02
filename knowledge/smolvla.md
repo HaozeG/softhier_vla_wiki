@@ -9,18 +9,45 @@ sources: [resources/models/smolvla.md, resources/serving/lerobot-async-inference
 SmolVLA is Hugging Face's open 450M-parameter VLA: the first half of a SmolVLM-2 language model, 64 visual tokens per frame, and a 100M flow-matching action expert emitting 50-action chunks in 10 steps. It is the reference "small VLA" for this wiki. Its accuracy claims are on LIBERO, Meta-World and low-cost SO100/SO101 arms; its serving claims come from the paper's asynchronous stack, and measured latencies on other hardware come from third-party runtimes and vary by 10× with implementation quality.
 
 ```text
-3 cameras (256x256, padded to 512x512)
-  -> SigLIP -> pixel shuffle -> 64 tokens per frame --+
-language prompt (padded to 48 tokens) --------------+--> LLM, first 16 of 32
-robot state -> 1 token -----------------------------+    layers (N = L/2)
-                                                              |
-                                  features from the N layers  |
-                                                              v
-  flow expert (~100M, 0.75x width): cross-attention to LLM features,
-  alternating with causal self-attention; 10 steps -> chunk of 50 actions
+ONCE PER CALL: read the observation with the VLM
++-----------------+           +----------------------------------------------+
+| 3 camera images |-- 3x64 -->| VLM (SmolVLM-2)                              |
++-----------------+           |                                              |
+| language prompt |--- 48 --->| images: SigLIP encoder + pixel shuffle       |
++-----------------+           |    -> 64 visual tokens per camera            |
+| robot state     |---- 1 --->| state: linear projection -> 1 token          |
++-----------------+           | concat: 3x64 + 48 + 1 = 241 tokens           |
+  arrow labels = tokens       |                                              |
+                              | LLM layers 1..16 (of 32), run once           |
+                              |                                              |
+                              +----------------------------------------------+
+                                                     | keys + values of the
+                                                     | 241 tokens, per LLM
+EACH OF 10 FLOW STEPS                                | layer (16 sets)
+                                                     v
++-----------------+           +----------------------------------------------+
+| noisy actions   |           | ACTION EXPERT (~100M, 0.75x width)           |
+| 50 tokens       |           |                                              |
+| + flow time     |           | cross-attention layers: attend to            |
+|                 |--- 50 --->|   the cached keys + values of LLM            |
+|                 |           |   layer i (the same i)                       |
+|                 |           | self-attention layers (every 2nd):           |
+|                 |           |   the 50 action tokens, causal among         |
+|                 |           |   themselves, also see the cached            |
+|                 |           |   prefix                                     |
++-----------------+           +----------------------------------------------+
+         ^                              |
+         +<--- velocity, 50 tokens -----+
+each step: Euler update of the noisy chunk with the velocity
+after step 10 the chunk is the 50 actions
 ```
 
 ## Details
+**Data flow per call (paper and first-party code, see [the source note](../resources/models/smolvla.md))**
+- **Once per call:** the three camera images (64 visual tokens each after pixel shuffle), the language prompt (padded to 48 tokens) and the robot state (1 token) form a prefix of 3 × 64 + 48 + 1 = 241 tokens. The first 16 LLM layers process it once and keep their keys and values, one set per layer (16 sets).
+- **Each of the 10 flow steps:** the 50 noisy action tokens are embedded together with the flow time (a sinusoidal time embedding joined to the action embedding and passed through a small MLP) and run through the expert. In cross-attention layers the keys and values come from the cached VLM layer with the same index, after the expert's own key and value projections (the reference code repeats this projection in every step; only the VLM's keys and values are cached); in self-attention layers (every second layer) the action tokens are causal among themselves and, in the released code, also see the cached prefix. A linear layer turns the output into the velocity, and one Euler step updates the noisy chunk. After step 10 the chunk is the 50 actions.
+- **What crosses from VLM to expert** is therefore keys and values (per layer), not a single feature vector, and not the final-layer output. The paper's wording is ambiguous ("features at the N-th layer" and "all features up to layer N"); the code settles it as per-layer keys and values for the layers used.
+
 **Architecture (from [the paper](../resources/models/smolvla.md))**
 - Vision-language trunk: SmolVLM-2 (SigLIP encoder plus SmolLM2 decoder); the action expert reads features from LLM layers up to N = L/2 (16 layers in the released model); no image tiling; images resized to 512×512; 64 visual tokens per frame after pixel shuffle; sensorimotor state projected to one prefix token.
 - Action expert: about 100M parameters, hidden size 0.75× the VLM's, alternating cross-attention and causal self-attention, flow matching, chunk n = 50, 10 integration steps at inference.

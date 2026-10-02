@@ -14,6 +14,8 @@ frames      RKNN, FP16            RKLLM, W8A8        RKNN graph or CPU  actions
             0.84 s per camera     0.10-0.22 s        0.08-0.5 s
             (SmolVLM-256M proxy)  (scaled from       (RKLLM cannot
                                    the 77 ms row)     convert it)
+ passes on: 64 tokens per camera  keys + values of   velocity of 50 action
+                                  the 241 tokens     tokens, once per step
 
 chunk lasts 1.67 s at 30 Hz.  Estimated chunk latency per camera count:
   1 camera    1.0-1.4 s   below 1.67 s: supplies actions, borderline

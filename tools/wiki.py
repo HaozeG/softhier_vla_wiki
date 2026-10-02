@@ -96,6 +96,26 @@ DIAGRAM_RE = re.compile(r"```text\n(.*?)```", re.S)  # diagrams are fenced as ``
 DIAGRAM_COLS = 80
 
 
+def box_problem(lines):
+    """First box whose side edges do not line up between its top and bottom edge, else None.
+    A box is a `+--+` run with `|` below it and a matching `+--+` further down at the same columns;
+    a `+--+` with no partner is a routed connector or a bottom edge and is ignored."""
+    for i, l in enumerate(lines):
+        for m in re.finditer(r"\+-{2,}\+", l):
+            c1, c2 = m.start(), m.end() - 1
+            nxt = lines[i + 1] if i + 1 < len(lines) else ""
+            if "|" not in (nxt[c1:c1 + 1], nxt[c2:c2 + 1]):
+                continue  # nothing hangs below this edge, so it is a bottom edge, not a top
+            bottom = next((j for j in range(i + 1, len(lines)) if lines[j][c1:c1 + 1] == "+" and lines[j][c2:c2 + 1] == "+"
+                           and set(lines[j][c1 + 1:c2]) <= set("-+")), None)
+            if bottom is None:
+                continue
+            for j in range(i + 1, bottom):
+                if lines[j][c1:c1 + 1] not in tuple("|+v^<>") or lines[j][c2:c2 + 1] not in tuple("|+v^<>"):
+                    return f"box edge misaligned at diagram line {j + 1} (box columns {c1 + 1} and {c2 + 1})"
+    return None
+
+
 # ---------- table format (Obsidian pads tables; matching it avoids reformat diffs, decision 0008) ----------
 SEP_RE = re.compile(r"^\s*\|?(\s*:?-+:?\s*\|)+(\s*:?-+:?\s*)?\s*$")
 
@@ -493,6 +513,9 @@ def structural_issues():
                 wide = next((n for n, l in enumerate(lines, 1) if len(l) > DIAGRAM_COLS), None)
                 if wide:
                     add("ERROR", "DIAGRAM", frel, f"diagram line {wide} is wider than {DIAGRAM_COLS} columns")
+                bp = box_problem(lines)
+                if bp:
+                    add("ERROR", "DIAGRAM", frel, bp + "; build boxed diagrams with tools/diagram.py")
             if "<!--" in body:
                 add("ERROR", "UNFILLED", frel, "template guidance comment (`<!-- ... -->`) still present; replace with real content")
             if re.search(r"\bTODO\b", body):
