@@ -1,0 +1,47 @@
+---
+type: glossary
+tags: [glossary, roofline, hardware, memory-bound]
+sources: [resources/serving/vla-perf.md, resources/hardware/edge-accelerator-datasheets.md, resources/hardware/nvidia-jetson-platform-specs.md, resources/rk3588/rockchip-rknn-rkllm-toolchain.md]
+---
+# Hardware and performance
+
+## Summary
+The words for why a faster chip does not always give a faster robot, and the hardware and toolchain names the notes use. Balance point, roofline, estimate versus measured, TOPS and the ~10 TOPS class are the wiki's own usage (convention) and are loaded into project sessions.
+
+## Terms
+| Term                              | Meaning                                                                                                                        | Scope      | Defined in                                                                                               |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ | ---------- | -------------------------------------------------------------------------------------------------------- |
+| FLOP, FLOP/s, TFLOP/s             | One floating-point operation; operations per second; a trillion per second.                                                    | field      | [edge hardware](../knowledge/edge-hardware-and-the-10-tops-gap.md)                                       |
+| memory bandwidth (GB/s)           | How many bytes per second the chip can read from memory.                                                                       | field      | [edge hardware](../knowledge/edge-hardware-and-the-10-tops-gap.md)                                       |
+| intensity (FLOP/byte)             | The arithmetic a phase does per byte it reads from memory.                                                                     | field      | [inference workload characterization](../knowledge/inference-workload-characterization.md)               |
+| balance point                     | A chip's FLOP/s divided by its bytes/s. The wiki says "balance point" where papers say "ridge point".                          | convention | [inference workload characterization](../knowledge/inference-workload-characterization.md)               |
+| memory-bound                      | Intensity below the balance point: the phase waits for memory, so more arithmetic speed does not help.                         | field      | [inference workload characterization](../knowledge/inference-workload-characterization.md)               |
+| compute-bound                     | Intensity above the balance point: the phase waits for arithmetic.                                                             | field      | [inference workload characterization](../knowledge/inference-workload-characterization.md)               |
+| roofline                          | Per-phase time is the larger of arithmetic time and memory time. A roofline latency is a lower bound, not a measurement.       | convention | [inference workload characterization](../knowledge/inference-workload-characterization.md)               |
+| estimate, measured, self-reported | Estimate: derived from specs or configs. Measured: a reported run. Self-reported: a community claim not independently checked. | convention | [wiki-design decision 0004](../wiki-design/decisions/0004-evidence-tiers-for-fast-moving-vla-sources.md) |
+| TOPS                              | Trillions of operations per second as a vendor quotes it, often for sparse INT8. It is not comparable with dense BF16 TFLOP/s. | convention | [edge hardware](../knowledge/edge-hardware-and-the-10-tops-gap.md)                                       |
+| ~10 TOPS class                    | Devices with roughly ten TOPS of vendor-quoted compute or less: the compute class this project targets.                        | convention | [edge hardware](../knowledge/edge-hardware-and-the-10-tops-gap.md)                                       |
+| GPU, NPU                          | Chip parts that do the matrix arithmetic: graphics processor; neural processing unit.                                          | field      | [edge hardware](../knowledge/edge-hardware-and-the-10-tops-gap.md)                                       |
+| Jetson Orin Nano, AGX Orin, Thor  | NVIDIA embedded GPU modules, from small to large.                                                                              | field      | [edge hardware](../knowledge/edge-hardware-and-the-10-tops-gap.md)                                       |
+| RK3588                            | A Rockchip chip with an NPU, common in robot prototypes.                                                                       | field      | [RK3588 deployment](../knowledge/rk3588-vla-deployment.md)                                               |
+| Ascend, Hailo                     | Accelerator families from Huawei and Hailo.                                                                                    | field      | [edge hardware](../knowledge/edge-hardware-and-the-10-tops-gap.md)                                       |
+| BF16, FP16, INT8                  | Number formats: two 16-bit floating-point formats and 8-bit integer.                                                           | field      | [quantization](../knowledge/quantization.md)                                                             |
+| LPDDR                             | Low-power DRAM used as main memory in edge chips.                                                                              | field      | [edge hardware](../knowledge/edge-hardware-and-the-10-tops-gap.md)                                       |
+| kernel, kernel fusion             | One GPU operation launch; combining several into one to cut overhead.                                                          | field      | [inference workload characterization](../knowledge/inference-workload-characterization.md)               |
+| CUDA graph                        | A recorded sequence of GPU launches replayed with little launch overhead.                                                      | field      | [inference workload characterization](../knowledge/inference-workload-characterization.md)               |
+| GEMM, tile                        | Matrix-matrix multiply; the block of a matrix one compute unit handles.                                                        | field      | [inference workload characterization](../knowledge/inference-workload-characterization.md)               |
+| SM                                | Streaming multiprocessor: one compute unit of an NVIDIA GPU.                                                                   | field      | [inference workload characterization](../knowledge/inference-workload-characterization.md)               |
+| ONNX, TensorRT, Triton            | A model exchange format; NVIDIA's inference compiler and runtime; a language for writing GPU kernels.                          | field      | [inference workload characterization](../knowledge/inference-workload-characterization.md)               |
+| RKNN, RKLLM                       | Rockchip's toolchains for NPU graphs and for language models.                                                                  | field      | [RK3588 deployment](../knowledge/rk3588-vla-deployment.md)                                               |
+
+## Why memory-bound matters
+A chip has two limits: how fast it does arithmetic and how fast it reads numbers from memory. Every phase of a model call needs both, and whichever takes longer sets that phase's time; this rule applied phase by phase is the roofline model. A phase that does little arithmetic for each byte it reads is memory-bound: a faster arithmetic unit leaves it unchanged, while fewer or faster memory reads shorten it. A phase that does a lot of arithmetic per byte is compute-bound, and fewer operations shorten it.
+
+```text
+Why the longer of two times sets the time of a phase (bar lengths illustrative
+
+arithmetic time |########
+memory time     |####################
+
+phase time = the longer bar: this phase is memory-bound
+```

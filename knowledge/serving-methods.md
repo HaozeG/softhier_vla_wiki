@@ -6,6 +6,8 @@ sources: [resources/models/smolvla.md, resources/serving/lerobot-async-inference
 # Serving methods
 
 ## Summary
+(Terms such as chunk duration, stale and lagged actions are defined in the glossary: [robot and control loop](../glossary/robot-and-control-loop.md), [symbols](../glossary/symbols-and-conventions.md).)
+
 Serving a VLA means keeping a robot supplied with valid actions despite inference latency. Four families of methods stack: (1) faster execution per call (kernels, graphs, runtimes), (2) chunking with asynchronous execution so inference overlaps motion, (3) chunk-stitching or latency-aware decoding so late chunks stay consistent, and (4) placement (on-device, edge server, cloud) and dual-system splits that run only a small model at control rate. Which one matters depends on where the latency of one model call falls relative to two times: the control period and the chunk duration (actions per chunk times control period).
 
 ## Diagram

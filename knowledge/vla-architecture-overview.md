@@ -6,6 +6,8 @@ sources: [resources/models/rt-2.md, resources/models/openvla.md, resources/model
 # VLA architecture overview
 
 ## Summary
+(Terms such as prefix, KV cache and flow matching: glossary, [model and attention](../glossary/model-and-attention.md) and [action generation](../glossary/action-generation.md).)
+
 Start with the [edge serving overview](vla-edge-serving-overview.md) for how this note fits the rest.
 
 A vision-language-action (VLA) model maps camera images, a language instruction and (usually) robot state to robot actions using a pretrained vision-language model (VLM) as its core. Designs differ mostly in the **action head** (discrete tokens, parallel regression, diffusion/flow expert) and in how much of the VLM is kept. The trajectory from RT-2 (55B, cloud, 1–3 Hz) to SmolVLA (0.45B) is a move to smaller VLMs, fewer visual tokens, chunked continuous actions from a small expert, and asynchronous execution. Terminology follows [Ma et al.](../resources/surveys/survey-vla-embodied-ai-ma.md): VLA originated with RT-2, and models built on large VLMs are sometimes called "large VLAs".

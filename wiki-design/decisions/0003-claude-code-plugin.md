@@ -14,4 +14,6 @@ Ship a Claude Code plugin in `tools/claude-plugin/` with a marketplace at the wi
 ## Why
 Native mechanisms surface the wiki without mandating it, and unrelated prompts stay untouched. In a test, a design prompt that never mentioned the wiki ran `wiki.py find` first with the plugin; an unrelated edit did not. Without the plugin a small test repo was still greppable, so the benefit at scale is unproven. Revisit with a UserPromptSubmit hint if sessions skip the wiki in a large repo.
 
+See also [0012](0012-glossary-loaded-by-the-plugin.md): the hook also injects the glossary's convention and project terms.
+
 Builds on [0002](0002-lint-and-git-as-log.md) and [0001](0001-wiki-layout-and-search.md).

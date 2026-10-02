@@ -6,7 +6,7 @@ sources: [resources/serving/vla-perf.md, resources/serving/realtime-vla.md, reso
 # Inference workload characterization
 
 ## Summary
-(Unfamiliar terms such as memory-bound are explained in [concepts first](concepts-first.md).)
+(Unfamiliar terms such as memory-bound are explained in [glossary: hardware and performance](../glossary/hardware-and-performance.md).)
 
 A flow-matching VLA call has three phases: vision encoding and VLM prefill (large matrix multiplies over hundreds of tokens, compute-bound on GPUs) and an iterative action-expert loop (few tokens, weights re-read every step, memory-bound). On bandwidth-poor edge devices all three can become memory-bound. Measured latencies sit several times above the roofline unless launch and synchronization overheads are engineered away; autoregressive-action VLAs replace the expert loop with a decode-dominated phase.
 
@@ -42,7 +42,7 @@ replace phase 3 with token-by-token decode through the full LLM (OpenVLA 7
 tokens, pi0-FAST 30-60 tokens).
 ```
 
-**In plain words.** Every phase of a call needs arithmetic and memory reads, and whichever takes longer sets that phase's time. A phase's *intensity* is its arithmetic per byte read (FLOP/byte); a chip's *balance point* is its arithmetic speed divided by its memory speed. A phase below the balance point is *memory-bound*: it waits for memory, so more arithmetic speed does not help. A phase above it is *compute-bound*: it waits for arithmetic. A worked example is in [concepts first](concepts-first.md).
+**In plain words.** Every phase of a call needs arithmetic and memory reads, and whichever takes longer sets that phase's time. A phase's *intensity* is its arithmetic per byte read (FLOP/byte); a chip's *balance point* is its arithmetic speed divided by its memory speed. A phase below the balance point is *memory-bound*: it waits for memory, so more arithmetic speed does not help. A phase above it is *compute-bound*: it waits for arithmetic. A worked example is in [glossary: hardware and performance](../glossary/hardware-and-performance.md).
 
 ```text
 Which limit applies: operator intensity (FLOP/byte) vs a device's balance point

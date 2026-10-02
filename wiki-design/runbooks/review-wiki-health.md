@@ -18,9 +18,10 @@ Run periodically (weekly, or after a large ingest), by hand or via the `wiki-hea
 8. **Missing pages:** a concept, component or term that keeps appearing across notes (`tools/wiki.py find "<term>" -n 10`, `grep -rl`) but has no note of its own deserves one (`new concept|entity …`).
 9. **Diagram vs text:** for each note with a diagram, check that the diagram answers three questions (parts, data between them with sizes, what repeats; [decision 0011](../decisions/0011-diagrams-show-parts-data-and-repetition.md)), that every box and arrow has a supporting sentence, every sentence about structure appears in the diagram, numbers agree, and decision trees cover all cases without gaps ([decision 0007](../decisions/0007-ascii-diagrams-as-logic-check.md)). Fix the stale side; list notes with structure but no diagram. Redraw rather than patch when the logic changed.
 10. **Separation:** `grep -rniE "softhier|relevance|our (project|design)" resources/` and `grep -rn "knowledge/" resources/` must find no project discussion or links into `knowledge/` ([decision 0010](../decisions/0010-resources-stay-project-neutral.md)); move any hit to `knowledge/`.
-11. **Data gaps:** collect `## Open questions` sections and the `Open questions` of `knowledge/softhier-design-implications.md`; list them for the user as suggested next sources.
-12. `tools/wiki.py stamp` → `index` → `health` until only deliberate warnings remain. Staleness cascades: after changing a directory's abstract, `check` flags parents up to the root; review them and `stamp .`.
-13. **Log:** when asked to commit: `tools/wiki.py commit lint "<subject>"`.
+11. **Glossary:** `glossary/` terms are definitions only (no numbers or findings), each `convention` or `project` row still matches how the notes use the term, every decision's `defines:` terms have rows, and the loaded set (`tools/wiki.py glossary --loaded`) is still short.
+12. **Data gaps:** collect `## Open questions` sections and the `Open questions` of `knowledge/softhier-design-implications.md`; list them for the user as suggested next sources.
+13. `tools/wiki.py stamp` → `index` → `health` until only deliberate warnings remain. Staleness cascades: after changing a directory's abstract, `check` flags parents up to the root; review them and `stamp .`.
+14. **Log:** when asked to commit: `tools/wiki.py commit lint "<subject>"`.
 
 ## Troubleshooting
 - Threshold too noisy or too quiet: `tools/wiki.py health --dup-threshold 0.90` (noisier) or `0.95`. The default 0.93 was calibrated in [decision 0005](../decisions/0005-near-duplicate-threshold.md); lower it temporarily with `--candidates` to look for overlap that is not a copy.

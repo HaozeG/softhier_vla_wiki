@@ -6,6 +6,8 @@ sources: [resources/models/openvla.md, resources/compression/bitvla.md, resource
 # Quantization for VLAs
 
 ## Summary
+(Format names such as W4A8, PTQ and ternary: [glossary, compression](../glossary/compression.md).)
+
 Quantization reliably cuts VLA memory (2–11×), but wall-clock gains depend on the kernel and on whether the phase is memory- or compute-bound. Weight-only INT4 helped a 7B autoregressive VLA on GPUs; 8-bit was slower because of dequantization overhead; GGUF 4-bit gave only 1.1× on GR00T-N1.7. The flow/diffusion action head is the most error-sensitive part, so low-bit LLM plus higher-precision expert (or expert MLPs only) is the safe default. Native low-bit training (BitVLA) gives the largest gains but requires a specialised kernel.
 
 ```text

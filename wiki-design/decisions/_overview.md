@@ -1,5 +1,5 @@
 ---
-covers: cb0c246b139c
+covers: f3dd93a4c8ed
 ---
 # wiki-design/decisions/
 
@@ -14,3 +14,4 @@ covers: cb0c246b139c
 - [0009 separate project knowledge from wiki design](0009-separate-project-knowledge-from-wiki-design.md) — project content and wiki design in separate folders, following OpenViking's resource / memory / skill split; resources grouped by topic.
 - [0010 resources stay project-neutral](0010-resources-stay-project-neutral.md) — source notes record what a source says; what it means for SoftHier-VLA lives in `knowledge/`, links run one way.
 - [0011 diagrams show parts, data and repetition](0011-diagrams-show-parts-data-and-repetition.md) — a diagram must answer: what are the parts, what data passes between them and how big, what repeats; built with `tools/diagram.py`, box alignment linted.
+- [0012 glossary loaded by the plugin](0012-glossary-loaded-by-the-plugin.md) — grouped glossary with field, convention and project scopes; convention and project terms are injected at session start; a decision defining a term adds its row.

@@ -12,11 +12,12 @@ Use when adding a paper, doc, repo, or experiment result to the wiki. One source
 2. **Search first:** `tools/wiki.py find "<topic>"` — extend an existing note instead of duplicating it.
 3. **Source note:** `tools/wiki.py new paper resources/<topic>/<slug>.md "<Title>"` (or `concept`/`entity` for non-papers). Fill every section faithfully; put the URL/ID in `sources:`. Leave no placeholder text behind. Keep it project-neutral: no "relevance to SoftHier-VLA" and no links into `knowledge/`; record scope caveats (device, precision, evidence tier) as claims of the source ([decision 0010](../decisions/0010-resources-stay-project-neutral.md)).
 4. **Synthesize:** this is where the project reading goes. Update or create the `knowledge/` notes the source informs (including [softhier-design-implications](../../knowledge/softhier-design-implications.md) for what it means for our design) (`new concept knowledge/<slug>.md "<Title>"`; `new comparison …` for trade-off analyses). Where the new source contradicts or supersedes an existing claim, fix that note and say so in it, each citing the source note in `sources:` and linking to it.
-5. **Diagram check:** for each touched `knowledge/` note with structure, add or update its ASCII diagram in the same edit as the text ([decision 0007](../decisions/0007-ascii-diagrams-as-logic-check.md)). Redraw from the new text; if the picture needs a box or arrow the text does not justify, or a case is missing, fix the text from the source note.
-6. **Cross-link:** `tools/wiki.py related <each touched note>`; add relative links for every `NOT LINKED` neighbour that is genuinely related.
-7. **Catalog:** add `- [Title](file.md) — one-line summary` per new note to its directory's `_overview.md`; revise `_abstract.md` if the directory's summary changed; repeat up the tree (`check` will flag parents).
-8. **Decisions:** if the source changed a choice, write `new decision memories/decisions/NNNN-<slug>.md "<Title>"` (project decisions; wiki-design decisions go in `wiki-design/decisions/`).
-9. **Verify:** `tools/wiki.py stamp <dirs>` → `index` → `health` (no errors; review every warning).
-10. **Log:** when asked to commit: `tools/wiki.py commit ingest "<subject>" --source <url>`.
+5. **Glossary:** if the source introduces a standard term the notes will use, add a `field` row to the right group in `glossary/` (definition only, no numbers); a local meaning of a field term is a `convention` row.
+6. **Diagram check:** for each touched `knowledge/` note with structure, add or update its ASCII diagram in the same edit as the text ([decision 0007](../decisions/0007-ascii-diagrams-as-logic-check.md)). Redraw from the new text; if the picture needs a box or arrow the text does not justify, or a case is missing, fix the text from the source note.
+7. **Cross-link:** `tools/wiki.py related <each touched note>`; add relative links for every `NOT LINKED` neighbour that is genuinely related.
+8. **Catalog:** add `- [Title](file.md) — one-line summary` per new note to its directory's `_overview.md`; revise `_abstract.md` if the directory's summary changed; repeat up the tree (`check` will flag parents).
+9. **Decisions:** if the source changed a choice, write `new decision memories/decisions/NNNN-<slug>.md "<Title>"` (project decisions; wiki-design decisions go in `wiki-design/decisions/`).
+10. **Verify:** `tools/wiki.py stamp <dirs>` → `index` → `health` (no errors; review every warning).
+11. **Log:** when asked to commit: `tools/wiki.py commit ingest "<subject>" --source <url>`.
 
 After ingesting, run the periodic [health review](review-wiki-health.md).

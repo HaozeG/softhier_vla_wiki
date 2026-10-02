@@ -1,0 +1,28 @@
+---
+type: glossary
+tags: [glossary, vla, architecture, attention]
+sources: [resources/models/smolvla.md, resources/models/openvla.md, resources/models/pi0.md]
+---
+# Model and attention
+
+## Summary
+What a VLA is made of and the transformer words used for how its parts exchange data. All terms are standard (scope field).
+
+## Terms
+| Term                               | Meaning                                                                                                                 | Scope | Defined in                                                                                 |
+| ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------- | ----- | ------------------------------------------------------------------------------------------ |
+| VLA                                | Vision-language-action model: takes camera images, a language instruction and usually robot state, and outputs actions. | field | [VLA architecture overview](../knowledge/vla-architecture-overview.md)                     |
+| VLM                                | Vision-language model: an image encoder plus a language model that reads both. A VLA is built on one.                   | field | [VLA architecture overview](../knowledge/vla-architecture-overview.md)                     |
+| vision encoder                     | Turns an image into patch tokens (SigLIP and DINOv2 are common encoders).                                               | field | [VLA architecture overview](../knowledge/vla-architecture-overview.md)                     |
+| projector                          | A small network that maps image features into the language model's token space.                                         | field | [VLA architecture overview](../knowledge/vla-architecture-overview.md)                     |
+| token                              | A vector standing for one piece of input: an image patch, a word piece, or the robot state.                             | field | [VLA architecture overview](../knowledge/vla-architecture-overview.md)                     |
+| parameters (B, M)                  | Model size in billions (B) or millions (M) of learned numbers.                                                          | field | [VLA architecture overview](../knowledge/vla-architecture-overview.md)                     |
+| LM backbone (LLM)                  | The language-model layers that process all tokens together.                                                             | field | [VLA architecture overview](../knowledge/vla-architecture-overview.md)                     |
+| prefix                             | All observation tokens given to the language model: images, text and state.                                             | field | [inference workload characterization](../knowledge/inference-workload-characterization.md) |
+| prefill                            | The single pass that processes the whole prefix.                                                                        | field | [inference workload characterization](../knowledge/inference-workload-characterization.md) |
+| KV cache                           | The keys and values each attention layer computes for the prefix, stored so later work can reuse them.                  | field | [SmolVLA](../knowledge/smolvla.md)                                                         |
+| self-attention                     | Tokens look at each other.                                                                                              | field | [VLA architecture overview](../knowledge/vla-architecture-overview.md)                     |
+| cross-attention                    | One set of tokens looks at another set's keys and values.                                                               | field | [SmolVLA](../knowledge/smolvla.md)                                                         |
+| causal and bidirectional attention | Causal: each token sees only earlier tokens. Bidirectional: every token sees all tokens.                                | field | [action representation and chunking](../knowledge/action-representation-and-chunking.md)   |
+| pixel shuffle                      | Rearranges image tokens to reduce their count.                                                                          | field | [SmolVLA](../knowledge/smolvla.md)                                                         |
+| ACT                                | A small policy that is not a VLM and regresses action chunks directly.                                                  | field | [action representation and chunking](../knowledge/action-representation-and-chunking.md)   |

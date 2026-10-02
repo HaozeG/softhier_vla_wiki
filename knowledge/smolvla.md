@@ -6,6 +6,8 @@ sources: [resources/models/smolvla.md, resources/serving/lerobot-async-inference
 # SmolVLA
 
 ## Summary
+(Evaluation names and evidence tags: [glossary, evaluation and models](../glossary/evaluation-and-models.md).)
+
 SmolVLA is Hugging Face's open 450M-parameter VLA: the first half of a SmolVLM-2 language model, 64 visual tokens per frame, and a 100M flow-matching action expert emitting 50-action chunks in 10 steps. It is the reference "small VLA" for this wiki. Its accuracy claims are on LIBERO, Meta-World and low-cost SO100/SO101 arms; its serving claims come from the paper's asynchronous stack, and measured latencies on other hardware come from third-party runtimes and vary by 10× with implementation quality.
 
 ```text

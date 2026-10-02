@@ -6,11 +6,14 @@ An LLM-maintained wiki for the SoftHier-VLA project. It combines three ideas:
 - **[zvec](https://github.com/alibaba/zvec)** — in-process vector DB for local hybrid search, related-note discovery and near-duplicate detection. No server, no API keys.
 - **[Karpathy's LLM-wiki pattern](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f)** — sources → LLM-maintained linked wiki → schema, with ingest / query / lint, and a chronological log (here: git commit messages).
 
+**New to the field?** Start with the [glossary](glossary/_overview.md), then `knowledge/vla-edge-serving-overview.md`. The wiki covers vision-language-action (VLA) models for robots and what it takes to run them on edge hardware.
+
 Agents should start at [CLAUDE.md](CLAUDE.md), which is the operating manual (note format, commands, workflows, commit format).
 
 | Dir | Holds |
 |---|---|
 | `resources/<topic>/` | one faithful note per external source, grouped by topic (models, surveys, serving, compression, rk3588, hardware) |
+| `glossary/` | grouped term definitions (field, convention, project scope); convention and project terms are loaded into sessions by the plugin |
 | `knowledge/` | synthesized concept/entity notes |
 | `memories/decisions/` | project decisions (numbered from 0001) |
 | `wiki-design/` | how the wiki works: `decisions/` (wiki design records) and `runbooks/` (ingest a source, review health) |

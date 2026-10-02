@@ -1,11 +1,10 @@
 ---
-covers: ff238dd72276
+covers: df308ab27b6b
 ---
 # knowledge/
 
-Synthesis for VLA serving on edge hardware, each note citing `resources/` notes. Start with the overview.
+Synthesis for VLA serving on edge hardware, each note citing `resources/` notes. New to the field? Read the glossary (`../glossary/`) first, then the overview.
 
-- [Concepts first](concepts-first.md) — plain-words glossary: control loop, VLA parts, memory- vs compute-bound, quantization names, symbols
 - [VLA edge serving overview](vla-edge-serving-overview.md) — start here: findings, reading path, trust guide
 - [Implications for SoftHier-VLA](softhier-design-implications.md) — what the sources mean for our design: mapping, precision, serving, targets
 - [VLA architecture overview](vla-architecture-overview.md) — components, action heads, reference models

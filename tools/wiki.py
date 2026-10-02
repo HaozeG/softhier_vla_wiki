@@ -59,9 +59,11 @@ TYPES = {
     "decision": ["Context", "Decision", "Why"],
     "runbook": ["Steps"],
     "comparison": ["Summary", "Comparison"],
+    "glossary": ["Summary", "Terms"],
 }
 NEED_SOURCES = {"concept", "entity", "paper"}
 OPS = ["ingest", "update", "delete", "lint", "refactor", "init"]
+GLOSSARY_DIR, GLOSSARY_SCOPES, GLOSSARY_BUDGET = "glossary", {"field", "convention", "project"}, 3000  # decision 0012
 DUP_THRESHOLD = 0.93  # bge-small, chunk-level: a lightly reworded copy scores ~1.0; related-but-distinct notes in one narrow topic reach ~0.90-0.92 (see decision 0005); unrelated <0.65
 
 
@@ -182,6 +184,51 @@ def format_tables(text: str):
         out.extend(fmt([cell(t, k) for k, t in enumerate(r)]) for r in rows[2:])
         i = j
     return "\n".join(out), problems
+
+
+# ---------- glossary (decision 0012) ----------
+def glossary_rows():
+    """Rows of every `## Terms` table in glossary/: dicts term, meaning, scope, defined, file (+ problems)."""
+    rows, problems = [], []
+    gd = ROOT / GLOSSARY_DIR
+    for f in sorted(gd.glob("*.md")) if gd.is_dir() else []:
+        if f.name in SUMMARY_FILES:
+            continue
+        fm, body = split_fm(f.read_text())
+        if fm.get("type") != "glossary":
+            continue
+        sec = re.search(r"^##\s+Terms\s*\n(.*?)(?=^##\s|\Z)", body, re.S | re.M)
+        lines = [l for l in (sec.group(1).splitlines() if sec else []) if l.lstrip().startswith("|")]
+        for l in lines[2:]:
+            c = split_row(l)
+            rel = f.relative_to(ROOT).as_posix()
+            if len(c) != 4:
+                problems.append((rel, f"terms row needs 4 cells (Term | Meaning | Scope | Defined in): {l[:60]}"))
+                continue
+            term, meaning, scope, defined = c
+            m = re.search(r"\]\(([^)\s#]+\.md)", defined)
+            target = None
+            if m:
+                tp = (f.parent / m.group(1)).resolve()
+                target = tp.relative_to(ROOT).as_posix() if tp.exists() and ROOT in tp.parents else None
+            if re.search(r"(?<![\w.])\d+(?:\.\d+)?(?!-bit|[\w])", meaning):
+                problems.append((rel, f"`{term}`: the glossary holds definitions only; move numbers and findings to a knowledge note"))
+            if scope not in GLOSSARY_SCOPES:
+                problems.append((rel, f"`{term}`: scope must be one of {sorted(GLOSSARY_SCOPES)}, got `{scope}`"))
+            if not target:
+                problems.append((rel, f"`{term}`: `Defined in` needs a link that resolves to a wiki note"))
+            rows.append({"term": term, "meaning": meaning, "scope": scope, "defined": target, "file": rel})
+    return rows, problems
+
+
+def loaded_glossary(rows=None):
+    """Convention and project terms, as compact lines: what a parent-repo session must not guess."""
+    rows = glossary_rows()[0] if rows is None else rows
+    def label(path):  # short, still unambiguous: decisions by number, other notes by file name
+        m = re.match(r"wiki-design/decisions/(\d{4})-", path or "")
+        return f"wiki-design decision {m.group(1)}" if m else Path(path or "?").stem
+    return [f"- {r['term']}: {r['meaning']} [{label(r['defined'])}]" for r in rows if r["scope"] in ("convention", "project")]
+
 
 
 LINK_RE = re.compile(r"\[[^\]]*\]\(([^)\s]+)\)|(wiki://[\w./-]+\.md)")
@@ -459,6 +506,12 @@ def structural_issues():
     out = []
     add = lambda sev, code, path, msg: out.append((sev, code, path, msg))
     _, inbound = link_graph()
+    g_rows, g_problems = glossary_rows()
+    for rel, msg in g_problems:
+        add("ERROR", "GLOSSARY", rel, msg)
+    g_size = len("\n".join(loaded_glossary(g_rows)))
+    if g_size > GLOSSARY_BUDGET:
+        add("ERROR", "GLOSSARYSIZE", GLOSSARY_DIR + "/", f"convention and project terms are {g_size} characters, over the {GLOSSARY_BUDGET} the plugin loads at session start; shorten meanings or move terms to scope `field`")
     titles, bodies = {}, {}
     for d in all_dirs():
         rel = d.relative_to(ROOT).as_posix()
@@ -503,6 +556,9 @@ def structural_issues():
             _, broken = note_links(f, body)
             for t in broken:
                 add("ERROR", "BROKENLINK", frel, t)
+            for term in parse_list(fm.get("defines", "")):
+                if term.lower() not in {r["term"].lower() for r in glossary_rows()[0] if r["scope"] == "project"}:
+                    add("ERROR", "DEFINES", frel, f"decision defines `{term}` but glossary has no project-scope row for it (add it to glossary/project-terms.md)")
             if format_tables(body)[0] != body:
                 add("WARN", "TABLEFMT", frel, "table not padded like Obsidian; run `tools/wiki.py fmt`")
             for blk in DIAGRAM_RE.findall(body):
@@ -728,13 +784,31 @@ def session_context(project: Path) -> str:
     for d in dirs(ROOT):
         a0 = summary_body(d, "_abstract.md")
         lines.append(f"- {d.name}/: {a0 or '(no abstract)'}")
+    glossary = loaded_glossary()
+    if glossary:
+        lines.append("\nWiki glossary: project and convention terms (they override general knowledge; for any other term see "
+                     f"`{os.path.relpath(ROOT, project)}/{GLOSSARY_DIR}/` or `{tool} glossary \"<term>\"`):\n" + "\n".join(glossary))
+    head = "\n".join(lines)
     try:
         recent = git("log", "-5", "--format=%as %s", check=False).strip()
     except Exception:  # noqa: BLE001
         recent = ""
-    if recent:
-        lines.append("\nRecent wiki changes:\n" + recent)
-    return "\n".join(lines)[:9000]
+    tail = ("\n\nRecent wiki changes:\n" + recent) if recent else ""
+    return (head + tail[: max(0, 9000 - len(head))])[:9000]  # glossary is never cut; recent changes go first
+
+
+def cmd_glossary(a):
+    """Look up glossary terms (substring match on term or meaning), or print what the plugin loads."""
+    rows, _ = glossary_rows()
+    if a.loaded:
+        print("\n".join(loaded_glossary(rows)))
+        return
+    q = (a.term or "").lower()
+    hits = [r for r in rows if not q or q in r["term"].lower() or q in r["meaning"].lower()]
+    for r in hits:
+        print(f"{r['term']}  [{r['scope']}]\n  {r['meaning']}\n  defined in {r['defined']}")
+    if not hits:
+        print("(no matching glossary term)")
 
 
 def cmd_setup(a):
@@ -833,6 +907,10 @@ def main():
     p = sub.add_parser("fmt", help="pad pipe tables like Obsidian (idempotent); --check only reports")
     p.add_argument("--check", action="store_true")
     p.set_defaults(fn=cmd_fmt)
+    p = sub.add_parser("glossary", help="look up glossary terms; --loaded prints what the plugin injects at session start")
+    p.add_argument("term", nargs="?")
+    p.add_argument("--loaded", action="store_true")
+    p.set_defaults(fn=cmd_glossary)
     sub.add_parser("install-hooks", help="enable the commit-msg hook").set_defaults(fn=cmd_install_hooks)
     p = sub.add_parser("stamp", help="record current children hash in summary files")
     p.add_argument("paths", nargs="*")
