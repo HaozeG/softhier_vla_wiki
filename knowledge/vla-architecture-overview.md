@@ -1,7 +1,7 @@
 ---
 type: concept
 tags: [vla, architecture, history, action-head, dual-system]
-sources: [resources/models/rt-2.md, resources/models/openvla.md, resources/models/octo.md, resources/models/pi0.md, resources/models/pi05.md, resources/models/fast-tokenizer.md, resources/models/openvla-oft.md, resources/models/gr00t-n1.md, resources/models/smolvla.md, resources/models/tinyvla.md, resources/models/figure-helix.md, resources/surveys/survey-vla-embodied-ai-ma.md]
+sources: [resources/models/rt-2.md, resources/models/openvla.md, resources/models/octo.md, resources/models/pi0.md, resources/models/pi05.md, resources/models/fast-tokenizer.md, resources/models/openvla-oft.md, resources/models/gr00t-n1.md, resources/models/smolvla.md, resources/models/tinyvla.md, resources/models/figure-helix.md, resources/surveys/survey-vla-embodied-ai-ma.md, resources/compression/quantvla.md]
 ---
 # VLA architecture overview
 
@@ -45,6 +45,7 @@ What crosses from the backbone to the action head (axes 1 and 2)
 - **Action decoding:** discrete autoregressive tokens (RT-2, OpenVLA); parallel decoding with a regression head (OpenVLA-OFT); diffusion/flow expert (Octo head, π0, GR00T N1, SmolVLA); two-speed systems (GR00T N1, Helix). Details in [action representation and chunking](action-representation-and-chunking.md).
 - **Backbone size and depth:** from 55B (RT-2) and 7B (OpenVLA) to 2–3B (π0, GR00T N1) to 0.45B (SmolVLA, which keeps only the first half of the LLM layers) and TinyVLA's 0.4–1.3B.
 - **Visual tokens:** 256 per 224×224 image for SigLIP-style encoders (OpenVLA, π0); 64 per frame with pixel shuffle in SmolVLA and GR00T N1.
+- **Action expert as a DiT:** GR00T N1's action module is a DiT (diffusion transformer): a transformer that refines noisy actions, alternating cross-attention to the VLM tokens with self-attention over the noisy actions and state ([GR00T N1](../resources/models/gr00t-n1.md)); QuantVLA also calls such a head a DiT action head ([QuantVLA](../resources/compression/quantvla.md)).
 - **Coupling of backbone and action expert:** shared self-attention with separate weights in π0 (blockwise causal mask, prefix KV cached across flow steps); cross-attention in GR00T N1; interleaved cross- and self-attention in SmolVLA.
 - **Where features are taken:** GR00T N1 uses the 12th LLM layer and reports faster inference and higher success than the last layer; SmolVLA uses layers up to N = L/2 as a speed trade-off: its ablation scores 78.5 at N = 16 against 80.3 at N = 32 on LIBERO (about 2 points lower), for half the layers ([layer skipping and pruning](layer-skipping-and-pruning.md)).
 - **Training recipe:** π0.5 pretrains with discrete FAST tokens and post-trains a flow expert; TinyVLA and Octo skip large robot pretraining.
@@ -64,7 +65,7 @@ What crosses from the backbone to the action head (axes 1 and 2)
 | [TinyVLA](../resources/models/tinyvla.md) | 0.42–1.3B                   | Pythia-based                         | diffusion head                       | 14 ms per action, A6000                  |
 | Helix (S2 / S1)                           | 7B / 80M                    | open VLM / cross-attn transformer    | 200 Hz S1                            | S2 7–9 Hz, onboard embedded GPUs         |
 
-Speeds come from different hardware, batch sizes and definitions; do not rank models by this column. Per-paper detail (tables, ablations, limitations) lives in the `resources/` notes, for example [SmolVLA paper](../resources/models/smolvla.md) vs the model-centric [SmolVLA](smolvla.md) note; this note only compares designs across them.
+In the table, Params is the model size in billions (B) or millions (M) of learned numbers (parameters). Speeds come from different hardware, batch sizes and definitions; do not rank models by this column. Per-paper detail (tables, ablations, limitations) lives in the `resources/` notes, for example [SmolVLA paper](../resources/models/smolvla.md) vs the model-centric [SmolVLA](smolvla.md) note; this note only compares designs across them.
 
 **Convergent efficient recipe (2025–2026):** small or truncated VLM, 64 visual tokens per frame, a small flow-matching expert with a handful of steps, chunked actions, and asynchronous execution. Each element has a measured or ablated justification in the linked notes: [layer skipping and pruning](layer-skipping-and-pruning.md), [token pruning and caching](token-pruning-and-caching.md), [flow-step reduction](flow-step-reduction.md), [serving methods](serving-methods.md).
 

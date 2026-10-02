@@ -6,7 +6,7 @@ sources: [resources/serving/vla-perf.md, resources/models/openvla-oft.md, resour
 # Flow-step reduction
 
 ## Summary
-In flow- or diffusion-based VLAs the action expert runs 4–10 (Diffusion Policy: up to 100) sequential steps per chunk, each re-reading the expert's weights, so it is often the largest share of latency on bandwidth-limited hardware. Options: fewer steps (with or without distillation), feature caching across steps, a single-pass regression head, or restructuring the loop so steps are amortized across control cycles (streaming). Fewer steps trade accuracy nonlinearly, and evidence differs on whether one step is safe.
+In flow- or diffusion-based VLAs the action expert runs 4–10 (Diffusion Policy: up to 100) sequential steps per chunk, each re-reading the expert's weights, so it is often the largest share of latency on bandwidth-limited hardware. One such refinement step is a flow step, and T is the number of flow steps one call runs. Options: fewer steps (with or without distillation), feature caching across steps, a single-pass regression head, or restructuring the loop so steps are amortized across control cycles (streaming). Fewer steps trade accuracy nonlinearly, and evidence differs on whether one step is safe.
 
 ```text
 chunk latency = P (vision + prefix, once) + T x E (T expert steps)

@@ -1,11 +1,13 @@
 ---
-covers: 56ba5fc75e42
+covers: c95789c09f11
 ---
 # knowledge/
 
-Synthesis for VLA serving on edge hardware, each note citing `resources/` notes. New to the field? Read the glossary (`../glossary/`) first, then the overview.
+Synthesis for VLA serving on edge hardware, each note citing `resources/` notes. Start order: the README, the glossary (`../glossary/_overview.md`), then the two notes below.
 
-- [VLA edge serving overview](vla-edge-serving-overview.md) — start here: findings, reading path, trust guide
+- [One VLA call, step by step](one-vla-call.md) — start here: plain-language walkthrough of one call, with one picture
+- [VLA edge serving overview](vla-edge-serving-overview.md) — next: findings, reading path, trust guide
+- [SoftHier and the project](softhier-and-the-project.md) — what the project README says: mapping VLA applications to a tile-based many-PE chip; goals
 - [Implications for SoftHier-VLA](softhier-design-implications.md) — what the sources mean for our design: mapping, precision, serving, targets
 - [VLA architecture overview](vla-architecture-overview.md) — components, action heads, reference models
 - [Action representation and chunking](action-representation-and-chunking.md) — tokens vs regression vs flow; chunk size

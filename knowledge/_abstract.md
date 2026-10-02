@@ -1,4 +1,4 @@
 ---
-covers: 56ba5fc75e42
+covers: c95789c09f11
 ---
-VLA edge serving: architectures, serving methods, workload analysis, pruning, quantization, edge hardware (RK3588, Unitree, AgiBot), a 10-TOPS estimate and SoftHier-VLA design implications. Terms: see glossary/. Start: vla-edge-serving-overview.
+VLA edge serving: architectures, serving, workload, pruning, quantization, edge hardware (RK3588, Unitree, AgiBot), a 10-TOPS estimate, SoftHier-VLA implications. Start: README, glossary/, one-vla-call, vla-edge-serving-overview.

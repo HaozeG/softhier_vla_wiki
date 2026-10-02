@@ -1,7 +1,7 @@
 ---
 type: concept
 tags: [layer-pruning, layer-skipping, early-exit, width-pruning, distillation, structured-pruning]
-sources: [resources/models/smolvla.md, resources/models/gr00t-n1.md, resources/compression/efficientvla.md, resources/compression/deer-vla.md, resources/compression/dysl-vla.md, resources/compression/clp-layer-pruning.md, resources/compression/pruned-vla-recovery.md, resources/surveys/survey-efficient-vla-guan.md]
+sources: [resources/models/smolvla.md, resources/models/gr00t-n1.md, resources/compression/efficientvla.md, resources/compression/deer-vla.md, resources/compression/dysl-vla.md, resources/compression/clp-layer-pruning.md, resources/compression/pruned-vla-recovery.md, resources/surveys/survey-efficient-vla-guan.md, resources/serving/vla-xpu-characterization.md]
 ---
 # Layer skipping and pruning
 
@@ -33,7 +33,7 @@ either way: the action head (fixed flow steps) sets a latency floor
 **Dynamic skipping and early exit**
 - DeeR-VLA: multi-exit LLM with action-consistency exit criteria and budgeted thresholds; LLM FLOPs 5.2–6.5× lower, memory 2–6× lower; wall-clock gain 55 → 17.5 ms (−68%) vs −81% theoretical, on a V100 with no early-exit code optimization ([DeeR-VLA](../resources/compression/deer-vla.md)).
 - DySL-VLA: about 20% static layers plus skippable dynamic blocks with adapters; skipping is restricted near critical actions by trajectory continuity; OpenVLA-OFT on Jetson Orin 676 → 345 ms at 96.5 vs 97.1% ([DySL-VLA](../resources/compression/dysl-vla.md)). It also reports that per-layer controllers add serial latency that can cancel gains.
-- Surveys additionally cite MoLe-VLA (layers as experts with self-distillation), FLOWER (drop upper layers) and speculative and parallel decoding ([Guan et al.](../resources/surveys/survey-efficient-vla-guan.md)).
+- Surveys additionally cite MoLe-VLA (layers as experts with self-distillation), FLOWER (drop upper layers) and speculative and parallel decoding ([Guan et al.](../resources/surveys/survey-efficient-vla-guan.md)). In speculative decoding a small draft model proposes tokens that the large model then accepts or rejects; the XPU benchmark reports it (1.11× on OpenVLA) and notes that quantization lowers its acceptance ([XPU](../resources/serving/vla-xpu-characterization.md)).
 
 **Weight (width) pruning**
 - Removing 63% of OpenVLA-OFT's backbone width drops LIBERO-Long from 93.2% to 0.8%. Offline hidden-state distillation (about 8 H100 GPU-hours, no RL) recovers 89.7%; supervised recovery suffices up to about 45% reduction; distillation matters beyond 63% ([pruned VLA recovery](../resources/compression/pruned-vla-recovery.md)).

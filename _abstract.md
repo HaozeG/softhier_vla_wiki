@@ -1,4 +1,4 @@
 ---
-covers: a50e85ee4990
+covers: 82120ed318b8
 ---
-SoftHier-VLA wiki. Project side: glossary/ (terms), resources/ (sources by topic), knowledge/ (VLA edge-serving synthesis), memories/decisions/. Wiki side: wiki-design/, tools/. New? Start with glossary/.
+SoftHier-VLA wiki. Project side: glossary/ (terms), resources/ (sources), knowledge/ (VLA edge serving), memories/decisions/. Wiki side: wiki-design/, tools/. New? README, glossary/, knowledge/one-vla-call, then the serving overview.

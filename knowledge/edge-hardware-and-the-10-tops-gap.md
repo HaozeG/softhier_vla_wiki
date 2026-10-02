@@ -27,6 +27,8 @@ CPU only        Pi 5, i9                     SmolVLA 8.2 s (Pi 5), 2.1 s (i9)
 Reading rule behind the "10 TOPS gap": the ratio of compute to bandwidth (FLOP/byte), not TOPS, sets which phase limits a device (about 195 for the 310B, 164 for an RTX 4090).
 
 ## Details
+The RTX 4090 (a graphics card), A100 and H100 (datacenter GPUs), all from NVIDIA, appear in the sources as reference points, far above the ~10 TOPS class this project targets.
+
 **Hardware classes (vendor figures; precision and sparsity matter)**
 
 | Class                                     | Compute                                                     | Memory bandwidth                                                          | Power                    | Source                                                                                                                              |

@@ -60,7 +60,7 @@ The first drawing is the roofline paragraph below; the second is "Does that keep
 **A real 6-TOPS NPU:** the RK3588 uses only about 4–19% of its headline TOPS on measured transformer workloads and runs vision encoders in FP16; the SmolVLA estimate there is about 1.0–1.4 s (1 camera) to 2.8–3.2 s (3 cameras), an order of magnitude above this roofline ([RK3588 deployment](rk3588-vla-deployment.md)).
 
 **Design hypotheses (not established by the sources)**
-1. Holding the expert's weights on chip removes about a quarter of the roofline time (39 → 10 ms); on a tile-based chip with large aggregate SRAM this is the natural mapping.
+1. Holding the expert's weights on chip removes about a quarter of the roofline time (39 → 10 ms); on a tile-based chip with large aggregate SRAM (static random-access memory, the fast memory on the chip itself) this is the natural mapping.
 2. Because the vision encoder (1024 patches × 3 cameras, no tiling) is about 80% of FLOPs, camera count, input resolution (256×256 inputs are padded up to 512×512 by the released config) and encoder precision matter more than the LLM's depth. Token reductions after the encoder ([token pruning and caching](token-pruning-and-caching.md)) do not reduce that cost.
 3. Weight quantization mostly helps memory-bound phases and only with native low-bit datapaths ([quantization](quantization.md)).
 

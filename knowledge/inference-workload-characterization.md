@@ -93,12 +93,14 @@ Measured runs use different chunk sizes, camera counts and frameworks; treat the
 
 **Where the software gap comes from (4090, [Realtime-VLA](../resources/serving/realtime-vla.md))**
 - π0 launches over a thousand kernels per call (1378 matmuls). Inter-kernel overhead: 12.9 ms in PyTorch, 1.7 ms with a CUDA graph, 0.9 ms with a software grid barrier. Graph capture alone roughly halved latency (106.5 → 43.5 ms for two views); simplifying the graph, tuned GEMM tiles and fused epilogues took it to 27.3 ms.
-- Tile quantization also matters: a 512×1152×1152 GEMM split into 144 blocks did not divide across 128 SMs.
+- Tool names used in these notes: ONNX is a model exchange format, TensorRT is NVIDIA's inference compiler and runtime, and Triton is a language for writing GPU kernels (standard meanings; Triton appears in [Realtime-VLA](../resources/serving/realtime-vla.md), TensorRT in [serving methods](serving-methods.md), ONNX in the [RK3588 notes](rk3588-vla-deployment.md)).
+- Tile quantization also matters. A GEMM (matrix-matrix multiply) is cut into tiles, blocks of the result that each compute unit works on, and tile quantization is the loss when the tiles do not divide evenly across the units: a 512×1152×1152 GEMM split into 144 tiles did not divide across 128 SMs ([Realtime-VLA](../resources/serving/realtime-vla.md)).
 - torch.compile gains vary by device (2.9× on RTX 4090 but 1.5× on Thor and 2.3× on Ascend 310P in [XPU](../resources/serving/vla-xpu-characterization.md)).
 
 **Related:** how precision changes these phases is in [quantization](quantization.md) (which is about numeric formats and kernels, not phase structure), and per-technique speedups measured against these baselines are collected in [technique comparison](technique-comparison.md).
 
 **Autoregressive and reasoning VLAs**
+- Autoregressive decoding produces output one token at a time, each pass needing the tokens already produced; the decode phase is the part of a call spent doing that ([OpenVLA-OFT](../resources/models/openvla-oft.md) contrasts it with parallel decoding).
 - OpenVLA generates 7 tokens sequentially; parallel decoding cut latency 4× and chunking gave 26× throughput ([OpenVLA-OFT](../resources/models/openvla-oft.md)). π0-FAST decodes 30–60 tokens through the full LLM, about 750 ms per chunk vs about 100 ms for diffusion π0 on the same GPU ([FAST](../resources/models/fast-tokenizer.md)).
 - For a reasoning VLA (MolmoAct-7B) generation was about 75% of latency, and Thor's 5× compute over Orin gave only 1.4× speedup ([edge bottleneck characterization](../resources/serving/vla-edge-bottleneck-characterization.md)).
 
