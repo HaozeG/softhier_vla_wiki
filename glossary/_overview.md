@@ -1,9 +1,9 @@
 ---
-covers: 05e235eeaa2f
+covers: ed7f1917378c
 ---
 # glossary/
 
-Start here if terms are new. Each file has a terms table (Term, Meaning, Scope, Defined in) and explanations below it. Scope `field` is a standard meaning, for newcomers; `convention` is this wiki's own meaning of a field term or symbol, and `project` is defined by a SoftHier-VLA decision; both are loaded into project sessions and override general knowledge ([wiki-design decision 0012](../wiki-design/decisions/0012-glossary-loaded-by-the-plugin.md)).
+Start here if terms are new. Each file has a terms table (Term, Meaning, Scope, Defined in) and explanations below it. Scope `field` is a standard meaning, for newcomers; `convention` is this wiki's own meaning of a field term or symbol, and `project` is defined by a SoftHier-VLA decision; both override general knowledge, and their names are listed at the start of project sessions (look up a definition with `tools/wiki.py glossary "<term>"`) ([wiki-design decision 0012](../wiki-design/decisions/0012-glossary-with-on-demand-lookup.md)).
 
 - [Robot and control loop](robot-and-control-loop.md) — control step, chunk, latency, async, stale and lagged actions
 - [Model and attention](model-and-attention.md) — VLA, VLM, tokens, prefix, KV cache, attention kinds

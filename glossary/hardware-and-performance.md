@@ -6,7 +6,7 @@ sources: [resources/serving/vla-perf.md, resources/hardware/edge-accelerator-dat
 # Hardware and performance
 
 ## Summary
-The words for why a faster chip does not always give a faster robot, and the hardware and toolchain names the notes use. Balance point, roofline, estimate versus measured, TOPS and the ~10 TOPS class are the wiki's own usage (convention) and are loaded into project sessions.
+The words for why a faster chip does not always give a faster robot, and the hardware and toolchain names the notes use. Balance point, roofline, estimate versus measured, TOPS and the ~10 TOPS class are the wiki's own usage (convention) and are listed by name at the start of project sessions.
 
 ## Terms
 | Term                              | Meaning                                                                                                                        | Scope      | Defined in                                                                                               |
@@ -38,7 +38,7 @@ The words for why a faster chip does not always give a faster robot, and the har
 A chip has two limits: how fast it does arithmetic and how fast it reads numbers from memory. Every phase of a model call needs both, and whichever takes longer sets that phase's time; this rule applied phase by phase is the roofline model. A phase that does little arithmetic for each byte it reads is memory-bound: a faster arithmetic unit leaves it unchanged, while fewer or faster memory reads shorten it. A phase that does a lot of arithmetic per byte is compute-bound, and fewer operations shorten it.
 
 ```text
-Why the longer of two times sets the time of a phase (bar lengths illustrative
+Why the longer of two times sets the time of a phase (bar lengths illustrative)
 
 arithmetic time |########
 memory time     |####################

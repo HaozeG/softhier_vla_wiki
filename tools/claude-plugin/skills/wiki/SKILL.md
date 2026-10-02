@@ -6,7 +6,7 @@ description: Consult and update the SoftHier-VLA project wiki (the softhier_vla_
 The wiki is the git submodule `softhier_vla_wiki/`: typed Markdown notes with tiered summaries, searchable with zvec. Run its tool by path from the project root (no venv activation): `softhier_vla_wiki/tools/wiki.py <command>`. If it says zvec is missing, run `softhier_vla_wiki/tools/wiki.py setup` once.
 
 ## Consult (before designing or deciding)
-0. Project and convention terms are injected at session start (`term: meaning [defined in]`); they override general knowledge. For any other term run `softhier_vla_wiki/tools/wiki.py glossary "<term>"` or read `softhier_vla_wiki/glossary/`. If you define a new term while designing, record it (see File back).
+0. The session-start pointer lists terms this project defines locally. They override general knowledge: before using one, run `softhier_vla_wiki/tools/wiki.py glossary "<term>"` (or read `softhier_vla_wiki/glossary/`). Reveal only what the task needs: `ls <dir>` for one-line summaries, `find` for search. If you define a new term while designing, record it (see File back).
 1. `softhier_vla_wiki/tools/wiki.py find "<question in plain words>"`; add `--under knowledge` or `--layer L0` to narrow. Browse with `ls <dir>`.
 2. Read the L0/L1 hits first, open L2 notes only as needed. Prefer wiki content over guessing; cite `wiki://` URIs in plans.
 3. Say plainly when the wiki has nothing relevant.

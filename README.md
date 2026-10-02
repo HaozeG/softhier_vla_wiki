@@ -13,7 +13,7 @@ Agents should start at [CLAUDE.md](CLAUDE.md), which is the operating manual (no
 | Dir | Holds |
 |---|---|
 | `resources/<topic>/` | one faithful note per external source, grouped by topic (models, surveys, serving, compression, rk3588, hardware) |
-| `glossary/` | grouped term definitions (field, convention, project scope); convention and project terms are loaded into sessions by the plugin |
+| `glossary/` | grouped term definitions (field, convention, project scope); the plugin lists the names of convention and project terms at session start; definitions are looked up on demand (`wiki.py glossary`) |
 | `knowledge/` | synthesized concept/entity notes |
 | `memories/decisions/` | project decisions (numbered from 0001) |
 | `wiki-design/` | how the wiki works: `decisions/` (wiki design records) and `runbooks/` (ingest a source, review health) |

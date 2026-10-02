@@ -63,7 +63,7 @@ TYPES = {
 }
 NEED_SOURCES = {"concept", "entity", "paper"}
 OPS = ["ingest", "update", "delete", "lint", "refactor", "init"]
-GLOSSARY_DIR, GLOSSARY_SCOPES, GLOSSARY_BUDGET = "glossary", {"field", "convention", "project"}, 3000  # decision 0012
+GLOSSARY_DIR, GLOSSARY_SCOPES, GLOSSARY_BUDGET = "glossary", {"field", "convention", "project"}, 800  # decision 0012
 DUP_THRESHOLD = 0.93  # bge-small, chunk-level: a lightly reworded copy scores ~1.0; related-but-distinct notes in one narrow topic reach ~0.90-0.92 (see decision 0005); unrelated <0.65
 
 
@@ -221,14 +221,10 @@ def glossary_rows():
     return rows, problems
 
 
-def loaded_glossary(rows=None):
-    """Convention and project terms, as compact lines: what a parent-repo session must not guess."""
+def local_term_names(rows=None):
+    """Names of the convention and project terms: the index a session sees at start (definitions are looked up on demand)."""
     rows = glossary_rows()[0] if rows is None else rows
-    def label(path):  # short, still unambiguous: decisions by number, other notes by file name
-        m = re.match(r"wiki-design/decisions/(\d{4})-", path or "")
-        return f"wiki-design decision {m.group(1)}" if m else Path(path or "?").stem
-    return [f"- {r['term']}: {r['meaning']} [{label(r['defined'])}]" for r in rows if r["scope"] in ("convention", "project")]
-
+    return [r["term"] for r in rows if r["scope"] in ("convention", "project")]
 
 
 LINK_RE = re.compile(r"\[[^\]]*\]\(([^)\s]+)\)|(wiki://[\w./-]+\.md)")
@@ -509,9 +505,9 @@ def structural_issues():
     g_rows, g_problems = glossary_rows()
     for rel, msg in g_problems:
         add("ERROR", "GLOSSARY", rel, msg)
-    g_size = len("\n".join(loaded_glossary(g_rows)))
+    g_size = len("; ".join(local_term_names(g_rows)))
     if g_size > GLOSSARY_BUDGET:
-        add("ERROR", "GLOSSARYSIZE", GLOSSARY_DIR + "/", f"convention and project terms are {g_size} characters, over the {GLOSSARY_BUDGET} the plugin loads at session start; shorten meanings or move terms to scope `field`")
+        add("ERROR", "GLOSSARYSIZE", GLOSSARY_DIR + "/", f"the names of convention and project terms are {g_size} characters, over the {GLOSSARY_BUDGET} listed at session start; merge terms or give standard ones scope `field`")
     titles, bodies = {}, {}
     for d in all_dirs():
         rel = d.relative_to(ROOT).as_posix()
@@ -767,48 +763,46 @@ def cmd_hook(a):
 
 
 def session_context(project: Path) -> str:
-    """Stdlib-only orientation for a session: where the wiki is, what it holds, what changed lately."""
+    """Stdlib-only orientation for a session: a short pointer to what the wiki holds and how to look things up.
+    Nothing is loaded in full: the session reveals definitions, decisions and notes on demand (decision 0012)."""
     tool = os.path.relpath(Path(__file__).resolve(), project)
-    lines = [f"A project wiki (LLM-maintained, git submodule) lives at `{os.path.relpath(ROOT, project)}/`.",
-             f"Consult it before design/architecture/planning work and when past decisions or project knowledge could matter: "
-             f"`{tool} find \"<question>\"` (semantic+keyword search), `{tool} ls <dir>`; cite `wiki://` URIs. "
-             f"File durable outcomes back (decisions, syntheses) using the workflow in `{os.path.relpath(ROOT, project)}/CLAUDE.md` "
-             f"or the `softhier-wiki:wiki` skill; commit only inside the submodule and only when asked."]
+    wiki = os.path.relpath(ROOT, project)
+    lines = [f"A project wiki (LLM-maintained, git submodule) lives at `{wiki}/`: SoftHier-VLA knowledge, decisions and term definitions.",
+             "Look things up instead of guessing, and reveal only what the task needs:",
+             f"- Terms: this project and wiki give some words their own meaning, which overrides general knowledge. Before using one, read its definition: "
+             f"`{tool} glossary \"<term>\"` (all groups: `{wiki}/{GLOSSARY_DIR}/`)."]
+    names = local_term_names()
+    if names:
+        lines.append("  Terms defined locally: " + "; ".join(names) + ".")
+    lines += [f"- Design documents: project decisions in `{wiki}/memories/decisions/`, synthesis in `{wiki}/knowledge/`, sources in `{wiki}/resources/<topic>/`. "
+              f"Browse with `{tool} ls <dir>` (one-line summaries), search with `{tool} find \"<question>\"`; cite `wiki://` URIs.",
+              f"- Filing back (decisions, new terms, syntheses): the workflow in `{wiki}/CLAUDE.md` or the `softhier-wiki:wiki` skill; commit only inside the submodule and only when asked."]
     if not (ROOT / ".venv").exists() or not INDEX.exists():
         lines.append(f"Not set up on this machine yet: run `{tool} setup` once before using it.")
-    ab, ov = summary_body(ROOT, "_abstract.md"), summary_body(ROOT, "_overview.md")
+    ab = summary_body(ROOT, "_abstract.md")
     if ab:
         lines.append(f"\nWiki abstract: {ab}")
-    if ov:
-        lines.append(f"\nWiki overview:\n{ov}")
     for d in dirs(ROOT):
         a0 = summary_body(d, "_abstract.md")
         lines.append(f"- {d.name}/: {a0 or '(no abstract)'}")
-    glossary = loaded_glossary()
-    if glossary:
-        lines.append("\nWiki glossary: project and convention terms (they override general knowledge; for any other term see "
-                     f"`{os.path.relpath(ROOT, project)}/{GLOSSARY_DIR}/` or `{tool} glossary \"<term>\"`):\n" + "\n".join(glossary))
-    head = "\n".join(lines)
-    try:
-        recent = git("log", "-5", "--format=%as %s", check=False).strip()
-    except Exception:  # noqa: BLE001
-        recent = ""
-    tail = ("\n\nRecent wiki changes:\n" + recent) if recent else ""
-    return (head + tail[: max(0, 9000 - len(head))])[:9000]  # glossary is never cut; recent changes go first
+    lines.append(f"\nWhat changed lately: `{tool} log -n 5`.")
+    return "\n".join(lines)[:4000]
 
 
 def cmd_glossary(a):
-    """Look up glossary terms (substring match on term or meaning), or print what the plugin loads."""
+    """Look up glossary terms (substring match on term or meaning); --names lists the local term names; --scope filters."""
     rows, _ = glossary_rows()
-    if a.loaded:
-        print("\n".join(loaded_glossary(rows)))
+    if a.scope:
+        rows = [r for r in rows if r["scope"] == a.scope]
+    if a.names:
+        print("; ".join(r["term"] for r in rows))
         return
     q = (a.term or "").lower()
     hits = [r for r in rows if not q or q in r["term"].lower() or q in r["meaning"].lower()]
     for r in hits:
         print(f"{r['term']}  [{r['scope']}]\n  {r['meaning']}\n  defined in {r['defined']}")
     if not hits:
-        print("(no matching glossary term)")
+        print("(no matching glossary term; browse the glossary/ folder)")
 
 
 def cmd_setup(a):
@@ -907,9 +901,10 @@ def main():
     p = sub.add_parser("fmt", help="pad pipe tables like Obsidian (idempotent); --check only reports")
     p.add_argument("--check", action="store_true")
     p.set_defaults(fn=cmd_fmt)
-    p = sub.add_parser("glossary", help="look up glossary terms; --loaded prints what the plugin injects at session start")
+    p = sub.add_parser("glossary", help="look up glossary terms; --names lists them; --scope field|convention|project filters")
     p.add_argument("term", nargs="?")
-    p.add_argument("--loaded", action="store_true")
+    p.add_argument("--names", action="store_true")
+    p.add_argument("--scope", choices=sorted(GLOSSARY_SCOPES))
     p.set_defaults(fn=cmd_glossary)
     sub.add_parser("install-hooks", help="enable the commit-msg hook").set_defaults(fn=cmd_install_hooks)
     p = sub.add_parser("stamp", help="record current children hash in summary files")

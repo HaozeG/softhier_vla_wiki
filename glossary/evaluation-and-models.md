@@ -6,7 +6,7 @@ sources: [wiki-design/decisions/0004-evidence-tiers-for-fast-moving-vla-sources.
 # Evaluation and models
 
 ## Summary
-Benchmark names and the evidence tags on source notes. The tag meanings are the wiki's own convention and are loaded into project sessions. Model descriptions are in the [catalog of model notes](../resources/models/_overview.md), not here.
+Benchmark names and the evidence tags on source notes. The tag meanings are the wiki's own convention and are listed by name at the start of project sessions. Model descriptions are in the [catalog of model notes](../resources/models/_overview.md), not here.
 
 ## Terms
 | Term               | Meaning                                                                        | Scope      | Defined in                                                                                               |

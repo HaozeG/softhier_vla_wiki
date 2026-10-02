@@ -42,7 +42,7 @@ replace phase 3 with token-by-token decode through the full LLM (OpenVLA 7
 tokens, pi0-FAST 30-60 tokens).
 ```
 
-**In plain words.** Every phase of a call needs arithmetic and memory reads, and whichever takes longer sets that phase's time. A phase's *intensity* is its arithmetic per byte read (FLOP/byte); a chip's *balance point* is its arithmetic speed divided by its memory speed. A phase below the balance point is *memory-bound*: it waits for memory, so more arithmetic speed does not help. A phase above it is *compute-bound*: it waits for arithmetic. A worked example is in [glossary: hardware and performance](../glossary/hardware-and-performance.md).
+**In plain words.** Every phase of a call needs arithmetic and memory reads, and whichever takes longer sets that phase's time. A phase's *intensity* is its arithmetic per byte read (FLOP/byte); a chip's *balance point* is its arithmetic speed divided by its memory speed. A phase below the balance point is *memory-bound*: it waits for memory, so more arithmetic speed does not help. A phase above it is *compute-bound*: it waits for arithmetic. The terms are defined in the [glossary: hardware and performance](../glossary/hardware-and-performance.md); the arithmetic for one SmolVLA flow step is in the [edge budget estimate](edge-budget-estimate.md).
 
 ```text
 Which limit applies: operator intensity (FLOP/byte) vs a device's balance point

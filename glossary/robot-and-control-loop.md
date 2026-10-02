@@ -6,7 +6,7 @@ sources: [resources/serving/lerobot-async-inference-docs.md, resources/serving/v
 # Robot and control loop
 
 ## Summary
-How the robot side of a VLA is described: how often commands go out, what a chunk is, and how model latency relates to execution. Chunk duration, latency, stale and lagged are the wiki's own meanings (convention) and are loaded into project sessions.
+How the robot side of a VLA is described: how often commands go out, what a chunk is, and how model latency relates to execution. Chunk duration, latency, stale and lagged are the wiki's own meanings (convention) and are listed by name at the start of project sessions.
 
 ## Terms
 | Term                                            | Meaning                                                                                                                               | Scope      | Defined in                                                                               |
