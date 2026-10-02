@@ -1,5 +1,5 @@
 ---
-covers: b56cb527b283
+covers: 386012dc40fc
 ---
 # glossary/
 

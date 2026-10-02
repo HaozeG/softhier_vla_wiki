@@ -24,12 +24,15 @@ Pipeline (Octo is the exception: no VLM)
    LM backbone: whole, or cut (L = its number of LLM layers):
    SmolVLA keeps the first L/2 layers; GR00T N1 uses 12th-layer features
 
-Where designs differ, by axis (what crosses from the backbone to the head)
+Axes: 1 how actions are decoded; 2 how a flow expert reads the backbone;
+3 speeds
 
  axis 1  discrete tokens    nothing: the backbone emits 7-8 action tokens
                             itself (RT-2, OpenVLA)
  axis 1  parallel decoding  decoder outputs at empty action queries -> MLP
                             head (OpenVLA-OFT)
+ axis 1  flow expert        refines a noisy chunk in steps (pi0, GR00T N1,
+                            SmolVLA, Octo head)
  axis 2  flow: pi0          prefix and action tokens share one attention;
                             prefix keys and values cached
  axis 2  flow: GR00T N1     cross-attention to the VLM tokens
@@ -42,9 +45,9 @@ Where designs differ, by axis (what crosses from the backbone to the head)
 **Common pipeline.** Vision encoder (SigLIP, or fused SigLIP + DINOv2) → projector → language-model backbone over image, text and state tokens → action head. See [inference workload characterization](inference-workload-characterization.md) for how each stage loads hardware.
 
 **Design axes** (numbered as in the diagram)
-- **Axis 1, action decoding:** discrete autoregressive tokens (RT-2, OpenVLA); parallel decoding with a regression head (OpenVLA-OFT); diffusion/flow expert (Octo head, π0, GR00T N1, SmolVLA). Details in [action representation and chunking](action-representation-and-chunking.md).
+- **Axis 1, how actions are decoded:** discrete autoregressive tokens (RT-2, OpenVLA); parallel decoding with a regression head (OpenVLA-OFT); diffusion/flow expert (Octo head, π0, GR00T N1, SmolVLA). Details in [action representation and chunking](action-representation-and-chunking.md).
   - **DiT:** GR00T N1's action module is a DiT (diffusion transformer): a transformer that refines noisy actions, alternating cross-attention to the VLM tokens with self-attention over the noisy actions and state ([GR00T N1](../resources/models/gr00t-n1.md)); QuantVLA also calls such a head a DiT action head ([QuantVLA](../resources/compression/quantvla.md)).
-- **Axis 2, coupling of backbone and action expert:** shared self-attention with separate weights in π0 (a blockwise causal mask: images and language, then state, then noisy actions form three blocks, attention is bidirectional inside a block and earlier blocks cannot see later ones, so the prefix keys and values can be cached across flow steps, [π0](../resources/models/pi0.md)); cross-attention in GR00T N1; interleaved cross- and self-attention in SmolVLA.
+- **Axis 2, how the flow expert reads the backbone (coupling of backbone and action expert):** shared self-attention with separate weights in π0 (a blockwise causal mask: images and language, then state, then noisy actions form three blocks, attention is bidirectional inside a block and earlier blocks cannot see later ones, so the prefix keys and values can be cached across flow steps, [π0](../resources/models/pi0.md)); cross-attention in GR00T N1; interleaved cross- and self-attention in SmolVLA.
 - **Axis 3, two speeds:** a slow VLM plus a fast policy (GR00T N1, Helix); see [serving methods](serving-methods.md).
 
 **Other differences between models**

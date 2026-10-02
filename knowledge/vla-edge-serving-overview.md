@@ -62,5 +62,5 @@ Devices that appear in the sources ([glossary: devices](../glossary/devices-and-
 
 ## Open questions
 - What a ~10 TOPS NPU actually achieves on a flow-matching VLA (operator support, utilization, bandwidth).
-- How the compute of SmolVLA splits between its vision path and its LLM half: not reported (the π0-class split in the workload note is not transferred).
+- How the compute of SmolVLA splits between its vision path and its LLM half: the paper does not report it; vla.cpp reports a time split for one device, an RTX 5070 ([workload note](inference-workload-characterization.md)).
 - Whether small models keep enough generalization after truncation, pruning and quantization combined.

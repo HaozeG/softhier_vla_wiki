@@ -29,6 +29,8 @@ From R to C a call runs for its latency l.
 R: queue falls to g*n; observation (images, text, state) goes to the model.
 C: chunk of n actions arrives while some actions are still queued (level
    above 0); overlapping actions are aggregated and the queue refills to n.
+
+Legend: R request sent, C chunk arrival, | call boundary, * queue level
 ```
 
 ```text

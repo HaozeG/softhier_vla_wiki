@@ -9,7 +9,7 @@ sources: [resources/hardware/nvidia-jetson-platform-specs.md, resources/hardware
 Nearly all measured "edge VLA" results are on Jetson Orin or Thor (tens to hundreds of vendor TOPS, 100–273 GB/s), not on ~10 TOPS parts. Below Orin Nano the sources give CPU runs (Raspberry Pi 5, desktop CPUs), one leaderboard plot that includes an Ascend 310B (10 TFLOP/s) and one community report on the RK3588 (6 TOPS). The plot shows ACT at about 10 Hz on the 310B but no bar for SmolVLA or any flow-matching VLA on it. So **no flow-matching VLA is measured on a 10 TFLOP/s part, and the only flow-matching VLA number on a small NPU is one self-reported community README (SmolVLA about 5 s per chunk on the RK3588)** (SmolVLA on the 88 TFLOP/s Ascend 310P is about 2 Hz in a PyTorch baseline).
 
 ## Devices and what was measured
-Vendor figures use different units and precisions, so the row order is rough.
+The notes' small-NPU rows are the Ascend 310B (10 TFLOP/s as its source states it) and the RK3588 (6 TOPS); larger parts are listed for context. Units differ as the sources state them (TOPS or TFLOP/s) and so does precision, so the row order is rough.
 
 | Device             | Compute as the source states it | Unit and precision      | Memory bandwidth               | Flow-matching VLA measured?                |
 | ------------------ | ------------------------------- | ----------------------- | ------------------------------ | ------------------------------------------ |

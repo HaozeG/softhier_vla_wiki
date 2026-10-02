@@ -11,6 +11,8 @@ sources: [resources/serving/vla-perf.md, resources/serving/realtime-vla.md, reso
 A flow-matching VLA call has three phases: vision encoding and VLM prefill (the prefix pass; large matrix multiplies over hundreds of tokens, compute-bound on GPUs) and an iterative action-expert loop (few tokens, weights re-read every step, memory-bound). On bandwidth-poor edge devices all three can become memory-bound. Measured latencies sit several times above the roofline unless launch and synchronization overheads are engineered away; autoregressive-action VLAs replace the expert loop with a decode-dominated phase.
 
 ## Diagram
+**In plain words.** Every phase of a call needs arithmetic and memory reads, and whichever takes longer sets that phase's time. A phase's *intensity* is its arithmetic per byte read (FLOP/byte); a chip's *balance point* is its arithmetic speed divided by its memory speed. A phase below the balance point is *memory-bound*: it waits for memory, so more arithmetic speed does not help. A phase above it is *compute-bound*: it waits for arithmetic. The terms are defined in the [glossary: hardware and performance](../glossary/hardware-and-performance.md). Memory-bound does not mean the longest phase: a phase can be memory-bound and still shorter than a compute-bound one, as the reported cases below show.
+
 ```text
 Which limit applies: operator intensity (FLOP/byte) vs a device's balance point
 (spacing not to scale)
@@ -56,8 +58,6 @@ replace phase 3 with token-by-token decode through the full LLM (OpenVLA 7
 tokens, pi0-FAST 30-60 tokens).
 ```
 
-**In plain words.** Every phase of a call needs arithmetic and memory reads, and whichever takes longer sets that phase's time. A phase's *intensity* is its arithmetic per byte read (FLOP/byte); a chip's *balance point* is its arithmetic speed divided by its memory speed. A phase below the balance point is *memory-bound*: it waits for memory, so more arithmetic speed does not help. A phase above it is *compute-bound*: it waits for arithmetic. The terms are defined in the [glossary: hardware and performance](../glossary/hardware-and-performance.md).
-
 ```text
 RTX 4090, pi0, 3 cameras: measured latency vs roofline  (1 # = 3 ms)
 
@@ -75,6 +75,7 @@ The first drawing is the balance-point line behind the second and third bullets 
 **Which phase is longest depends on the device and the model.** In VLA-Perf's roofline for π0 the expert is shorter than the vision-language model on an RTX 4090 and longer on Jetson Thor; in the XPU study's measured profile the expert takes about twice the vision-language model's time. The numbers are in the bullets below; the cases differ in model, device and method and are not reconciled here.
 
 **Phase structure (π0-class, 3 cameras, 800 tokens; [VLA-Perf](../resources/serving/vla-perf.md))**
+The 800 tokens (256 per image) belong to the π0-class model of VLA-Perf, a different model from SmolVLA, whose prefix has 241 tokens (64 per image; see [SmolVLA](smolvla.md)).
 - Roofline latency (Table 3: 800 tokens, chunk 50, 10 steps): Jetson Thor vision 6.1 ms + VLM 20.3 ms + action expert 26.2 ms = 52.6 ms (19.0 Hz); RTX 4090 4.0 + 19.8 + 7.3 = 31.1 ms; A100 16.2 ms; H100 6.2 ms. The 30.4 ms in the table below is the same paper's Table 1 (empty prompt, chunk 63), a different configuration.
 - Operator intensity (FLOPs/byte): vision 321, VLM 543, action expert 54. Balance points: 164 (RTX 4090), 1481 (Thor, with 273 GB/s LPDDR5X; figure as given by VLA-Perf, whose peak-throughput assumption is not stated in this note), so on Thor even the VLM is memory-bound.
 - Other sources report the same shape: VLM decoder layer about 840 FLOPs/byte vs expert 64.5 (ridge points 330 RTX 4090, 208 AGX Orin, 945 Thor in [XPU characterization](../resources/serving/vla-xpu-characterization.md)); prefix 256–530 vs expert about 50 FLOPs/byte in [vla.cpp](../resources/serving/vla-cpp.md). Ridge points differ between papers because each assumes different peak throughput; the ordering is consistent.
@@ -111,4 +112,4 @@ Measured runs use different chunk sizes, camera counts and frameworks; treat the
 **Memory footprints:** OpenVLA 15 GB in bf16; π0 about 14 GB; SmolVLA about 2 GB ([LeRobot docs](../resources/serving/lerobot-async-inference-docs.md)); KV cache for one frame set is small (0.01 GB in VLA-Perf's π0 model) but grows linearly with history.
 
 ## Open questions
-- No source gives a per-operator profile for SmolVLA on an accelerator; the vision-encoder share for 512×512 inputs is not reported in the papers read.
+- No source gives a per-operator profile for SmolVLA on an accelerator; its time split on one device (an RTX 5070) comes from vla.cpp (above), not from the SmolVLA paper.

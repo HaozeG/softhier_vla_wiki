@@ -25,7 +25,7 @@ ONCE PER CALL (prefill): read the observation with the VLM
                               +----------------------------------------------+
                                                      | keys + values of the
                                                      | 241 tokens, per LLM
-EACH OF 10 FLOW STEPS                                | layer (16 sets)
+EACH OF 10 FLOW STEPS (x10)                          | layer (16 sets)
                                                      v
 +-----------------+           +----------------------------------------------+
 | noisy actions   |           | ACTION EXPERT (~100M, 0.75x width)           |
@@ -39,13 +39,13 @@ EACH OF 10 FLOW STEPS                                | layer (16 sets)
 |                 |           |   prefix                                     |
 +-----------------+           +----------------------------------------------+
          ^                              |
-         +<--- velocity, 50 tokens -----+
+         +<-- velocity, 50 tokens, x10 -+
 each step: Euler update of the noisy chunk with the velocity
 after step 10 the chunk is the 50 actions
 ```
 
 ## Details
-In the first drawing the "VLM" box contains the vision encoder (SigLIP with pixel shuffle) and the first 16 LLM layers, the same two parts as boxes 1 and 2 of [one VLA call](one-vla-call.md).
+In the drawing the "VLM" box contains the vision encoder (SigLIP with pixel shuffle) and the first 16 LLM layers, the same two parts as stages 2 and 3 of [one VLA call](one-vla-call.md). The workload note's π0-class figures (800 prefix tokens, 256 tokens per image) belong to a different model from SmolVLA's 241 and 64.
 
 **Data flow per call (paper and first-party code, see [the source note](../resources/models/smolvla.md))**
 - **Once per call, in the prefill (the prefix pass):** the three camera images (64 visual tokens each after pixel shuffle), the language prompt (padded to 48 tokens) and the robot state (1 token) form a prefix of 3 × 64 + 48 + 1 = 241 tokens. The first 16 LLM layers process it once and keep their keys and values (in attention, each token offers a key to be matched and a value to be read; a token looks at others by matching against their keys and mixing their values), one set per layer (16 sets); these stored keys and values are what the wiki calls the KV cache, the working memory attention reads from.
@@ -85,4 +85,4 @@ See [inference workload characterization](inference-workload-characterization.md
 
 ## Open questions
 - Cross-embodiment generalization beyond SO100 arms (the paper's own limitation).
-- Which of the vision path (64 tokens per frame, 512×512 input) and the LLM half takes more compute for SmolVLA itself: the per-component split is not reported in the paper text read, and the π0-class split in the workload note is not transferred to it.
+- The SmolVLA paper does not report how compute splits between the vision path and the LLM half; vla.cpp reports a time split for SmolVLA on one device, an RTX 5070 (figures in the [workload note](inference-workload-characterization.md)), and no source gives a per-operator profile on an accelerator.
