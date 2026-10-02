@@ -47,6 +47,7 @@ Required `##` sections: concept/entity → `Summary`; paper → `Summary`, `Key 
 | `index` | Sync the search index with the files (incremental) |
 | `check [--strict]` | Fast structural lint, no model: folder summary files (missing, empty, stale, too long), frontmatter, sections, links, catalog, diagrams (`DIAGRAM`: over 80 columns or non-ASCII), table padding (`TABLEFMT` warning), unfilled template comments, orphans, TODOs, exact duplicates |
 | `health [--strict] [--dup-threshold 0.93] [--candidates]` | `index` + `check` + zvec near-duplicate detection; `--candidates` also lists related-but-distinct pairs to read for contradictions |
+| `glossary --az` | Write `glossary/a-to-z.md`, the generated A to Z index of all terms; `check` reports `GLOSSARYINDEX` when it is stale |
 | `glossary ["<term>"] [--names] [--scope S]` | Look up glossary definitions on demand; `--names` lists term names (what the plugin shows at session start), `--scope field\|convention\|project` filters |
 | `fmt [--check]` | Pad all pipe tables like Obsidian (whitespace only, idempotent); `--check` just reports |
 | `stamp [<dirs>]` | Record the folder's content hash in its summary files after you rewrite them |
@@ -56,7 +57,7 @@ Required `##` sections: concept/entity → `Summary`; paper → `Summary`, `Key 
 | `install-hooks` | Enable the `commit-msg` hook that enforces the format below |
 
 ## Write workflow (every insert / update / delete)
-1. Edit notes. A decision that introduces or redefines a term lists it in its `defines:` frontmatter and adds a project row to `glossary/project-terms.md` in the same commit (`check` reports `DEFINES`); a source that brings a new standard term adds a `field` row to the right glossary group. Glossary rows are definitions only: no measured or derived numbers, examples or findings (`check` reports `GLOSSARY`). Update the directory's `_overview.md` (catalog line) and `_abstract.md` if its summary changed; parents too.
+1. Edit notes. A decision that introduces or redefines a term lists it in its `defines:` frontmatter and adds a project row to `glossary/project-terms.md` in the same commit (`check` reports `DEFINES`); a source that brings a new standard term adds a `field` row to the right glossary group. After glossary edits run `glossary --az` to regenerate the A to Z index. Glossary rows are definitions only: no measured or derived numbers, examples or findings (`check` reports `GLOSSARY`). Update the directory's `_overview.md` (catalog line) and `_abstract.md` if its summary changed; parents too.
 2. `fmt` (if you touched a table) → `stamp <dirs>` → `check`. Staleness cascades upward: a directory's hash includes its children's L0 abstracts, so changing `knowledge/_abstract.md` flags the root summary files too; review them and stamp (`stamp .` for root). Re-stamping an accurate sidecar is fine. Replace placeholder text such as "Empty until populated" when adding the first note.
 3. `index` → `health`; no errors, and every warning read (`NEARDUP`: merge or cross-link; `ORPHAN`: link via `related`).
 4. **Delete** = remove the file, its catalog line, and links to it (`check` finds the rest).
