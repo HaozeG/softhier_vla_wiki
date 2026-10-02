@@ -9,21 +9,23 @@ sources: [resources/hardware/unitree-robot-compute.md, resources/hardware/agibot
 Commercial robots that publish their hardware separate the fast, deterministic joint control from heavier AI, and the split follows model size. Most published designs use a CPU-class control side (an 8-core CPU on Unitree; dual RK3588 on AgiBot's X2, though sources disagree on their role) and put large AI models on a separate NVIDIA Jetson (Orin NX, AGX Orin, or Thor), optional on Unitree's EDU models and standard on AgiBot's research and next-generation robots. Small walking policies do not need the second tier: AgiBot's open X1 runs its walking policy and its 1 kHz joint drivers in one process on one x86 controller, and Unitree's examples run the policy on a plain computer. The RK3588's 6-TOPS NPU is best evidenced for CNN vision, small language models and ACT-style policies, not for a full VLA. Marketing pages give no software map or control rates, but the vendors' open code does. Unitree has two separate examples: an SDK example that sends motor commands every 2 ms, and a walking-policy example that runs at 50 Hz. AgiBot's open X1 stack uses a 1 kHz control setting on an x86 controller. AgiBot's GO-1 manipulation model is offered as a remote policy server because robots "may not have powerful GPUs". These are example-code settings for the G1, H1, H1_2 and X1, not measurements of the shipped controllers, and they do not show which processor closes the joint loop on a Unitree robot.
 
 ```text
- AI tier: large perception, language and VLA models, low rate
- +------------------------------------------------------------------------+
- | Jetson Orin NX / AGX Orin / Thor,  or  a remote GPU server (GO-1)      |
- | GO-1: one 30-action chunk per second                                   |
- +--------------------------------------+---------------------------------+
-                                        | action chunks (inferred interface)
-                                        v
- Control side: deterministic, low latency, small policies (example rates)
- +------------------------------------------------------------------------+
- | 8-core CPU, RK3588 (<= 6 TOPS NPU), or x86 real-time controller        |
- |   walking policy    50 Hz    (Unitree example, on an external computer)|
- |   motor commands    2 ms period (Unitree G1 SDK example)               |
- |   joint drivers     up to 1 kHz                                        |
- | AgiBot X1: policy and 1 kHz drivers share one process on one x86 box   |
- +------------------------------------------------------------------------+
++--------------------------------------------------------------------------+
+| AI TIER: large perception, language and VLA models, low rate             |
+| Jetson Orin NX / AGX Orin / Thor,  or  a remote GPU server (GO-1 option) |
+| GO-1: one chunk of 30 actions per call                                   |
++--------------------------------------------------------------------------+
+                                      |
+                                      |  action chunks (inferred interface),
+                                      |  about one call per second in GO-1
+                                      v
++--------------------------------------------------------------------------+
+| CONTROL SIDE: deterministic, low latency, small policies (example rates) |
+| 8-core CPU, RK3588 (<= 6 TOPS NPU), or x86 real-time controller          |
+|   walking policy    50 Hz   (Unitree example, on an external computer)   |
+|   motor commands    every 2 ms (Unitree G1 SDK example)                  |
+|   joint drivers     up to 1 kHz                                          |
+| AgiBot X1: policy and 1 kHz drivers share one process on one x86 box     |
++--------------------------------------------------------------------------+
 ```
 
 ## Details

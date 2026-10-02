@@ -1,5 +1,5 @@
 ---
-covers: 857c346dcad8
+covers: 2c78add749c2
 ---
 # knowledge/
 

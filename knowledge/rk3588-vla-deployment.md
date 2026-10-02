@@ -9,19 +9,35 @@ sources: [resources/rk3588/rk3588-platform-specs.md, resources/rk3588/rockchip-r
 On the RK3588's 6-TOPS NPU, what is well evidenced is CNN vision, LLM and VLM decoding (5–78 tokens/s, W8A8 only) and small ACT-style policies (about 0.12 s per chunk, self-reported). A SmolVLA-class VLA has one community measurement, about 5 s per 50-action chunk, and component data from Rockchip implies about 1–1.4 s with one camera and about 2.8–3.2 s with three. A chunk of 50 actions lasts 1.67 s at 30 Hz, so the released three-camera configuration cannot keep a 30 Hz robot supplied, and one camera is borderline (it fails if stale actions are dropped, which needs under 0.83 s). The NPU is used at about 4–19% of its headline TOPS in the measured transformer workloads, and the toolchain is the main risk: transformers convert fragilely, only W8A8 is available for the language model, and the vision encoder runs in FP16 through a separate toolchain. Practice on these boards is therefore ACT-class policies at control rate, VLMs off the control loop, and hardware video paths.
 
 ```text
-camera --> [ vision encoder ] --> [ LLM prefix ] --> [ flow expert x10 ] --> 50
-frames      RKNN, FP16            RKLLM, W8A8        RKNN graph or CPU  actions
-            0.84 s per camera     0.10-0.22 s        0.08-0.5 s
-            (SmolVLM-256M proxy)  (scaled from       (RKLLM cannot
-                                   the 77 ms row)     convert it)
- passes on: 64 tokens per camera  keys + values of   velocity of 50 action
-                                  the 241 tokens     tokens, once per step
+ONE SMOLVLA CALL ON RK3588 (estimate)
+  1-3 camera frames
+        |
+        v
++----------------------+    RKNN, FP16: 0.84 s per camera
+| vision encoder       |    (SmolVLM-256M as proxy)
++----------------------+
+        |
+        | 64 tokens per camera
+        v
++----------------------+    RKLLM, W8A8: 0.10-0.22 s
+| LLM prefix           |    (scaled from the 77 ms row)
++----------------------+
+        |
+        | keys + values of the prefix (241 tokens, 3 cameras)
+        v
++----------------------+
+| flow expert          |<--+   RKNN graph or CPU (RKLLM cannot convert it)
+| 10 steps             |   |   0.08-0.5 s over the 10 steps
+|                      |---+   velocity of 50 action tokens per step
++----------------------+
+        |
+        v  chunk of 50 actions
 
 chunk lasts 1.67 s at 30 Hz.  Estimated chunk latency per camera count:
   1 camera    1.0-1.4 s   below 1.67 s: supplies actions, borderline
                           (dropping stale actions needs < 0.83 s: fails)
   2 cameras   1.9-2.3 s   above 1.67 s: queue starves
-  3 cameras   2.8-3.2 s   above 1.67 s: queue starves (community report: 5.05 s)
+  3 cameras   2.8-3.2 s   above 1.67 s: queue starves (community: 5.05 s)
 ```
 
 ## Details

@@ -6,21 +6,38 @@ sources: [resources/serving/vla-perf.md, resources/serving/realtime-vla.md, reso
 # Inference workload characterization
 
 ## Summary
-A flow-matching VLA call has three phases: vision encoding and VLM prefill (large matrix multiplies over hundreds of tokens, compute-bound on GPUs) and an iterative action-expert loop (few tokens, weights re-read every step, memory-bound). On bandwidth-poor edge devices all three can become memory-bound. Measured latencies sit several times above the roofline unless launch and synchronization overheads are engineered away; autoregressive-action VLAs add a fourth, decode-dominated phase.
+A flow-matching VLA call has three phases: vision encoding and VLM prefill (large matrix multiplies over hundreds of tokens, compute-bound on GPUs) and an iterative action-expert loop (few tokens, weights re-read every step, memory-bound). On bandwidth-poor edge devices all three can become memory-bound. Measured latencies sit several times above the roofline unless launch and synchronization overheads are engineered away; autoregressive-action VLAs replace the expert loop with a decode-dominated phase.
 
 ## Diagram
 ```text
-One flow-matching VLA call (pi0-class), left to right
+ONE FLOW-MATCHING CALL (pi0-class, 3 cameras, 800 prefix tokens)
 
- images --+     +-----------+     +-----------+     +-----------------+
- text   --+---> | 1 vision  | --> | 2 VLM     | --> | 3 action expert |-> chunk
- state  --+     |   encoder |     |   prefill |     | loop of T steps |
-                +-----------+     +-----------+     +-----------------+
-                 many tokens       many tokens       few tokens; weights
-                 per matmul        per matmul        re-read every step
+  3 camera images
+        |  256 tokens per image
+        v
++--------------------------------+
+| 1 VISION ENCODER               |    compute-bound on GPUs, 321 FLOP/byte
++--------------------------------+
+        | visual tokens + text + state
+        | = 800 tokens in total
+        v
++--------------------------------+
+| 2 VLM PREFILL                  |    compute-bound on GPUs, 543 FLOP/byte
++--------------------------------+
+        | prefix keys + values, kept
+        | for all T steps
+        v
++--------------------------------+
+| 3 ACTION EXPERT                |<--+
+| few tokens per step            |   |  repeats T times (T = 4-10)
+|                                |---+  memory-bound: weights re-read
++--------------------------------+      every step, 54 FLOP/byte
+        |
+        v  chunk of actions
 
- Autoregressive-action VLAs add a 4th phase after 2: token-by-token decode
- (OpenVLA 7 tokens, pi0-FAST 30-60 tokens) through the full LLM.
+On Jetson Thor all three phases are memory-bound. Autoregressive-action VLAs
+replace phase 3 with token-by-token decode through the full LLM (OpenVLA 7
+tokens, pi0-FAST 30-60 tokens).
 ```
 
 ```text

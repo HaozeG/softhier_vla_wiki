@@ -10,17 +10,22 @@ Serving a VLA means keeping a robot supplied with valid actions despite inferenc
 
 ## Diagram
 ```text
-Async chunked execution (families 2 and 3; 1 and 4 act on the model call)
+ASYNC CHUNKED EXECUTION (families 2 and 3; 1 and 4 act on the model call)
 
-   observation, sent when queue < g * n actions
-  +--------------------------------------------+
-  |                                            v
-+---------------+                    +-------------------+
-| robot client  | <--- new chunk --- | model call        |
-| queue of      |  (n actions; late  | latency l         |
-| actions; pops |  ones are stitched | (family 1 shrinks |
-| one per dt    |  in, family 3)     |  it; 4 moves it)  |
-+---------------+                    +-------------------+
++------------------------------------------------------------------------+
+| ROBOT CLIENT: queue of actions, pops one every dt (control period)     |
+|                                                                        |
++------------------------------------------------------------------------+
+          |                                         ^
+          |  observation, sent when the queue holds |  new chunk: n actions;
+          |  fewer than g * n actions               |  late ones stitched (3)
+          v                                         |
++------------------------------------------------------------------------+
+| MODEL CALL: latency l  (family 1 shrinks it, family 4 moves it)        |
+|                                                                        |
++------------------------------------------------------------------------+
+
+The request repeats whenever the queue runs low; actions keep popping meanwhile.
 ```
 
 ```text
