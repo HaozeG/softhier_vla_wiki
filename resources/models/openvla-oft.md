@@ -21,4 +21,4 @@ Using OpenVLA as the base, the paper compares action decoding (autoregressive vs
 - **Limitations (§VIII):** L1 regression may struggle with truly multimodal demonstrations; untested for pretraining.
 
 ## Related
-See also: [FAST](fast-tokenizer.md), FlashVLA, LightVLA, VLA-Cache, BitVLA; all build on or compare against OFT.
+See also: [FAST](fast-tokenizer.md).

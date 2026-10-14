@@ -1,45 +1,15 @@
 ---
 type: glossary
-tags: [glossary, roofline, performance, memory-bound]
-sources: [resources/serving/vla-perf.md, resources/hardware/edge-accelerator-datasheets.md, resources/hardware/nvidia-jetson-platform-specs.md, resources/rk3588/rockchip-rknn-rkllm-toolchain.md]
+tags: [glossary, performance, evidence]
+sources: [wiki-design/decisions/0004-evidence-tiers-for-fast-moving-vla-sources.md, session:parent-readme]
 ---
 # Hardware and performance
 
 ## Summary
-The words for why a faster chip does not always give a faster robot: arithmetic against memory, roofline, units and number formats. Balance point, roofline, estimate versus measured, TOPS and the ~10 TOPS class are the wiki's own usage (convention). Devices, toolchains and kernel words are in [devices and toolchains](devices-and-toolchains.md).
+Words for judging a hardware number and for the project's utilization aim: estimate versus measured, and MFU. Estimate, measured and self-reported are the wiki's own usage (convention).
 
 ## Terms
-| Term                              | Meaning                                                                                                                                                                                                                 | Scope      | Defined in                                                                                               |
-| --------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- | -------------------------------------------------------------------------------------------------------- |
-| FLOP, FLOP/s, TFLOP/s             | One floating-point operation; operations per second; a trillion per second. They measure how much arithmetic a model needs and how much a chip can do.                                                                  | field      | [SoftHier and the project](../knowledge/softhier-and-the-project.md)                                     |
-| memory bandwidth (GB/s)           | How many bytes per second the chip can read from memory. A model's weights must be read through it.                                                                                                                     | field      | [SoftHier and the project](../knowledge/softhier-and-the-project.md)                                     |
-| intensity (FLOP/byte)             | The arithmetic a phase does per byte it reads from memory. A phase that uses each weight it reads for only a few tokens does little arithmetic per byte; a phase that reuses each weight across many tokens does a lot. | field      | [SoftHier and the project](../knowledge/softhier-and-the-project.md)                                     |
-| balance point                     | A chip's FLOP/s divided by its bytes/s. The wiki says balance point where papers say ridge point.                                                                                                                       | convention | [SoftHier and the project](../knowledge/softhier-and-the-project.md)                                     |
-| memory-bound                      | Intensity below the balance point: the phase waits for memory, so more arithmetic speed does not help. Phases with few tokens per weight read tend to be memory-bound.                                                  | field      | [SoftHier and the project](../knowledge/softhier-and-the-project.md)                                     |
-| compute-bound                     | Intensity above the balance point: the phase waits for arithmetic. Phases with many tokens per weight read tend to be compute-bound.                                                                                    | field      | [SoftHier and the project](../knowledge/softhier-and-the-project.md)                                     |
-| roofline                          | Per-phase time is the larger of the arithmetic time and the memory time. A roofline latency is a lower bound, not a measurement.                                                                                        | convention | [SoftHier and the project](../knowledge/softhier-and-the-project.md)                                     |
-| estimate, measured, self-reported | Estimate: a figure a source computes from specs or configs. Measured: a reported run. Self-reported: a community claim that was not independently checked.                                                              | convention | [wiki-design decision 0004](../wiki-design/decisions/0004-evidence-tiers-for-fast-moving-vla-sources.md) |
-| TOPS                              | Trillions of operations per second as a vendor quotes it, often for sparse INT8. It is not comparable with dense BF16 TFLOP/s.                                                                                          | convention | [SoftHier and the project](../knowledge/softhier-and-the-project.md)                                     |
-| sparse versus dense               | A sparse figure counts operations assuming many weights are zero and skipped; a dense figure counts all of them. A vendor's sparse figure for a chip is larger than its dense one. Standard gloss.                      | field      | [SoftHier and the project](../knowledge/softhier-and-the-project.md)                                     |
-| GPU, NPU                          | Chip parts that do the matrix arithmetic: the graphics processor, and the neural processing unit built for models.                                                                                                      | field      | [SoftHier and the project](../knowledge/softhier-and-the-project.md)                                     |
-| BF16, FP16, FP8, FP4, INT8        | Number formats: two sixteen-bit floating-point formats, eight-bit and four-bit floating point, and eight-bit integer. Fewer bits mean less memory per weight.                                                           | field      | [SoftHier and the project](../knowledge/softhier-and-the-project.md)                                     |
-| tokens per second                 | How many tokens a language model produces per second while decoding; the notes use it for the decode speed of language models on a device.                                                                              | field      | [SoftHier and the project](../knowledge/softhier-and-the-project.md)                                     |
-| FPS                               | Frames per second: how many camera frames or images are captured or processed per second. It also states a robot's control rate in some setups.                                                                         | field      | [SoftHier and the project](../knowledge/softhier-and-the-project.md)                                     |
-| batch size                        | How many inputs one pass processes together; batch size one means a single observation per pass.                                                                                                                        | field      | [SoftHier and the project](../knowledge/softhier-and-the-project.md)                                     |
-| MFU (model FLOPs utilization)     | The share of a chip's peak arithmetic rate that a model's work actually uses. Standard gloss; the project README names it as an aim.                                                                                    | field      | [SoftHier and the project](../knowledge/softhier-and-the-project.md)                                     |
-
-
-
-## Why memory-bound matters
-A chip has two limits: how fast it does arithmetic and how fast it reads numbers from memory. Every phase of a model call needs both, and whichever takes longer sets that phase's time; this rule applied phase by phase is the roofline model. A phase that does little arithmetic for each byte it reads is memory-bound: a faster arithmetic unit leaves it unchanged, while fewer or faster memory reads shorten it. A phase that does a lot of arithmetic per byte is compute-bound, and fewer operations shorten it.
-
-Phases differ because of how many tokens share each weight that is read. A phase that handles few tokens for each weight read, such as decoding one token at a time or the short action chunk in the action expert, uses every weight for only a few tokens, so it does little arithmetic per byte read and tends to be memory-bound. A phase that handles many tokens for each weight read, such as the prefix with all its image and text tokens, reuses every weight across many tokens, so it does a lot of arithmetic per byte and tends to be compute-bound. The notes give the sourced cases.
-
-```text
-Why the longer of two times sets the time of a phase (bar lengths illustrative)
-
-arithmetic time |########
-memory time     |####################
-
-phase time = the longer bar: this phase is memory-bound
-```
+| Term                              | Meaning                                                                                                                                                    | Scope      | Defined in                                                                                               |
+| --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- | -------------------------------------------------------------------------------------------------------- |
+| estimate, measured, self-reported | Estimate: a figure a source computes from specs or configs. Measured: a reported run. Self-reported: a community claim that was not independently checked. | convention | [wiki-design decision 0004](../wiki-design/decisions/0004-evidence-tiers-for-fast-moving-vla-sources.md) |
+| MFU (model FLOPs utilization)     | The share of a chip's peak arithmetic rate that a model's work actually uses. Standard gloss; the project README names it as an aim.                       | field      | [SoftHier and the project](../knowledge/softhier-and-the-project.md)                                     |

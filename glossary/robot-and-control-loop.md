@@ -1,7 +1,7 @@
 ---
 type: glossary
 tags: [glossary, control, chunking, async]
-sources: [resources/serving/lerobot-async-inference-docs.md, resources/serving/vla-simd.md, resources/serving/real-time-chunking.md]
+sources: [resources/models/smolvla.md, knowledge/one-vla-call.md]
 ---
 # Robot and control loop
 
@@ -18,10 +18,7 @@ How the robot side of a VLA is described: how often commands go out, what a chun
 | latency (l)                                     | The time of one model call, from the observation going in to the chunk coming out. It is not the time to finish a task; it is the delay that asynchronous execution has to hide.                      | convention | [one VLA call](../knowledge/one-vla-call.md)                                             |
 | asynchronous (async) execution                  | The robot keeps executing queued actions while the next call runs, so inference overlaps motion instead of the robot waiting for each answer.                                                         | field      | [one VLA call](../knowledge/one-vla-call.md)                                             |
 | stale actions                                   | Actions of a late chunk that describe moments already passed, because the call took time while the robot kept moving. Dropping them is called discarding stale actions.                               | convention | [one VLA call](../knowledge/one-vla-call.md)                                             |
-| lagged execution                                | Executing a late chunk from its first action anyway instead of discarding its stale actions, so the robot acts on a chunk that was planned for an earlier moment.                                     | convention | [one VLA call](../knowledge/one-vla-call.md)                                             |
-| dual system                                     | A large, slow model that understands the scene and plans, plus a small, fast policy that produces actions at the control rate, so that the slow model's latency does not set the control rate.        | field      | [VLA architecture overview](../knowledge/vla-architecture-overview.md)                   |
 | open loop                                       | Executing several actions of a chunk without taking a new observation in between, so the robot does not react to changes until the chunk is used up.                                                  | field      | [action representation and chunking](../knowledge/action-representation-and-chunking.md) |
-| inference                                       | Running a trained model to get its output, as opposed to training it. In these notes one inference is one model call.                                                                                 | field      | [one VLA call](../knowledge/one-vla-call.md)                                             |
 | action queue                                    | The list of actions on the robot side, filled from received chunks, from which one action is taken at each control step.                                                                              | field      | [one VLA call](../knowledge/one-vla-call.md)                                             |
 
 

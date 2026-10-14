@@ -56,8 +56,6 @@ Axes: 1 how actions are decoded; 2 how a flow expert reads the backbone;
 - **Where features are taken:** GR00T N1 uses the 12th LLM layer and reports faster inference and higher success than the last layer; SmolVLA uses layers up to N = L/2 (L is the number of LLM layers) as a speed trade-off: its ablation scores 78.5 at N = 16 against 80.3 at N = 32 on LIBERO (about 2 points lower), for half the layers (SmolVLA paper).
 - **Training recipe:** π0.5 pretrains with discrete FAST tokens and post-trains a flow expert; TinyVLA and Octo skip large robot pretraining.
 
-**Convergent efficient recipe (2025–2026):** small or truncated VLM, 64 visual tokens per frame, a small flow-matching expert with a handful of steps, chunked actions, and asynchronous execution.
-
 ## Reference models (skim)
 The numbers in this table come from different papers and are not comparable. Octo is not VLM-based (see its [note](../resources/models/octo.md)); it is listed as the small-model reference point the others compare against, so the Summary's "VLM as its core" does not apply to it.
 

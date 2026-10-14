@@ -18,4 +18,4 @@ A broad survey that organizes VLA research into three lines: components of VLAs 
 - **Challenges (§VI):** real-time responsiveness: "current VLA models ... face a tradeoff between speed and capacity" and inference that cannot keep pace generates stale actions; also data scarcity, safety, multi-agent systems and applications.
 
 ## Related
-See also: [Zhong et al.](survey-vla-action-tokenization.md), Yu et al., Guan et al..
+See also: [Zhong et al.](survey-vla-action-tokenization.md).
