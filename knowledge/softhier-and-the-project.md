@@ -14,6 +14,14 @@ The README lists three goals:
 2. Workload analysis: what a VLA application asks of a chip. The [VLA edge serving overview](vla-edge-serving-overview.md) and the notes it lists collect what the sources report about this.
 3. Aim for MFU, with a scheduling layer in software (the README line is unfinished). MFU is the share of the chip's peak arithmetic rate that a model's work actually uses (standard meaning, not spelled out in the README).
 
+## Hardware overview (current status)
+Not yet recorded beyond the terms below; each item is filled in as the project reads about SoftHier ([SDK](https://github.com/pulp-platform/softhier-sdk)).
+- **Tiles:** not yet recorded.
+- **PEs (per tile):** not yet recorded.
+- **On-chip memory (SRAM):** not yet recorded.
+- **Interconnect:** not yet recorded.
+- **Programming model and toolchain:** not yet recorded (goal 1 above names MLIR).
+
 ## Terms
 - **SoftHier:** the tile-based many-PE chip the project maps VLA applications to; the SDK is at https://github.com/pulp-platform/softhier-sdk.
 - **PE (processing element):** one compute unit of a many-PE chip.

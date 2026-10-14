@@ -1,4 +1,4 @@
 ---
-covers: b8c4efe0d52f
+covers: 93542f12ad30
 ---
-Physical AI knowledge, first area VLA models: architectures, serving, workload, pruning, quantization, edge hardware (RK3588, Unitree, AgiBot). Start: README, one-vla-call, vla-edge-serving-overview; glossary/ for terms.
+Physical AI knowledge, first area VLA models. Frame: SoftHier overview, one-vla-call, VLA architecture, WAM stub. The rest is serving, efficiency and edge-hardware reference.

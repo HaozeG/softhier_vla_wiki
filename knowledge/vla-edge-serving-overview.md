@@ -1,6 +1,6 @@
 ---
 type: concept
-tags: [overview, vla, edge, serving, start-here]
+tags: [overview, vla, edge, serving]
 sources: [resources/surveys/survey-efficient-vla-yu.md, resources/surveys/survey-efficient-vla-guan.md, resources/serving/vla-perf.md, resources/models/smolvla.md, resources/models/pi0.md, resources/serving/vla-cpp.md, resources/serving/jetson-pi.md]
 ---
 # VLA edge serving: overview and reading list

@@ -8,7 +8,7 @@ sources: [resources/models/rt-2.md, resources/models/openvla.md, resources/model
 ## Summary
 (Terms such as prefix, KV cache and flow matching: glossary, [model and attention](../glossary/model-and-attention.md) and [action generation](../glossary/action-generation.md).)
 
-Start with the [edge serving overview](vla-edge-serving-overview.md) for how this note fits the rest.
+Start with [one VLA call](one-vla-call.md); the [edge serving overview](vla-edge-serving-overview.md) holds the later reference material.
 
 A vision-language-action (VLA) model maps camera images, a language instruction and (usually) robot state to robot actions using a pretrained vision-language model (VLM) as its core. Designs differ mostly in the **action head** (discrete tokens, parallel regression, diffusion/flow expert) and in how much of the VLM is kept. The trajectory from RT-2 (55B, cloud, 1–3 Hz) to SmolVLA (0.45B) is a move to smaller VLMs, fewer visual tokens, chunked continuous actions from a small expert, and asynchronous execution. Terminology follows [Ma et al.](../resources/surveys/survey-vla-embodied-ai-ma.md): VLA originated with RT-2, and models built on large VLMs are sometimes called "large VLAs".
 
@@ -77,5 +77,6 @@ The numbers in this table come from different papers and are not comparable. Oct
 In the table, Params is the model size in billions (B) or millions (M) of learned numbers (parameters). Speeds come from different hardware, batch sizes and definitions; do not rank models by this column. Per-paper detail (tables, ablations, limitations) lives in the `resources/` notes, for example [SmolVLA paper](../resources/models/smolvla.md) vs the model-centric [SmolVLA](smolvla.md) note; this note only compares designs across them.
 
 ## Open questions
+- How world action models ([WAM stub](wam-overview.md)) differ architecturally from VLAs.
 - Whether discrete-token pretraining (π0.5, π0-FAST) or flow-only training is the better base for small models; the evidence here comes from PI's own comparisons.
 - How much semantic generalization is lost when the VLM is truncated or replaced by a sub-1B model; most small-model results use LIBERO-style benchmarks and short tasks.

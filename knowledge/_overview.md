@@ -1,14 +1,20 @@
 ---
-covers: b8c4efe0d52f
+covers: 93542f12ad30
 ---
 # knowledge/
 
-Synthesis of what the sources say about physical AI; VLA models are the first covered area (further areas get their own notes), with a focus on how they are built, made efficient and served on robot hardware. Each note cites `resources/` notes. Start order (reading steps 1 to 3): the README, then the first two notes below (the second holds the full reading list), with the glossary (`../glossary/_overview.md`) open for new words.
+Synthesis of what the sources say about physical AI; VLA models are the first covered area (further areas get their own notes), with a focus on how they are built, made efficient and served on robot hardware. Each note cites `resources/` notes. Start with the frame notes below (SoftHier, VLA, WAM), with the glossary (`../glossary/_overview.md`) open for new words; the reference notes cover serving, efficiency and edge hardware and are read later.
 
-- [One VLA call, step by step](one-vla-call.md) — start here: plain-language walkthrough of one call, with one picture
-- [VLA edge serving overview](vla-edge-serving-overview.md) — next: findings, reading path, trust guide
+## Frame
+
 - [SoftHier and the project](softhier-and-the-project.md) — what the project README says: mapping VLA applications to a tile-based many-PE chip; goals
+- [One VLA call, step by step](one-vla-call.md) — start here: plain-language walkthrough of one call, with one picture
 - [VLA architecture overview](vla-architecture-overview.md) — components, action heads, reference models
+- [World action models (WAM)](wam-overview.md) — stub: what the sources say so far about WAM; definition and categories open
+
+## Reference (serving, efficiency, hardware)
+
+- [VLA edge serving overview](vla-edge-serving-overview.md) — findings, full reading list, trust guide for serving numbers
 - [Action representation and chunking](action-representation-and-chunking.md) — tokens vs regression vs flow; chunk size
 - [SmolVLA](smolvla.md) — the reference small VLA and its measured latencies
 - [Inference workload characterization](inference-workload-characterization.md) — phases, roofline vs measured, overheads
