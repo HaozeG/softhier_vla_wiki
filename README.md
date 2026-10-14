@@ -3,7 +3,7 @@
 ## What this wiki covers
 The topic is physical AI: robots that perceive and act in the physical world. The first area covered is vision-language-action (VLA) models, programs that read a robot's camera images and a written instruction and answer with the commands that move its arms: how they are built, made efficient and run on robot hardware. The wiki records what the literature says about this for the SoftHier-VLA project (mapping VLA applications for physical AI to a tile-based many-PE chip like SoftHier). Further areas of physical AI get their own notes later.
 
-**Where to start.** The frame has three parts: [SoftHier and the project](knowledge/softhier-and-the-project.md) (the chip and the project goals), [one VLA call, step by step](knowledge/one-vla-call.md) followed by the [VLA architecture overview](knowledge/vla-architecture-overview.md) (what a VLA is, its parts and categories), and [world action models](knowledge/wam-overview.md) (stub). Keep the [glossary](glossary/_overview.md) open alongside ([A to Z index](glossary/a-to-z.md)). Serving, efficiency and edge-hardware notes are later reference, listed from the [VLA edge serving overview](knowledge/vla-edge-serving-overview.md).
+**Where to start.** The frame has three parts: [SoftHier and the project](knowledge/softhier-and-the-project.md) (the chip and the project goals), [one VLA call, step by step](knowledge/one-vla-call.md) followed by the [VLA architecture overview](knowledge/vla-architecture-overview.md) (what a VLA is, its parts and categories), and [world action models](knowledge/wam-overview.md) (stub). Keep the [glossary](glossary/_overview.md) open alongside ([A to Z index](glossary/a-to-z.md)).
 
 ## For maintainers
 Agents should start at [CLAUDE.md](CLAUDE.md), which is the operating manual (note format, commands, workflows, commit format).
@@ -17,9 +17,9 @@ An LLM-maintained wiki for the SoftHier-VLA project. It combines three ideas:
 
 | Dir | Holds |
 |---|---|
-| `resources/<topic>/` | one faithful note per external source, grouped by topic (models, surveys, serving, compression, rk3588, hardware) |
+| `resources/<topic>/` | one faithful note per external source, grouped by topic (models, surveys) |
 | `glossary/` | grouped term definitions (field, convention, project scope); the plugin lists the names of convention and project terms at session start; definitions are looked up on demand (`wiki.py glossary`) |
-| `knowledge/` | synthesized concept/entity notes; start with `one-vla-call.md`, then `vla-edge-serving-overview.md` |
+| `knowledge/` | synthesized concept/entity notes; start with `softhier-and-the-project.md` and `one-vla-call.md` |
 | `memories/decisions/` | project decisions (numbered from 0001) |
 | `wiki-design/` | how the wiki works: `decisions/` (wiki design records) and `runbooks/` (ingest a source, review health) |
 | `tools/` | `wiki.py`, note templates (`concept entity paper decision runbook comparison`), commit-msg hook |

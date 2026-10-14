@@ -1,4 +1,4 @@
 ---
-covers: 93542f12ad30
+covers: 83ef7d33dc7d
 ---
-Physical AI knowledge, first area VLA models. Frame: SoftHier overview, one-vla-call, VLA architecture, WAM stub. The rest is serving, efficiency and edge-hardware reference.
+Physical AI knowledge, first area VLA models: SoftHier overview, one VLA call, VLA architecture, action representation, SmolVLA, WAM stub.

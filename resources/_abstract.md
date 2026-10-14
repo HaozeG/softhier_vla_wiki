@@ -1,4 +1,4 @@
 ---
-covers: 3434cd3c681e
+covers: 1893fd3d781c
 ---
-Faithful notes on 48 sources, grouped into models, surveys, serving, compression, rk3588 and hardware, each tagged by evidence tier.
+Faithful notes on 14 sources, grouped into models and surveys, each tagged by evidence tier.

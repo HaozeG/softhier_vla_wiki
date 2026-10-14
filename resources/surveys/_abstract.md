@@ -1,4 +1,4 @@
 ---
-covers: 83cf6add9edb
+covers: b570a1f850b5
 ---
-Five surveys: efficient VLAs (lifecycle and pipeline views), VLA components, action tokenization, embodied models at the edge.
+Two surveys: VLA components, policies and planners; action tokenization.

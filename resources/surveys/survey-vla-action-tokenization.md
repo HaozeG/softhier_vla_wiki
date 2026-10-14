@@ -17,4 +17,4 @@ The survey unifies VLAs as chains of "VLA modules" that produce "action tokens":
 - **Trends (§13):** the authors expect hierarchical architectures (language plans and code on top; affordance, trajectory and goal-state prediction in the middle; raw-action policy at the bottom), with reasoning integrated as needed; learning from imitation toward RL; and co-evolution of model, data and hardware.
 
 ## Related
-See also: [Ma et al.](survey-vla-embodied-ai-ma.md), [FAST](../models/fast-tokenizer.md), [Yu et al.](survey-efficient-vla-yu.md).
+See also: [Ma et al.](survey-vla-embodied-ai-ma.md), [FAST](../models/fast-tokenizer.md), Yu et al..

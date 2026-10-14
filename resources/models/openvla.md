@@ -21,4 +21,4 @@ OpenVLA is a 7B-parameter open VLA built from the Prismatic-7B VLM (fused SigLIP
 - **Limitations (§6):** single-image input; throughput too low for 50 Hz setups such as ALOHA; success typically under 90%. Authors suggest action chunking and speculative decoding.
 
 ## Related
-See also: [RT-2](rt-2.md), [OpenVLA-OFT](openvla-oft.md), [TinyVLA](tinyvla.md), [BitVLA](../compression/bitvla.md).
+See also: [RT-2](rt-2.md), [OpenVLA-OFT](openvla-oft.md), [TinyVLA](tinyvla.md), BitVLA.
