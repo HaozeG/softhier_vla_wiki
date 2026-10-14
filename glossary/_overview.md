@@ -1,5 +1,5 @@
 ---
-covers: b284d0e32ddf
+covers: 84e5b293a49c
 ---
 # glossary/
 
@@ -24,5 +24,5 @@ Look terms up here while you read; you do not need to read it first. The best or
 - [Hardware and performance](hardware-and-performance.md) — estimate versus measured, MFU
 - [Devices and toolchains](devices-and-toolchains.md) — memory, kernel words, tile, PE, SRAM
 - [Evaluation and models](evaluation-and-models.md) — benchmarks, training words, one-line model identities (no sizes or speeds), evidence tags
-- [Symbols and conventions](symbols-and-conventions.md) — H, n, K, T, l, L, N, Hz, xN
+- [Symbols and conventions](symbols-and-conventions.md) — H, n, K, L, N, Hz, xN
 - [Project terms](project-terms.md) — terms specific to SoftHier-VLA (SoftHier so far; no decisions define terms yet)

@@ -20,7 +20,7 @@ The ways a VLA turns its features into actions (discrete tokens, parallel regres
 | action expert                    | The small network that runs the flow steps: it reads what the language model computed and writes the action chunk.                                                                            | field | [SmolVLA](../knowledge/smolvla.md)                                                       |
 | noisy chunk, flow time           | The current guess for the chunk, which starts as noise, and how far along the refinement it is.                                                                                               | field | [SmolVLA](../knowledge/smolvla.md)                                                       |
 | velocity, Euler step             | The expert outputs a velocity, the direction in which to move the noisy chunk; an Euler step moves it a small way along that direction.                                                       | field | [SmolVLA](../knowledge/smolvla.md)                                                       |
-| flow steps (T)                   | The number of refinement steps one call runs; each step calls the expert once, so more steps mean a longer call.                                                                              | field | [one VLA call](../knowledge/one-vla-call.md)                                             |
+| flow step, flow steps            | The number of refinement steps one call runs; each step calls the expert once, so more steps mean a longer call.                                                                              | field | [one VLA call](../knowledge/one-vla-call.md)                                             |
 
 
 
