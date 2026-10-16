@@ -1,5 +1,5 @@
 ---
-covers: b0debbf28117
+covers: c60e7101a323
 ---
 # resources/models/
 
@@ -17,3 +17,7 @@ Model and architecture sources: the VLAs the wiki compares and the action repres
 - [RT-2](rt-2.md) — first VLA; 55B cloud-served at 1–3 Hz
 - [SmolVLA](smolvla.md) — 450M VLA, async inference
 - [TinyVLA](tinyvla.md) — sub-1.5B, diffusion head
+- [RL Token](rl-token.md) — small actor-critic on a frozen VLA's RL token
+- [π*0.6](pi06-recap.md) — RECAP: advantage-conditioned offline RL of the whole VLA
+- [Real-Time EXPO-FT](real-time-expo-ft.md) — async VLA plus small RL edit policy
+

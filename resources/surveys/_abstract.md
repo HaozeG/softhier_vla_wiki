@@ -1,4 +1,4 @@
 ---
-covers: 84f0cfa34a1a
+covers: 1d7aedec22c1
 ---
-Two surveys: VLA components, policies and planners; action tokenization.
+Four surveys: VLA components, policies and planners; action tokenization; dual-system VLAs (OpenHelix); world action models.
