@@ -1,4 +1,4 @@
 ---
-covers: 6328d1b579e8
+covers: 9be26d51e652
 ---
-Faithful notes on 14 sources, grouped into models and surveys, each tagged by evidence tier.
+Faithful notes on 24 sources, grouped into models (VLAs, imitation policies, RL methods) and surveys (surveys, tutorials, a guide), each tagged by evidence tier.

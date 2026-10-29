@@ -20,4 +20,4 @@ TinyVLA is one of the first explicit efforts at a small, fast VLA. It builds sub
 - **Limitations implied:** evaluations are task-specific fine-tunes on a handful of tasks; no cross-embodiment pretraining, which SmolVLA later cites as limiting generalization.
 
 ## Related
-See also: [Octo](octo.md), [OpenVLA](openvla.md), [SmolVLA](smolvla.md).
+See also: [Octo](octo.md), [OpenVLA](openvla.md), [SmolVLA](smolvla.md), [Diffusion Policy](diffusion-policy.md), [ACT](act-aloha.md).

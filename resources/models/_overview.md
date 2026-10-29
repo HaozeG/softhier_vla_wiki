@@ -1,9 +1,9 @@
 ---
-covers: c60e7101a323
+covers: c019c7d2a5de
 ---
 # resources/models/
 
-Model and architecture sources: the VLAs the wiki compares and the action representations they use.
+Model and architecture sources: the VLAs the wiki compares, the action representations they use, and the single-task imitation policies (ACT, Diffusion Policy) they build on.
 
 - [FAST](fast-tokenizer.md) — DCT+BPE action tokens
 - [Helix](figure-helix.md) — 7B S2 + 80M S1
@@ -20,4 +20,6 @@ Model and architecture sources: the VLAs the wiki compares and the action repres
 - [RL Token](rl-token.md) — small actor-critic on a frozen VLA's RL token
 - [π*0.6](pi06-recap.md) — RECAP: advantage-conditioned offline RL of the whole VLA
 - [Real-Time EXPO-FT](real-time-expo-ft.md) — async VLA plus small RL edit policy
+- [ACT (ALOHA)](act-aloha.md) — CVAE transformer, action chunking, temporal ensembling
+- [Diffusion Policy](diffusion-policy.md) — DDPM over action sequences, receding horizon, DDIM
 

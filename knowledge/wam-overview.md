@@ -1,12 +1,12 @@
 ---
 type: concept
 tags: [wam, world-model, overview, taxonomy]
-sources: [resources/surveys/survey-world-action-models-nus.md, resources/surveys/survey-vla-embodied-ai-ma.md]
+sources: [resources/surveys/survey-world-action-models-nus.md, resources/surveys/survey-vla-embodied-ai-ma.md, resources/surveys/guide-embodied-ai.md]
 ---
 # World action models (WAM)
 
 ## Summary
-A world action model is a model in which a forecast of the future is available to the action: it uses a predicted future observation to produce the action, score it or train the action path, inside one model. A VLA only maps the present observation to actions; a world model only predicts the future. This note follows one survey ([World Action Models: A Survey](../resources/surveys/survey-world-action-models-nus.md)); other surveys may define WAM differently.
+A world action model is a model in which a forecast of the future is available to the action: it uses a predicted future observation to produce the action, score it or train the action path, inside one model. A VLA only maps the present observation to actions; a world model only predicts the future. This note follows one survey ([World Action Models: A Survey](../resources/surveys/survey-world-action-models-nus.md)); other surveys may define WAM differently. The community [Embodied-AI-Guide](../resources/surveys/guide-embodied-ai.md), for example, describes a WAM only as a policy that first predicts what it will see and then derives actions, the predict-then-act case below.
 
 ```text
 VLA          o, l ----------------------------> a
