@@ -1,0 +1,27 @@
+---
+type: glossary
+tags: [glossary, robots, embodiment, data, demonstrations]
+sources: [resources/surveys/guide-embodied-ai.md, resources/surveys/tutorial-robot-learning-hf.md, resources/models/act-aloha.md, resources/models/diffusion-policy.md, resources/models/smolvla.md]
+---
+# Robots and data
+
+## Summary
+The basic objects of physical AI: the robot body, what a policy observes and commands, and the demonstrations it learns from. All terms are standard (scope field). The [physical AI map](../knowledge/physical-ai-map.md) shows where these sit in the field.
+
+## Terms
+| Term                               | Meaning                                                                                                                                                       | Scope | Defined in                                                                                           |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----- | ---------------------------------------------------------------------------------------------------- |
+| physical AI                        | AI that perceives and acts in the physical world, as robots do; the topic of this wiki. Also called embodied AI.                                              | field | [physical AI map](../knowledge/physical-ai-map.md)                                                   |
+| policy                             | The mapping from what the robot observes to the actions it takes; in practice, the trained model that drives the robot.                                       | field | [imitation learning and behaviour cloning](../knowledge/imitation-learning-and-behaviour-cloning.md) |
+| observation                        | What the policy reads at one moment: usually camera images and proprioception, and for a VLA also a language instruction.                                     | field | [imitation learning and behaviour cloning](../knowledge/imitation-learning-and-behaviour-cloning.md) |
+| proprioception (robot state)       | The robot's readings of its own body, such as joint positions; also called robot state.                                                                       | field | [imitation learning and behaviour cloning](../knowledge/imitation-learning-and-behaviour-cloning.md) |
+| action                             | One command for one control step, for example target positions for the joints. A policy's output is a sequence of these.                                      | field | [action representation and chunking](../knowledge/action-representation-and-chunking.md)             |
+| position control, velocity control | Two kinds of action: a target position for the robot to reach, or a velocity for it to move at.                                                               | field | [Diffusion Policy](../resources/models/diffusion-policy.md)                                          |
+| DoF (degrees of freedom)           | The number of independently movable joints of a robot; also used for the number of numbers in one action.                                                     | field | [Embodied-AI-Guide](../resources/surveys/guide-embodied-ai.md)                                       |
+| end-effector                       | The tool at the end of an arm, such as a gripper or a hand. End-effector actions command its pose; joint actions command each joint.                          | field | [physical AI map](../knowledge/physical-ai-map.md)                                                   |
+| embodiment, cross-embodiment       | Embodiment: the particular robot body, with its arms, sensors and action space. Cross-embodiment: using one model or dataset across several different robots. | field | [SmolVLA](../knowledge/smolvla.md)                                                                   |
+| SO100, SO101                       | Low-cost real robot arms used for real-world tests.                                                                                                           | field | [SmolVLA](../knowledge/smolvla.md)                                                                   |
+| ALOHA                              | A low-cost two-arm (bimanual) teleoperation set-up: a human drives two small leader arms and two follower arms copy them.                                     | field | [ACT](../resources/models/act-aloha.md)                                                              |
+| teleoperation                      | A human drives the robot directly, for example through leader arms or a game pad, to record demonstrations.                                                   | field | [imitation learning and behaviour cloning](../knowledge/imitation-learning-and-behaviour-cloning.md) |
+| demonstration, trajectory          | One recorded run of a task: the sequence of observations and actions, usually from teleoperation.                                                             | field | [imitation learning and behaviour cloning](../knowledge/imitation-learning-and-behaviour-cloning.md) |
+| episode, episodes                  | One attempt at a task, from the start until it succeeds or stops; benchmark scores such as the success rate are counted over episodes.                        | field | [SmolVLA](../knowledge/smolvla.md)                                                                   |

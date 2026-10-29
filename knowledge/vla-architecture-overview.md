@@ -6,7 +6,7 @@ sources: [resources/models/rt-2.md, resources/models/openvla.md, resources/model
 # VLA architecture overview
 
 ## Summary
-(Terms such as prefix, KV cache and flow matching: glossary ([A to Z index](../glossary/a-to-z.md)), [model and attention](../glossary/model-and-attention.md) and [action generation](../glossary/action-generation.md).)
+(Terms such as prefix, KV cache and flow matching: glossary ([A to Z index](../glossary/a-to-z.md)), [model parts and attention](../glossary/model-and-attention.md) and [action generation](../glossary/action-generation.md).)
 
 Start with [one VLA call](one-vla-call.md).
 
