@@ -1,5 +1,5 @@
 ---
-covers: d52ae8df6f8a
+covers: b190a1afb870
 ---
 # knowledge/
 
@@ -11,6 +11,7 @@ Synthesis of what the sources say about physical AI; VLA models are the first co
 - [SoftHier and the project](softhier-and-the-project.md) — what the project README says: mapping VLA applications to a tile-based many-PE chip; goals
 - [One VLA call, step by step](one-vla-call.md) — start here: plain-language walkthrough of one call, with one picture
 - [VLA architecture overview](vla-architecture-overview.md) — components, action heads, reference models
+- [Paper map: tile-based dataflow hardware, compilers and mapping](dataflow-hw-paper-map.md) — ISCA/ASPLOS/MICRO/HPCA themes and verified anchors for the SoftHier side; reading tracker
 - [World action models (WAM)](wam-overview.md) — definition, taxonomy and cost model from one survey; other WAM definitions open
 
 ## Reference

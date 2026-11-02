@@ -1,5 +1,5 @@
 ---
-covers: 485baae1b90d
+covers: f136145548fd
 ---
 # SoftHier-VLA wiki
 
