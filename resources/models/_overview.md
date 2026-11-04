@@ -1,6 +1,3 @@
----
-covers: c019c7d2a5de
----
 # resources/models/
 
 Model and architecture sources: the VLAs the wiki compares, the action representations they use, and the single-task imitation policies (ACT, Diffusion Policy) they build on.

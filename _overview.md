@@ -1,6 +1,3 @@
----
-covers: 76108b5ea770
----
 # SoftHier-VLA wiki
 
 Top-level map. Topic: physical AI (robots that perceive and act in the physical world); the first area covered is VLA models. Newcomers: read `README.md`, then the frame notes in `knowledge/` (physical-AI map, SoftHier overview, one VLA call, VLA architecture, WAM stub), with `glossary/` open for new words. Then drill down via each directory's `_overview.md`.

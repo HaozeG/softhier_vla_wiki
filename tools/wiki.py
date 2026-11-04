@@ -6,16 +6,15 @@ Layers (per directory, like OpenViking):
   L1  _overview.md   <=4000 chars, what is inside and where to look
   L2  *.md           the actual notes (indexed per heading chunk)
 
-Folder summary files carry `covers: <hash>` in frontmatter: a hash of the directory's direct
-children (file contents + child abstracts). `check` flags a summary file stale when it
-no longer matches; after rewriting one, run `stamp` to record the new hash.
+`check` warns (STALE) when notes in a folder changed since the last commit but neither of its
+summary files did: a reminder to reread them, not a hash. It does not cascade to parent folders.
 
 Notes (L2) carry frontmatter (`type`, `tags`, `sources`) and per-type required sections;
 no dates live in files: git is the log (`commit` writes structured messages, `log` reads them).
 
 Commands:
   index | find | related | ls | tree            search & browse (zvec hybrid / nearest-neighbour)
-  new | check | health | stamp                  create from template, lint, semantic health, summary-file stamp
+  new | check | health                         create from template, lint, semantic health
   commit | log | history | install-hooks        git-as-log
   setup                                         one-time environment setup
 """
@@ -338,10 +337,24 @@ def summary_body(d: Path, name: str):
     return split_fm(f.read_text())[1].strip() if f.exists() else None
 
 
-def covers_hash(d: Path) -> str:
-    parts = [f"{f.name}:{sha(f.read_text())}" for f in notes(d)]
-    parts += [f"{c.name}/:{sha(summary_body(c, '_abstract.md') or '')}" for c in dirs(d)]
-    return sha("\n".join(parts))[:12]
+def dirs_needing_summary_review():
+    """Folders whose notes changed vs HEAD (staged, unstaged or untracked) while neither summary file did."""
+    try:
+        out = subprocess.run(["git", "status", "--porcelain", "--untracked-files=all"], cwd=ROOT,
+                             capture_output=True, text=True, check=True).stdout
+    except (OSError, subprocess.CalledProcessError):
+        return []
+    touched, summaries = set(), set()
+    for line in out.splitlines():
+        for path in line[3:].split(" -> "):
+            path = Path(path.strip('"'))
+            if path.suffix != ".md" or path.parts[0] in SKIP_DIRS or path.parts[0].startswith("."):
+                continue
+            if path.name in SUMMARY_FILES:
+                summaries.add(path.parent)
+            elif path.name != GLOSSARY_INDEX and not (path.parent == Path(".") and path.name in ROOT_SKIP_FILES):
+                touched.add(path.parent)
+    return sorted(touched - summaries)
 
 
 # ---------- chunking ----------
@@ -551,6 +564,9 @@ def structural_issues():
     idx = ROOT / GLOSSARY_DIR / GLOSSARY_INDEX
     if (ROOT / GLOSSARY_DIR).is_dir() and (not idx.exists() or idx.read_text() != glossary_index_text()):
         add("ERROR", "GLOSSARYINDEX", f"{GLOSSARY_DIR}/{GLOSSARY_INDEX}", "the alphabetical index is missing or stale; run `tools/wiki.py glossary --az`")
+    for d in dirs_needing_summary_review():
+        add("WARN", "STALE", f"{d.as_posix()}/_overview.md",
+            "notes here changed but the summary files did not; update the catalog line if needed (no change is fine)")
     titles, bodies = {}, {}
     for d in all_dirs():
         rel = d.relative_to(ROOT).as_posix()
@@ -562,11 +578,9 @@ def structural_issues():
                 continue
             fm, body = split_fm(f.read_text())
             if not body.strip():
-                add("ERROR", "EMPTY", f"{rel}/{name}", "summary file has no body text; write the summary, then `stamp`")
+                add("ERROR", "EMPTY", f"{rel}/{name}", "summary file has no body text")
             if len(body.strip()) > cap:
                 add("ERROR", "TOO LONG", f"{rel}/{name}", f"{len(body.strip())} > {cap} chars")
-            if fm.get("covers") != covers_hash(d):
-                add("ERROR", "STALE", f"{rel}/{name}", "children changed; review/rewrite then `stamp`")
         overview = summary_body(d, "_overview.md") or ""
         for f in notes(d):
             frel = f.relative_to(ROOT).as_posix()
@@ -728,7 +742,7 @@ def cmd_new(a):
     dest.write_text(tpl.read_text().replace("{{title}}", a.title))
     rel = dest.relative_to(ROOT)
     print(f"created {rel}\nnext: replace every `<!-- ... -->` guidance comment with real content, list it in {rel.parent}/_overview.md, "
-          f"`related {rel}` to cross-link, then `stamp`, `index`, `health`")
+          f"`related {rel}` to cross-link, then `index`, `health`")
 
 
 # ---------- git as the log ----------
@@ -872,19 +886,6 @@ def cmd_install_hooks(a):
     print("git core.hooksPath -> tools/hooks (commit-msg enforces `wiki(<op>): subject` + `Date:` trailer)")
 
 
-def cmd_stamp(a):
-    targets = [resolve(p) for p in a.paths] if a.paths else list(all_dirs())
-    # bottom-up so parents hash the freshly-stamped child abstracts... abstracts' bodies
-    # don't change on stamp, so order only matters for the printed output.
-    for d in sorted(targets, key=lambda p: -len(p.parts)):
-        for name in SUMMARY_FILES:
-            f = d / name
-            if f.exists():
-                body = split_fm(f.read_text())[1].lstrip("\n")
-                f.write_text(f"---\ncovers: {covers_hash(d)}\n---\n{body}")
-                print(f"stamped {f.relative_to(ROOT)}")
-
-
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -955,9 +956,6 @@ def main():
     p.add_argument("--scope", choices=sorted(GLOSSARY_SCOPES))
     p.set_defaults(fn=cmd_glossary)
     sub.add_parser("install-hooks", help="enable the commit-msg hook").set_defaults(fn=cmd_install_hooks)
-    p = sub.add_parser("stamp", help="record current children hash in summary files")
-    p.add_argument("paths", nargs="*")
-    p.set_defaults(fn=cmd_stamp)
     a = ap.parse_args()
     a.fn(a)
 

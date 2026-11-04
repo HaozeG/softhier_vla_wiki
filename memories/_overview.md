@@ -1,6 +1,3 @@
----
-covers: 9342090d7422
----
 # memories/
 
 Project memory: what was decided and learned while working on SoftHier-VLA.

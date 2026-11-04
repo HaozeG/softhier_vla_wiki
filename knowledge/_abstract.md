@@ -1,4 +1,1 @@
----
-covers: 00912f937c3e
----
-Physical AI knowledge, first area VLA models: physical-AI map, SoftHier overview, dataflow-HW paper map, imitation learning, one VLA call, VLA architecture, action representation, SmolVLA, dual-system VLA, RL fast policy, WAM, benchmark workloads.
+What the sources say about physical AI and how the parts relate, starting with VLA models: frame notes, model architecture, action generation, workloads and hardware. Each note cites resources/.

@@ -1,6 +1,3 @@
----
-covers: c32c44056ab9
----
 # resources/serving/
 
 Sources that measure how VLA models run on hardware: latency, bottlenecks, energy and the closed control loop, as opposed to how the models are built (`models/`).

@@ -1,6 +1,3 @@
----
-covers: aa942ab15f26
----
 # resources/surveys/
 
 Surveys, tutorials and guides used for structure and naming, not as primary evidence.

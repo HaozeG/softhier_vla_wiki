@@ -20,9 +20,9 @@ Use when adding a paper, doc, repo, or experiment result to the wiki. One source
 5. **Glossary:** if the source introduces a standard term the notes will use, add a `field` row to the right group in `glossary/` (definition only, no numbers; then run `tools/wiki.py glossary --az` to refresh the A to Z index); a local meaning of a field term is a `convention` row.
 6. **Diagram check:** for each touched `knowledge/` note with structure, add or update its ASCII diagram in the same edit as the text ([decision 0007](../decisions/0007-ascii-diagrams-as-logic-check.md)). Redraw from the new text; if the picture needs a box or arrow the text does not justify, or a case is missing, fix the text from the source note.
 7. **Cross-link:** `tools/wiki.py related <each touched note>`; add relative links for every `NOT LINKED` neighbour that is genuinely related.
-8. **Catalog:** add `- [Title](file.md) — one-line summary` per new note to its directory's `_overview.md`; revise `_abstract.md` if the directory's summary changed; repeat up the tree (`check` will flag parents).
+8. **Catalog:** add `- [Title](file.md) — one-line summary` per new note to its directory's `_overview.md`; revise `_abstract.md` if the directory's summary changed; a parent folder's summary changes only if its scope did.
 9. **Decisions:** if the source changed a choice, write `new decision memories/decisions/NNNN-<slug>.md "<Title>"` (project decisions; wiki-design decisions go in `wiki-design/decisions/`).
-10. **Verify:** `tools/wiki.py stamp <dirs>` → `index` → `health` (no errors; review every warning).
+10. **Verify:** `tools/wiki.py index` → `health` (no errors; review every warning).
 11. **Log:** when asked to commit: `tools/wiki.py commit ingest "<subject>" --source <url>`.
 
 ## In-depth mode: reading the source together

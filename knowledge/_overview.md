@@ -1,6 +1,3 @@
----
-covers: 00912f937c3e
----
 # knowledge/
 
 Synthesis of what the sources say about physical AI; VLA models are the first covered area (further areas get their own notes), with a focus on how they are built. Each note cites `resources/` notes. Start with the frame notes below (SoftHier, VLA, WAM), with the glossary (`../glossary/_overview.md`) open for new words.

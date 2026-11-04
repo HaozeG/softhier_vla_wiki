@@ -1,6 +1,3 @@
----
-covers: 1cfc6aab10a0
----
 # wiki-design/runbooks/
 
 - [Ingest a source](ingest-a-source.md) — add a paper/doc/result: choose brainstorming or in-depth (guided reading) mode, then search, read arXiv papers from HTML with `arxiv.py`, scaffold, synthesize, cross-link with `related`, catalog, verify, log.

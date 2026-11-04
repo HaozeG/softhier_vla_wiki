@@ -20,7 +20,7 @@ Run periodically (weekly, or after a large ingest), by hand or via the `wiki-hea
 10. **Separation:** `grep -rniE "softhier|relevance|our (project|design)" resources/` and `grep -rn "knowledge/" resources/` must find no project discussion or links into `knowledge/` ([decision 0010](../decisions/0010-resources-stay-project-neutral.md)); move any hit to `knowledge/`. Also `grep -rniE "\(inferences?[),:;]|\(derived|hypothes|implications" knowledge/` must find no derived estimate, hypothesis or design-implications text; remove it or, where a source states it, cite and label it as the source's ([decision 0013](../decisions/0013-scope-and-no-derived-content.md)).
 11. **Glossary:** `glossary/` terms are definitions only (no numbers or findings), each `convention` or `project` row still matches how the notes use the term, every decision's `defines:` terms have rows, and the name list shown at session start (`tools/wiki.py glossary --names --scope convention`) is still short. After any glossary edit run `tools/wiki.py glossary --az` to regenerate `glossary/a-to-z.md`; `check` reports `GLOSSARYINDEX` when it is stale.
 12. **Data gaps:** collect `## Open questions` sections; list them for the user as suggested next sources.
-13. `tools/wiki.py stamp` → `index` → `health` until only deliberate warnings remain. Staleness cascades: after changing a directory's abstract, `check` flags parents up to the root; review them and `stamp .`.
+13. `tools/wiki.py index` → `health` until only deliberate warnings remain.
 14. **Log:** when asked to commit: `tools/wiki.py commit lint "<subject>"`.
 
 ## Troubleshooting

@@ -1,6 +1,3 @@
----
-covers: abd8d88b0ee2
----
 # resources/
 
 One faithful note per external source, cited by the knowledge notes. Grouped by topic; tags `recent`, `low-evidence`, `first-party`, `community` mark evidence tier ([wiki-design decision 0004](../wiki-design/decisions/0004-evidence-tiers-for-fast-moving-vla-sources.md)). Add a topic folder when a new area is investigated.

@@ -1,4 +1,1 @@
----
-covers: 765465cb0f9f
----
-Glossary in groups from robot to chip: robots and data, learning, action generation, model parts, execution, model families, evaluation, evidence, hardware, symbols, project. Look terms up: wiki.py glossary "<term>"; A to Z index.
+Term definitions grouped by subject, from robot to chip, with field, convention and project scopes. Look a term up with wiki.py glossary "<term>"; a-to-z.md lists all.

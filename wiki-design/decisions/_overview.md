@@ -1,6 +1,3 @@
----
-covers: f191ef58a123
----
 # wiki-design/decisions/
 
 - [0001 wiki layout and search](0001-wiki-layout-and-search.md) — layered L0/L1/L2 directory summaries (from OpenViking) plus local hybrid search with zvec + fastembed; no server or API keys.
@@ -18,3 +15,4 @@ covers: f191ef58a123
 - [0013 scope is physical AI; no derived content](0013-scope-and-no-derived-content.md) — notes state what sources say and how parts relate; no derived estimates, proposals or inferences unless asked; records the removal of two derived notes.
 - [0014 note writing style](0014-note-writing-style.md) — structure before detail, tables for items with attributes, evidence labels, open questions explicit; note text stays English for the search model.
 - [0015 ingest modes](0015-ingest-modes-brainstorm-or-in-depth.md) — every ingest first asks: brainstorming (automatic) or in-depth (lead the maintainer through the source section by section while they read it).
+- [Trim workflow overhead](2026-11-05-trim-workflow-overhead.md) — no `covers` hash or `stamp`; summaries describe scope, not contents; worktrees share the venv; new decisions named by date and slug.

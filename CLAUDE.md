@@ -11,7 +11,7 @@ An LLM-maintained wiki on physical AI (robots that perceive and act in the physi
 | Wiki design (wiki side) | `wiki-design/decisions/` (decisions about the wiki), `wiki-design/runbooks/`, `tools/` | Kept apart from project content ([decision 0009](wiki-design/decisions/0009-separate-project-knowledge-from-wiki-design.md)); changed only by wiki-development sessions |
 | Schema | this file, `tools/templates/`, `tools/wiki.py` (lint) | Follow it; propose changes via a decision record |
 
-Every folder has two short summary files: `_abstract.md` (≤256 chars, the one-glance summary; also called L0) and `_overview.md` (≤4000 chars, also the *catalog*: every note gets a line `- [Title](file.md) — one-line summary`; also called L1). Read these first, open the full notes (L2) only when needed. The layering comes from OpenViking. **Git is the log**; zvec is the search index that finds related notes by meaning.
+Every folder has two short summary files: `_abstract.md` (≤256 chars, the one-glance summary of what the folder is for, not what is in it; also called L0) and `_overview.md` (≤4000 chars, also the *catalog*: every note gets a line `- [Title](file.md) — one-line summary`; also called L1). Read these first, open the full notes (L2) only when needed. The layering comes from OpenViking. **Git is the log**; zvec is the search index that finds related notes by meaning.
 
 ## Note format (enforced by `check`)
 ```
@@ -52,15 +52,14 @@ Required `##` sections: concept/entity → `Summary`; paper → `Summary`, `Key 
 | `glossary --az` | Write `glossary/a-to-z.md`, the generated A to Z index of all terms; `check` reports `GLOSSARYINDEX` when it is stale |
 | `glossary ["<term>"] [--names] [--scope S]` | Look up glossary definitions on demand; `--names` lists term names (what the plugin shows at session start), `--scope field\|convention\|project` filters |
 | `fmt [--check]` | Pad all pipe tables like Obsidian (whitespace only, idempotent); `--check` just reports |
-| `stamp [<dirs>]` | Record the folder's content hash in its summary files after you rewrite them |
 | `commit <op> "<subject>" [--source URL]... [--body ...] [--dry-run]` | Lint-gated commit with structured message |
 | `log [-n N] [--op OP] [--path P] [--pages]` / `history <note>` | Read the change log back from git |
 | `setup` | One-time: create `.venv`, install deps, build the index, enable the hook (works from any cwd, e.g. `softhier_vla_wiki/tools/wiki.py setup`) |
 | `install-hooks` | Enable the `commit-msg` hook that enforces the format below |
 
 ## Write workflow (every insert / update / delete)
-1. Edit notes. A decision that introduces or redefines a term lists it in its `defines:` frontmatter and adds a project row to `glossary/project-terms.md` in the same commit (`check` reports `DEFINES`); a source that brings a new standard term adds a `field` row to the right glossary group. After glossary edits run `glossary --az` to regenerate the A to Z index. Glossary rows are definitions only: no measured or derived numbers, examples or findings (`check` reports `GLOSSARY`). Update the directory's `_overview.md` (catalog line) and `_abstract.md` if its summary changed; parents too.
-2. `fmt` (if you touched a table) → `stamp <dirs>` → `check`. Staleness cascades upward: a directory's hash includes its children's L0 abstracts, so changing `knowledge/_abstract.md` flags the root summary files too; review them and stamp (`stamp .` for root). Re-stamping an accurate sidecar is fine. Replace placeholder text such as "Empty until populated" when adding the first note.
+1. Edit notes. A decision that introduces or redefines a term lists it in its `defines:` frontmatter and adds a project row to `glossary/project-terms.md` in the same commit (`check` reports `DEFINES`); a source that brings a new standard term adds a `field` row to the right glossary group. After glossary edits run `glossary --az` to regenerate the A to Z index. Glossary rows are definitions only: no measured or derived numbers, examples or findings (`check` reports `GLOSSARY`). Add the note's catalog line to its directory's `_overview.md`. `_abstract.md` states the folder's scope, never a list of its children or a count, so it changes only when the scope does.
+2. `fmt` (if you touched a table) → `check`. `STALE` is a warning for a folder whose notes changed while its summary files did not: reread its catalog line and move on if it is still right. Parents are not flagged; edit a parent's summary only when its scope changed.
 3. `index` → `health`; no errors, and every warning read (`NEARDUP`: merge or cross-link; `ORPHAN`: link via `related`).
 4. **Delete** = remove the file, its catalog line, and links to it (`check` finds the rest).
 5. Commit (op: `ingest` = a new external source; `update` = new/changed knowledge or decisions from our own work; `delete`; `lint` = health fixes; `refactor` = restructuring; `init` = first commit). Only commit when the user asked you to, or in an autonomous maintenance run): `tools/wiki.py commit <op> "<subject>"`.
@@ -89,4 +88,4 @@ The Claude Code plugin in `tools/claude-plugin/` (see README) makes parent-repo 
 ```bash
 tools/wiki.py setup   # venv + deps + index + commit hook; first run downloads the embedding model (~130 MB)
 ```
-`.venv/` and `.index/` are git-ignored; `.index/` is a rebuildable cache (`rm -rf .index && tools/wiki.py index`). Each folder's summary files are `_abstract.md` and `_overview.md` (`cat <dir>/_abstract.md`); write only their body, `stamp` manages the `covers:` frontmatter.
+`.venv/` and `.index/` are git-ignored (a git worktree without its own `.venv` uses the main checkout's); `.index/` is a rebuildable cache (`rm -rf .index && tools/wiki.py index`). Each folder's summary files are `_abstract.md` and `_overview.md` (`cat <dir>/_abstract.md`); they carry no frontmatter.

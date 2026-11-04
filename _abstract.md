@@ -1,4 +1,1 @@
----
-covers: 76108b5ea770
----
-SoftHier-VLA wiki on physical AI, first area VLA models: glossary/ (terms), resources/ (sources), knowledge/ (synthesis), memories/decisions/. Wiki side: wiki-design/, tools/. New? README, then knowledge/.
+SoftHier-VLA wiki on physical AI, first area VLA models. Project side: glossary, sources, knowledge, project decisions. Wiki side: wiki-design, tools. New? README, then knowledge/.

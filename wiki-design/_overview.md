@@ -1,6 +1,3 @@
----
-covers: 1a627ac0dff7
----
 # wiki-design/
 
 Material about the wiki, kept apart from project content ([decision 0009](decisions/0009-separate-project-knowledge-from-wiki-design.md)). Changed by sessions started in this repo; project sessions use the runbooks but do not edit this folder.
