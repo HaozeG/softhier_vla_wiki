@@ -1,20 +1,20 @@
 ---
 type: concept
 tags: [vla, architecture, history, action-head, dual-system]
-sources: [resources/models/rt-2.md, resources/models/openvla.md, resources/models/octo.md, resources/models/pi0.md, resources/models/pi05.md, resources/models/fast-tokenizer.md, resources/models/openvla-oft.md, resources/models/gr00t-n1.md, resources/models/smolvla.md, resources/models/tinyvla.md, resources/models/figure-helix.md, resources/surveys/survey-vla-embodied-ai-ma.md, ]
+sources: [resources/models/rt-2.md, resources/models/openvla.md, resources/models/octo.md, resources/models/pi0.md, resources/models/pi05.md, resources/models/fast-tokenizer.md, resources/models/openvla-oft.md, resources/models/gr00t-n1.md, resources/models/smolvla.md, resources/models/tinyvla.md, resources/models/figure-helix.md, resources/surveys/survey-vla-embodied-ai-ma.md, resources/serving/vla-workload-characterization-kaist.md]
 ---
 # VLA architecture overview
 
 ## Summary
 (Terms such as prefix, KV cache and flow matching: glossary ([A to Z index](../glossary/a-to-z.md)), [model parts and attention](../glossary/model-and-attention.md) and [action generation](../glossary/action-generation.md).)
 
-Start with [one VLA call](one-vla-call.md).
+Start with [one VLA call](one-vla-call.md). For measured cost per stage of five VLAs on the same hardware, see [benchmark workloads](vla-benchmark-workloads.md).
 
 A vision-language-action (VLA) model maps camera images, a language instruction and (usually) robot state to robot actions using a pretrained vision-language model (VLM) as its core. Designs differ mostly in the **action head** (discrete tokens, parallel regression, diffusion/flow expert) and in how much of the VLM is kept. The trajectory from RT-2 (55B, cloud, 1–3 Hz) to SmolVLA (0.45B) is a move to smaller VLMs, fewer visual tokens, chunked continuous actions from a small expert, and asynchronous execution. Terminology follows [Ma et al.](../resources/surveys/survey-vla-embodied-ai-ma.md): VLA originated with RT-2, and models built on large VLMs are sometimes called "large VLAs".
 
 ## Diagram
 ```text
-Pipeline (Octo is the exception: no VLM)
+Pipeline (exceptions with no VLM: Octo, and Cosmos-Policy, a video model)
 
  images --> vision encoder --> projector -----+ visual tokens
    (SigLIP, or SigLIP + DINOv2)               |
@@ -57,24 +57,26 @@ Axes: 1 how actions are decoded; 2 how a flow expert reads the backbone;
 - **Training recipe:** π0.5 pretrains with discrete FAST tokens and post-trains a flow expert; TinyVLA and Octo skip large robot pretraining.
 
 ## Reference models (skim)
-The numbers in this table come from different papers and are not comparable. Octo is not VLM-based (see its [note](../resources/models/octo.md)); it is listed as the small-model reference point the others compare against, so the Summary's "VLM as its core" does not apply to it.
+The numbers in this table come from different papers and are not comparable. Octo is not VLM-based (see its [note](../resources/models/octo.md)); it is listed as the small-model reference point the others compare against, so the Summary's "VLM as its core" does not apply to it. Cosmos-Policy is not VLM-based either: it is one video-diffusion model whose latent holds the actions ([benchmark workloads](vla-benchmark-workloads.md)).
 
-| Model                                     | Params                      | Backbone                             | Action head                          | Reported speed (hardware)                           |
-| ----------------------------------------- | --------------------------- | ------------------------------------ | ------------------------------------ | --------------------------------------------------- |
-| RT-2                                      | 5B / 12B / 55B              | PaLI-X / PaLM-E                      | 8 discrete tokens (256 bins)         | 5 Hz (5B), 1–3 Hz (55B), multi-TPU cloud            |
-| OpenVLA                                   | 7B                          | Prismatic (SigLIP + DINOv2, Llama 2) | 7 discrete tokens                    | about 6 Hz, RTX 4090, bf16, 15 GB                   |
-| [Octo](../resources/models/octo.md)       | 27M / 93M                   | T5 + patch CNN + transformer         | diffusion head, 20 steps             | not reported                                        |
-| π0                                        | 3.3B                        | PaliGemma 3B + 300M expert           | flow, 10 steps, H = 50               | 73 ms on-board RTX 4090, 3 cameras                  |
-| π0-FAST                                   | about 3B (no action expert) | PaliGemma                            | 30–60 FAST tokens                    | about 750 ms per chunk, RTX 4090                    |
-| OpenVLA-OFT                               | 7.5B                        | as OpenVLA                           | parallel L1 regression, K = 8–25     | 109.7 actions/s (K = 8, A100)                       |
-| GR00T N1                                  | 2.2B (1.34B VLM)            | Eagle-2 (SmolLM2 + SigLIP-2)         | DiT flow, 4 steps, H = 16            | 63.9 ms per chunk, L40, bf16                        |
-| SmolVLA                                   | 0.45B                       | truncated SmolVLM-2                  | flow expert (100M), 10 steps, n = 50 | see [SmolVLA paper](../resources/models/smolvla.md) |
-| [TinyVLA](../resources/models/tinyvla.md) | 0.42–1.3B                   | Pythia-based                         | diffusion head                       | 14 ms per action, A6000                             |
-| Helix (S2 / S1)                           | 7B / 80M                    | open VLM / cross-attn transformer    | 200 Hz S1                            | S2 7–9 Hz, onboard embedded GPUs                    |
+| Model                                     | Params                      | Backbone                                           | Action head                                                | Reported speed (hardware)                                                  |
+| ----------------------------------------- | --------------------------- | -------------------------------------------------- | ---------------------------------------------------------- | -------------------------------------------------------------------------- |
+| RT-2                                      | 5B / 12B / 55B              | PaLI-X / PaLM-E                                    | 8 discrete tokens (256 bins)                               | 5 Hz (5B), 1–3 Hz (55B), multi-TPU cloud                                   |
+| OpenVLA                                   | 7B                          | Prismatic (SigLIP + DINOv2, Llama 2)               | 7 discrete tokens                                          | about 6 Hz, RTX 4090, bf16, 15 GB                                          |
+| [Octo](../resources/models/octo.md)       | 27M / 93M                   | T5 + patch CNN + transformer                       | diffusion head, 20 steps                                   | not reported                                                               |
+| π0                                        | 3.3B                        | PaliGemma 3B + 300M expert                         | flow, 10 steps, H = 50                                     | 73 ms on-board RTX 4090, 3 cameras                                         |
+| π0-FAST                                   | about 3B (no action expert) | PaliGemma                                          | 30–60 FAST tokens                                          | about 750 ms per chunk, RTX 4090                                           |
+| OpenVLA-OFT                               | 7.5B                        | as OpenVLA                                         | parallel L1 regression, K = 8–25                           | 109.7 actions/s (K = 8, A100)                                              |
+| GR00T N1                                  | 2.2B (1.34B VLM)            | Eagle-2 (SmolLM2 + SigLIP-2)                       | DiT flow, 4 steps, H = 16                                  | 63.9 ms per chunk, L40, bf16                                               |
+| SmolVLA                                   | 0.45B                       | truncated SmolVLM-2                                | flow expert (100M), 10 steps, n = 50                       | see [SmolVLA paper](../resources/models/smolvla.md)                        |
+| [TinyVLA](../resources/models/tinyvla.md) | 0.42–1.3B                   | Pythia-based                                       | diffusion head                                             | 14 ms per action, A6000                                                    |
+| GR00T N1.6 (Jung et al.)                  | about 3B                    | Cosmos-Reason VLM                                  | DiT flow, 4 steps, chunk 16                                | 120 ms eager, RTX 4090 ([benchmark workloads](vla-benchmark-workloads.md)) |
+| Cosmos-Policy (Jung et al.)               | about 2B                    | Wan2.1 VAE + Cosmos-Predict2 DiT (one video model) | actions in video-latent slots, 5 diffusion steps, chunk 16 | 396 ms eager, RTX 4090                                                     |
+| Helix (S2 / S1)                           | 7B / 80M                    | open VLM / cross-attn transformer                  | 200 Hz S1                                                  | S2 7–9 Hz, onboard embedded GPUs                                           |
 
 In the table, Params is the model size in billions (B) or millions (M) of learned numbers (parameters). Speeds come from different hardware, batch sizes and definitions; do not rank models by this column. Per-paper detail (tables, ablations, limitations) lives in the `resources/` notes, for example [SmolVLA paper](../resources/models/smolvla.md) ; this note only compares designs across them.
 
 ## Open questions
-- How world action models ([WAM stub](wam-overview.md)) differ architecturally from VLAs.
+- How world action models ([WAM stub](wam-overview.md)) differ architecturally from VLAs. One measured video-generation policy, Cosmos-Policy, is profiled in [benchmark workloads](vla-benchmark-workloads.md).
 - Whether discrete-token pretraining (π0.5, π0-FAST) or flow-only training is the better base for small models; the evidence here comes from PI's own comparisons.
 - How much semantic generalization is lost when the VLM is truncated or replaced by a sub-1B model; most small-model results use LIBERO-style benchmarks and short tasks.

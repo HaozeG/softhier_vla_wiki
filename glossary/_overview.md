@@ -1,5 +1,5 @@
 ---
-covers: 80824e0d4e82
+covers: 765465cb0f9f
 ---
 # glossary/
 
@@ -21,11 +21,11 @@ Look terms up here while you read; you do not need to read it first. The best or
 - [Robots and data](robots-and-data.md) — policy, observation, proprioception, action, DoF, end-effector, embodiment, robots, teleoperation, demonstrations
 - [Learning paradigms](learning-paradigms.md) — imitation learning and behaviour cloning, compounding error, multimodal demonstrations, RL and its parts, training stages
 - [Action generation](action-generation.md) — action head kinds: discrete tokens; single pass (regression, CVAE); iterative from noise (diffusion, flow matching) with their step words
-- [Model parts and attention](model-and-attention.md) — VLA, encoders, projector, tokens, prefix, KV cache, attention kinds, action expert, DiT
-- [Execution and the robot loop](robot-and-control-loop.md) — control step, chunk, latency, async, stale actions, open loop, temporal ensembling, receding horizon
+- [Model parts and attention](model-and-attention.md) — VLA, encoders, projector, tokens, prefix, KV cache, attention kinds, action expert, DiT, VAE
+- [Execution and the robot loop](robot-and-control-loop.md) — control step, chunk, latency, async, stale actions, observation staleness, overlap percentage, open loop, temporal ensembling, receding horizon
 - [Model families and named models](model-families.md) — dual-system VLA, world model, WAM; one-line identities of ACT, Diffusion Policy and the VLAs (no sizes or speeds)
-- [Simulation and evaluation](simulation-and-evaluation.md) — benchmarks, success rate, sim-to-real
+- [Simulation and evaluation](simulation-and-evaluation.md) — benchmarks, MuJoCo, success rate, sim-to-real
 - [Evidence](evidence.md) — estimate versus measured, source evidence tags
-- [Deployment hardware](deployment-hardware.md) — tile, PE, SRAM, many-PE chip, MLIR, TPU, MFU
+- [Deployment hardware](deployment-hardware.md) — tile, PE, SRAM, many-PE chip, MLIR, TPU, MFU; profiling words: GEMM, kernel, batch size, roofline, arithmetic intensity, ridge point, memory/compute-bound, DVFS, EMC, SLO
 - [Symbols and conventions](symbols-and-conventions.md) — H, n, K, L, N, Hz, xN
 - [Project terms](project-terms.md) — terms specific to SoftHier-VLA (SoftHier so far; no decisions define terms yet)

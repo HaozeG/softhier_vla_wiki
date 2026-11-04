@@ -1,7 +1,7 @@
 ---
 type: concept
 tags: [action-tokens, chunking, fast, flow-matching, diffusion, cvae, regression, execution-horizon, temporal-ensembling]
-sources: [resources/models/rt-2.md, resources/models/openvla.md, resources/models/fast-tokenizer.md, resources/models/openvla-oft.md, resources/models/pi0.md, resources/models/smolvla.md, resources/models/octo.md, resources/surveys/survey-vla-action-tokenization.md, resources/models/act-aloha.md, resources/models/diffusion-policy.md, resources/surveys/tutorial-robot-learning-hf.md, resources/surveys/tutorial-flow-diffusion-mit.md]
+sources: [resources/serving/vla-workload-characterization-kaist.md, resources/models/rt-2.md, resources/models/openvla.md, resources/models/fast-tokenizer.md, resources/models/openvla-oft.md, resources/models/pi0.md, resources/models/smolvla.md, resources/models/octo.md, resources/surveys/survey-vla-action-tokenization.md, resources/models/act-aloha.md, resources/models/diffusion-policy.md, resources/surveys/tutorial-robot-learning-hf.md, resources/surveys/tutorial-flow-diffusion-mit.md]
 ---
 # Action representation and chunking
 
@@ -53,6 +53,7 @@ The table is "Representations" below and the bar is "Chunk size and horizon".
 - ACT ablation (simulation, no ensembling): chunk 1 → 1%, chunk 100 → 44%, slightly lower at 200–400 (near open loop); chunking also helped two baseline methods. ACT motivates chunking by compounding errors: a chunk of k cuts the effective horizon k-fold ([ACT](../resources/models/act-aloha.md)).
 - Diffusion Policy predicts T_p = 16 and executes T_a = 8 before replanning (receding horizon) for most tasks; 8 executed steps was best in its ablation, and it kept peak performance with up to 4 steps of simulated latency ([Diffusion Policy](../resources/models/diffusion-policy.md)).
 - A chunk lets a slow model keep the robot moving: with 50 actions at 30 Hz a chunk lasts 1.67 s.
+- **Overlap and success (LIBERO, MuJoCo, four models):** starting the next call earlier, at 10%, 25% or 50% of the chunk left, lets the robot run at a shorter control period. It also makes the robot act on older observations. From 10% to 50% overlap, success fell 15–20 points for π0.5 and OpenVLA-OFT and 31–49 points for GR00T N1.6 and Cosmos-Policy on an RTX 4090, while episodes on the long-horizon LIBERO-10 tasks got 2.8–3.0× shorter for GR00T N1.6 and 3.6–3.9× for π0.5 ([Jung et al.](../resources/serving/vla-workload-characterization-kaist.md); overview in [benchmark workloads](vla-benchmark-workloads.md)).
 
 **Reported on combining representations**
 - Discrete tokens help training speed and language following, and continuous heads help serving; π0.5 uses both stages ([π0.5](../resources/models/pi05.md)).

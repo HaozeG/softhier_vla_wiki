@@ -1,5 +1,5 @@
 ---
-covers: 485baae1b90d
+covers: 8cffd94309c7
 ---
 # SoftHier-VLA wiki
 
@@ -7,7 +7,7 @@ Top-level map. Topic: physical AI (robots that perceive and act in the physical 
 
 **Project side** (what we know and decided about SoftHier-VLA)
 - `glossary/` — grouped term definitions to look up while reading, with an A to Z index. Convention and project terms are loaded into project sessions.
-- `resources/` — 24 source notes in two topic folders (models, surveys), tagged by evidence tier.
+- `resources/` — 25 source notes in three topic folders (models, surveys, serving), tagged by evidence tier.
 - `knowledge/` — synthesis on SoftHier and on VLA models (first area covered: how they are built); start with `softhier-and-the-project.md` and `one-vla-call.md`.
 - `memories/` — project memory; `memories/decisions/` holds project decision records (none yet).
 
