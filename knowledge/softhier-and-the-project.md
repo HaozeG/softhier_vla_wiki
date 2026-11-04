@@ -41,6 +41,8 @@ TE cluster (inside each tile)
 - **Memory hierarchy as drawn:** L1 local memory per tile, then HBM at the edge; no other level is shown. The DMA connects to the data NoC; the cluster interconnect connects to the sync NoC.
 - **Not in the figure:** sizes, bandwidths, number of cores per tile, engine throughput and the routing scheme.
 
+Papers on chips of this kind (tile-based and dataflow hardware, their compilers, workload mapping) are tracked in the [paper map](dataflow-hw-paper-map.md).
+
 ## Terms
 - **SoftHier:** the tile-based many-PE chip the project maps VLA applications to; the SDK is at https://github.com/pulp-platform/softhier-sdk.
 - **PE (processing element):** one compute unit of a many-PE chip.

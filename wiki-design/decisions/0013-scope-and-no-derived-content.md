@@ -34,3 +34,5 @@ The wiki began as the knowledge base for one question, how VLA models run on a s
 The value of the wiki is a reliable, complete base for later discussion. Derived content mixes our guesses with what sources report, goes stale as soon as a source changes, and was never checked. Keeping only what sources say makes every claim traceable, and a user who wants an estimate or a proposal can ask for it knowingly.
 
 Builds on [0004](0004-evidence-tiers-for-fast-moving-vla-sources.md), [0009](0009-separate-project-knowledge-from-wiki-design.md) and [0010](0010-resources-stay-project-neutral.md).
+
+Note writing style that applies this rule in practice (evidence labels, open questions apart from claims): [0014](0014-note-writing-style.md).

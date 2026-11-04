@@ -1,4 +1,4 @@
 ---
-covers: 53918564e6f4
+covers: 00912f937c3e
 ---
-Physical AI knowledge, first area VLA models: physical-AI map, SoftHier overview, imitation learning, one VLA call, VLA architecture, action representation, SmolVLA, dual-system VLA, fast policy trained by RL, WAM, benchmark workloads.
+Physical AI knowledge, first area VLA models: physical-AI map, SoftHier overview, dataflow-HW paper map, imitation learning, one VLA call, VLA architecture, action representation, SmolVLA, dual-system VLA, RL fast policy, WAM, benchmark workloads.
