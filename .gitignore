@@ -1,5 +1,5 @@
-.venv/
-.index/
+.venv
+.index
 __pycache__/
 .obsidian/
 .claude/worktrees/

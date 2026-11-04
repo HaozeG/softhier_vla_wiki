@@ -32,10 +32,23 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 
 
+def _main_checkout():
+    """Main working tree of this repo (differs from ROOT inside a git worktree)."""
+    try:
+        out = subprocess.run(["git", "worktree", "list", "--porcelain"], cwd=ROOT,
+                             capture_output=True, text=True, check=True).stdout
+        return Path(out.split("\n", 1)[0].removeprefix("worktree ").strip())
+    except (OSError, subprocess.CalledProcessError):
+        return ROOT
+
+
 def _ensure_venv():
     """Re-exec inside <wiki>/.venv so the tool works from any cwd (e.g. the parent repo) without activation."""
-    py = ROOT / ".venv" / "bin" / "python"
-    if py.exists() and not os.environ.get("WIKI_REEXEC") and Path(sys.prefix).resolve() != (ROOT / ".venv").resolve():
+    venv = ROOT / ".venv"
+    if not venv.exists():
+        venv = _main_checkout() / ".venv"  # a git worktree shares the main checkout's venv
+    py = venv / "bin" / "python"
+    if py.exists() and not os.environ.get("WIKI_REEXEC") and Path(sys.prefix).resolve() != venv.resolve():
         os.environ["WIKI_REEXEC"] = "1"
         os.execv(str(py), [str(py), *sys.argv])
 
