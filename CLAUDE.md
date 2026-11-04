@@ -84,6 +84,12 @@ The Claude Code plugin in `tools/claude-plugin/` (see README) makes parent-repo 
 - **Wiki-development session** (started in this repo): improves the schema/tooling, runs `wiki-health`, curates structure. Writes to the wiki side (`wiki-design/`, `tools/`, `CLAUDE.md`). The `wiki-health` subagent (`.claude/agents/`) is discoverable only from here.
 - **Working session in the parent repo** (this repo is its `softhier_vla_wiki/` submodule): queries the wiki and files updates while doing other work (e.g. design plans). Writes only to the project side: `resources/`, `knowledge/` and project decisions in `memories/decisions/` (numbered from 0001; wiki-design decisions have their own numbers, so cite them as "wiki-design decision NNNN"). It uses the runbooks but does not edit `wiki-design/`. **First use on a fresh checkout:** run `softhier_vla_wiki/tools/wiki.py setup` once (venv + deps + index + hook; downloads the embedding model). Afterwards run the tool by path, no activation needed: `softhier_vla_wiki/tools/wiki.py find "…"` (it re-execs into `.venv`). Read this file first; paths in commands are wiki-relative (`knowledge/x.md`). Commits go into the submodule (`softhier_vla_wiki/tools/wiki.py commit …`); the parent then shows the submodule as modified — bumping its pointer is the user's call.
 
+## Working memory (mnemon)
+The store is `softhier-vla` (set in `.claude/settings.json`). These rules override the global mnemon guide for this project:
+- Recall only when the request depends on earlier sessions (a preference, an open thread, a past conclusion), not on every message.
+- Store only user preferences, open questions and one-line pointers to wiki notes. Never store branch, commit, patch-file or reading-progress state: git and the files record it, and it goes stale within a session.
+- Write directly with `mnemon remember ... --store softhier-vla`; no memory sub-agent.
+
 ## Setup
 ```bash
 tools/wiki.py setup   # venv + deps + index + commit hook; first run downloads the embedding model (~130 MB)
