@@ -23,6 +23,9 @@ A review of one long session (an ingest, an in-depth reading, then commit, merge
 - **Worktrees share the main checkout's venv.** `wiki.py` falls back to it; `.gitignore` entries have no trailing slash.
 - **Commits on branches need no request.** On a branch other than `main` the agent commits each finished operation; on `main` it commits only when asked; merging and pushing wait for the user. `commit ... -- <paths>` commits only the named paths, so other sessions' changes stay out.
 - **Lighter working memory.** mnemon is recalled when a request depends on earlier sessions, written directly (no sub-agent), and never holds branch, commit or progress state. The store is set in the tracked `.claude/settings.json` so worktree sessions use it too.
+- **In-depth reading writes first.** Each section's claims and the user's critiques go straight into the source note and are shown; the user corrects afterwards instead of being asked before each write.
+- **Fetched source text is cached** in the git-ignored `raw/`, so a resumed session does not fetch or extract it again.
+- **One home per procedure.** The ingest runbook holds the ingest procedure; CLAUDE.md and the plugin skill point to it rather than repeating it, so a change touches one file.
 - **New decisions are named `YYYY-MM-DD-<slug>.md`**, so concurrent sessions cannot collide. Existing numbered decisions keep their names and are still cited by number. A decision may be revised in place when a later one changes it; the later one says what it replaced.
 
 ## Why

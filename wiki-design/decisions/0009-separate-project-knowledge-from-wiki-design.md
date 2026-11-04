@@ -19,7 +19,7 @@ softhier_vla_wiki/
 |                         topics: models, surveys, serving, compression,
 |                         rk3588, hardware
 +-- knowledge/            synthesis built from the sources
-+-- memories/decisions/   project decisions, numbered from 0001
++-- memories/decisions/   project decisions
 |
 |  WIKI SIDE: how the wiki works (not project content)
 +-- wiki-design/
@@ -30,7 +30,7 @@ softhier_vla_wiki/
 ```
 - **Project side** holds only SoftHier-VLA content. Sessions in the parent repo write here: ingest into `resources/`, synthesize into `knowledge/`, record choices in `memories/decisions/`. Other memory types (for example `entities/` or `cases/`) are added when there is content for them, not before.
 - **Wiki side** holds only material about the wiki. Sessions started in this repo change it; a project session uses the runbooks but does not edit `wiki-design/`.
-- **Two number spaces.** Each decisions folder is numbered from 0001. In prose, cite "wiki-design decision 0007" or "project decision 0001", or link by path.
+- **Two number spaces.** Each decisions folder was numbered from 0001. In prose, cite "wiki-design decision 0007" or "project decision 0001", or link by path. (New decisions are named by date and slug instead; see [workflow trim](2026-11-05-trim-workflow-overhead.md).)
 - **Resources by topic.** A new source goes in the topic folder that fits it; add a folder when a catalog nears the 4000-character limit.
 - Decision 0004 (evidence tiers) stays on the wiki side: it is a rule for how sources are recorded, even though it names VLA sources.
 - Claude's own personal memory (outside the repo) holds pointers about the user and working style only; anything the project needs later goes into the wiki.

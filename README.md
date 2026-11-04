@@ -20,7 +20,7 @@ An LLM-maintained wiki for the SoftHier-VLA project. It combines three ideas:
 | `resources/<topic>/` | one faithful note per external source, grouped by topic (models, surveys) |
 | `glossary/` | grouped term definitions (field, convention, project scope); the plugin lists the names of convention and project terms at session start; definitions are looked up on demand (`wiki.py glossary`) |
 | `knowledge/` | synthesized concept/entity notes; start with `softhier-and-the-project.md` and `one-vla-call.md` |
-| `memories/decisions/` | project decisions (numbered from 0001) |
+| `memories/decisions/` | project decisions (`YYYY-MM-DD-<slug>.md`) |
 | `wiki-design/` | how the wiki works: `decisions/` (wiki design records) and `runbooks/` (ingest a source, review health) |
 | `tools/` | `wiki.py`, note templates (`concept entity paper decision runbook comparison`), commit-msg hook, `diagram.py` (ASCII diagrams), `arxiv.py` (arXiv paper to Markdown from its HTML: LaTeX equations, table cells) |
 | `.claude/agents/wiki-health.md` | subagent that runs and triages `health` |

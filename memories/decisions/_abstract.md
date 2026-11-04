@@ -1,1 +1,1 @@
-Project decisions for SoftHier-VLA (context, decision, why), numbered from 0001. Empty until populated.
+Project decisions for SoftHier-VLA (context, decision, why), named by date and slug. Empty until populated.
