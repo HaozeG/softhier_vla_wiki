@@ -1,7 +1,7 @@
 ---
-covers: 79e0a64725c3
+covers: 6cadc677a3bc
 ---
 # wiki-design/runbooks/
 
-- [Ingest a source](ingest-a-source.md) — add a paper/doc/result: search, scaffold, synthesize, cross-link with `related`, catalog, verify, log.
+- [Ingest a source](ingest-a-source.md) — add a paper/doc/result: choose brainstorming or in-depth (guided reading) mode, then search, scaffold, synthesize, cross-link with `related`, catalog, verify, log.
 - [Review wiki health](review-wiki-health.md) — periodic `health` review: triage errors, near-duplicates, orphans; also run by the `wiki-health` subagent.

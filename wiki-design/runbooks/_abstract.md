@@ -1,4 +1,4 @@
 ---
-covers: 79e0a64725c3
+covers: 6cadc677a3bc
 ---
 Runbooks: ingest a source into the wiki, and review wiki health (duplicates, links, stale summaries) on a schedule.

@@ -1,5 +1,5 @@
 ---
-covers: c8d83448c99e
+covers: ee9ee57ff4f5
 ---
 # wiki-design/decisions/
 
@@ -16,3 +16,4 @@ covers: c8d83448c99e
 - [0011 diagrams show parts, data and repetition](0011-diagrams-show-parts-data-and-repetition.md) — a diagram must answer: what are the parts, what data passes between them and how big, what repeats; built with `tools/diagram.py`, box alignment linted.
 - [0012 glossary loaded by the plugin](0012-glossary-with-on-demand-lookup.md) — grouped glossary with field, convention and project scopes; convention and project terms are injected at session start; a decision defining a term adds its row.
 - [0013 scope is physical AI; no derived content](0013-scope-and-no-derived-content.md) — notes state what sources say and how parts relate; no derived estimates, proposals or inferences unless asked; records the removal of two derived notes.
+- [0015 ingest modes](0015-ingest-modes-brainstorm-or-in-depth.md) — every ingest first asks: brainstorming (automatic) or in-depth (lead the maintainer through the source section by section while they read it).
