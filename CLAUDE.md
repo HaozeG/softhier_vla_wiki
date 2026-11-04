@@ -52,7 +52,7 @@ Required `##` sections: concept/entity → `Summary`; paper → `Summary`, `Key 
 | `glossary --az` | Write `glossary/a-to-z.md`, the generated A to Z index of all terms; `check` reports `GLOSSARYINDEX` when it is stale |
 | `glossary ["<term>"] [--names] [--scope S]` | Look up glossary definitions on demand; `--names` lists term names (what the plugin shows at session start), `--scope field\|convention\|project` filters |
 | `fmt [--check]` | Pad all pipe tables like Obsidian (whitespace only, idempotent); `--check` just reports |
-| `commit <op> "<subject>" [--source URL]... [--body ... \| --body-file F] [--dry-run] [-- <paths>]` | Lint-gated commit with structured message; with `-- <paths>` only those paths are committed |
+| `commit <op> "<subject>" [--source URL]... [--body ... \| --body-file F] [--dry-run] [-- <paths>]` | Lint-gated commit with structured message; with `-- <paths>` (wiki-relative) only those paths are committed |
 | `log [-n N] [--op OP] [--path P] [--pages]` / `history <note>` | Read the change log back from git |
 | `setup` | One-time: create `.venv`, install deps, build the index, enable the hook (works from any cwd, e.g. `softhier_vla_wiki/tools/wiki.py setup`) |
 | `install-hooks` | Enable the `commit-msg` hook that enforces the format below |
@@ -94,4 +94,4 @@ The store is `softhier-vla` (set in `.claude/settings.json`). These rules overri
 ```bash
 tools/wiki.py setup   # venv + deps + index + commit hook; first run downloads the embedding model (~130 MB)
 ```
-`.venv/` and `.index/` are git-ignored (a git worktree without its own `.venv` uses the main checkout's); `raw/` (also git-ignored) caches fetched source text such as `tools/arxiv.py` output, so a resumed session need not fetch it again; `.index/` is a rebuildable cache (`rm -rf .index && tools/wiki.py index`). Each folder's summary files are `_abstract.md` and `_overview.md` (`cat <dir>/_abstract.md`); they carry no frontmatter.
+`.venv/` and `.index/` are git-ignored (a git worktree without its own `.venv` uses the main checkout's); `raw/` (also git-ignored) caches fetched source text (`tools/arxiv.py <id> --raw`), so a resumed session need not fetch it again; `.index/` is a rebuildable cache (`rm -rf .index && tools/wiki.py index`). Each folder's summary files are `_abstract.md` and `_overview.md` (`cat <dir>/_abstract.md`); they carry no frontmatter.

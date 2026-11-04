@@ -8,6 +8,7 @@ equations or table rows into a source note.
 
     tools/arxiv.py 2506.01844                  # Markdown to stdout
     tools/arxiv.py https://arxiv.org/abs/2506.01844v1 -o smolvla.md
+    tools/arxiv.py 2506.01844 --raw            # cache in <wiki>/raw/<id>.md (git-ignored); reused if present
     tools/arxiv.py 2506.01844 --stats          # counts only: equations, tables, figures
     tools/arxiv.py 2506.01844 --source -d DIR  # no HTML? fetch the LaTeX source into new DIR
 
@@ -277,6 +278,7 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     ap.add_argument("paper", help="arXiv id or abs/pdf/html URL")
     ap.add_argument("-o", "--output", help="write Markdown here instead of stdout")
+    ap.add_argument("--raw", action="store_true", help="write to <wiki>/raw/<id>.md and reuse it if it exists")
     ap.add_argument("--stats", action="store_true", help="print counts only")
     ap.add_argument("--source", action="store_true", help="fetch the LaTeX source instead")
     ap.add_argument("-d", "--dir", help="new empty directory for --source")
@@ -287,6 +289,12 @@ def main():
             ap.error("--source needs -d DIR")
         fetch_source(aid, args.dir)
         return
+    if args.raw:
+        args.output = Path(__file__).resolve().parent.parent / "raw" / f"{aid}.md"
+        if args.output.exists() and not args.stats:
+            print(f"cached: {args.output}")
+            return
+        args.output.parent.mkdir(exist_ok=True)
     md, stats = html_to_markdown(aid)
     summary = (f"{aid}: {stats['display_math']} display equations, {stats['inline_math']} inline math, "
                f"{stats['tables']} tables, {stats['figures']} figures")
@@ -296,6 +304,7 @@ def main():
     print(summary, file=sys.stderr)
     if args.output:
         Path(args.output).write_text(md, encoding="utf-8")
+        print(f"wrote {args.output}", file=sys.stderr)
     else:
         sys.stdout.write(md)
 

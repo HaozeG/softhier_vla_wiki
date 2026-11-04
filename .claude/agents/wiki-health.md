@@ -6,7 +6,7 @@ tools: Bash, Read, Edit, Write, Grep, Glob
 You maintain the wiki in the current repository. Read `CLAUDE.md` first, then `wiki-design/runbooks/review-wiki-health.md`, and follow it.
 
 Procedure:
-1. `. .venv/bin/activate` (create it per CLAUDE.md if missing), then `tools/wiki.py health`.
+1. `tools/wiki.py health` (the tool finds its venv itself, also from a git worktree).
 2. Also run `tools/wiki.py health --candidates` and read the `REVIEW` pairs for contradictions. Pre-existing uncommitted changes in the repo are the user's: leave them, and only touch what a finding requires.
 3. Triage each finding using the runbook. Fix mechanical problems directly (broken links, missing sections, stale folder summaries, uncatalogued notes, orphans via `tools/wiki.py related`). For `NEARDUP`/`DUPLICATE`, read both notes and either merge into the better one (keep its sources, redirect inbound links, delete the other) or add cross-links and a sentence saying how they differ. Never delete content you have not read in full.
 4. Do not invent facts. If a fix needs information you don't have, leave a `TODO` and report it.

@@ -33,19 +33,27 @@ ROOT = Path(__file__).resolve().parent.parent
 
 def _main_checkout():
     """Main working tree of this repo (differs from ROOT inside a git worktree)."""
+    def run(*args):
+        return subprocess.run(["git", *args], cwd=ROOT, capture_output=True, text=True).stdout.strip()
     try:
-        out = subprocess.run(["git", "worktree", "list", "--porcelain"], cwd=ROOT,
-                             capture_output=True, text=True, check=True).stdout
-        return Path(out.split("\n", 1)[0].removeprefix("worktree ").strip())
-    except (OSError, subprocess.CalledProcessError):
+        common = Path(run("rev-parse", "--path-format=absolute", "--git-common-dir"))
+        if not common.name:
+            return ROOT
+        # a submodule's git dir lives in the parent's .git/modules/ and names its checkout in core.worktree
+        wt = run("config", "--file", str(common / "config"), "core.worktree")
+        return (common / wt).resolve() if wt else common.parent
+    except OSError:
         return ROOT
+
+
+def venv_dir():
+    venv = ROOT / ".venv"
+    return venv if venv.exists() else _main_checkout() / ".venv"  # a git worktree shares the main checkout's venv
 
 
 def _ensure_venv():
     """Re-exec inside <wiki>/.venv so the tool works from any cwd (e.g. the parent repo) without activation."""
-    venv = ROOT / ".venv"
-    if not venv.exists():
-        venv = _main_checkout() / ".venv"  # a git worktree shares the main checkout's venv
+    venv = venv_dir()
     py = venv / "bin" / "python"
     if py.exists() and not os.environ.get("WIKI_REEXEC") and Path(sys.prefix).resolve() != venv.resolve():
         os.environ["WIKI_REEXEC"] = "1"
@@ -755,6 +763,8 @@ def git(*args, check=True):
 
 def cmd_commit(a):
     issues = [i for i in structural_issues() if i[0] == "ERROR"]
+    if a.paths:  # only errors in what is being committed block it
+        issues = [i for i in issues if any(i[2] == p.rstrip("/") or i[2].startswith(p.rstrip("/") + "/") for p in a.paths)]
     if issues and not a.force:
         report(issues)
         sys.exit("refusing to commit: fix errors (or --force)")
@@ -835,9 +845,11 @@ def session_context(project: Path) -> str:
         lines.append("  Terms defined locally: " + "; ".join(names) + ".")
     lines += [f"- Design documents: project decisions in `{wiki}/memories/decisions/`, topic notes in `{wiki}/knowledge/`, sources in `{wiki}/resources/<topic>/`. "
               f"Browse with `{tool} ls <dir>` (one-line summaries), search with `{tool} find \"<question>\"`; cite `wiki://` URIs.",
-              f"- Filing back (decisions, new terms, notes on what sources say): the workflow in `{wiki}/CLAUDE.md` or the `softhier-wiki:wiki` skill; commit only inside the submodule and only when asked."]
-    if not (ROOT / ".venv").exists() or not INDEX.exists():
+              f"- Filing back (decisions, new terms, notes on what sources say): the workflow in `{wiki}/CLAUDE.md` or the `softhier-wiki:wiki` skill; commit only inside the submodule: on `main` only when asked, on another branch each finished operation; merging and pushing wait for the user."]
+    if not venv_dir().exists():
         lines.append(f"Not set up on this machine yet: run `{tool} setup` once before using it.")
+    elif not INDEX.exists():
+        lines.append(f"No search index in this checkout yet: run `{tool} index` before `find`.")
     ab = summary_body(ROOT, "_abstract.md")
     if ab:
         lines.append(f"\nWiki abstract: {ab}")
