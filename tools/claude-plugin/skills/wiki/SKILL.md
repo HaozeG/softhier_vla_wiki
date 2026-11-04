@@ -19,6 +19,6 @@ Durable outcomes belong in the wiki, not only in chat:
 4. Writing style (wiki-design decision 0014): structure before detail (claim and layout in `## Summary`, then the diagram, then details); tables for items with attributes (papers, options, choices, comparisons); label evidence (say what was checked and against what, mark unchecked items, no "iff/always/only" unless sourced); short sections; unresolved points in `## Open questions`. Note text stays English (the search model is English-only); chat replies follow the user's language preference.
 5. Run `softhier_vla_wiki/tools/wiki.py fmt` if you wrote a table (padded like Obsidian, decision 0008).
 6. Add the catalog line to the directory's `_overview.md`, then `index`, `health` until clean.
-7. Commit inside the submodule only when the user asks: `softhier_vla_wiki/tools/wiki.py commit update "<subject>"`. Never bump the parent's submodule pointer unasked.
+7. Commit inside the submodule only when the user asks, unless you work on a branch other than `main`: `softhier_vla_wiki/tools/wiki.py commit update "<subject>" -- <paths you changed>`. Never bump the parent's submodule pointer unasked.
 
 Full conventions (note types, folder summary files, commit format, health review): `softhier_vla_wiki/CLAUDE.md`.

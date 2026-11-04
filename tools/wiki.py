@@ -759,8 +759,9 @@ def cmd_commit(a):
         report(issues)
         sys.exit("refusing to commit: fix errors (or --force)")
     pre_staged = bool(git("diff", "--cached", "--name-only").strip())
-    git("add", "-A")
-    changes = [l.split("\t") for l in git("diff", "--cached", "--name-status").splitlines()]
+    scope = ["--", *a.paths] if a.paths else []  # paths: commit only these, leave other changes alone
+    git("add", "-A", *scope)
+    changes = [l.split("\t") for l in git("diff", "--cached", "--name-status", *scope).splitlines()]
     if not changes:
         sys.exit("nothing to commit")
     pages = [f"{c[0][0]} {c[-1]}" for c in changes if Path(c[-1]).name not in SUMMARY_FILES]
@@ -771,14 +772,15 @@ def cmd_commit(a):
         trailers.append(f"Summary-files: {n_side}")
     if a.source:
         trailers.append(f"Sources: {'; '.join(a.source)}")
-    body = (a.body.strip() + "\n\n") if a.body else ""
+    text = Path(a.body_file).read_text() if a.body_file else a.body
+    body = (text.strip() + "\n\n") if text else ""
     msg = f"wiki({a.op}): {a.subject}\n\n{body}" + "\n".join(trailers) + "\n"
     if a.dry_run:
         print(msg)
         if not pre_staged:
             git("reset", "-q")
         return
-    git("commit", "-q", "-m", msg)
+    git("commit", "-q", "-m", msg, *scope)
     print(git("log", "-1", "--format=%h %s"), end="")
 
 
@@ -927,10 +929,12 @@ def main():
     p.add_argument("op", choices=OPS)
     p.add_argument("subject")
     p.add_argument("--body")
+    p.add_argument("--body-file", help="read the body from a file")
     p.add_argument("--source", action="append", help="repeatable; recorded in Sources: trailer")
     p.add_argument("--date", help="YYYY-MM-DD (default: today)")
     p.add_argument("--dry-run", action="store_true")
     p.add_argument("--force", action="store_true")
+    p.add_argument("paths", nargs="*", help="after --: commit only these paths (default: everything)")
     p.set_defaults(fn=cmd_commit)
     p = sub.add_parser("log", help="wiki change log from git history")
     p.add_argument("-n", type=int, default=20)

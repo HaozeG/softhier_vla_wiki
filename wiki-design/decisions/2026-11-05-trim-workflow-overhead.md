@@ -20,6 +20,7 @@ A review of one long session (an ingest, an in-depth reading, then commit, merge
 - **No `covers` hash, no `stamp`.** `check` warns `STALE` once for a folder whose notes changed since the last commit while neither of its summary files did. It does not cascade to parents; a parent's summary changes only when its scope changes.
 - **Summary files describe scope, not contents.** `_abstract.md` says what the folder is for; it does not list children or carry counts. The `_overview.md` catalog lines are the one listing.
 - **Worktrees share the main checkout's venv.** `wiki.py` falls back to it; `.gitignore` entries have no trailing slash.
+- **Commits on branches need no request.** On a branch other than `main` the agent commits each finished operation; on `main` it commits only when asked; merging and pushing wait for the user. `commit ... -- <paths>` commits only the named paths, so other sessions' changes stay out.
 - **New decisions are named `YYYY-MM-DD-<slug>.md`**, so concurrent sessions cannot collide. Existing numbered decisions keep their names and are still cited by number. A decision may be revised in place when a later one changes it; the later one says what it replaced.
 
 ## Why

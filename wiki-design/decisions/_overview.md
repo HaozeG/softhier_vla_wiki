@@ -15,4 +15,4 @@
 - [0013 scope is physical AI; no derived content](0013-scope-and-no-derived-content.md) — notes state what sources say and how parts relate; no derived estimates, proposals or inferences unless asked; records the removal of two derived notes.
 - [0014 note writing style](0014-note-writing-style.md) — structure before detail, tables for items with attributes, evidence labels, open questions explicit; note text stays English for the search model.
 - [0015 ingest modes](0015-ingest-modes-brainstorm-or-in-depth.md) — every ingest first asks: brainstorming (automatic) or in-depth (lead the maintainer through the source section by section while they read it).
-- [Trim workflow overhead](2026-11-05-trim-workflow-overhead.md) — no `covers` hash or `stamp`; summaries describe scope, not contents; worktrees share the venv; new decisions named by date and slug.
+- [Trim workflow overhead](2026-11-05-trim-workflow-overhead.md) — no `covers` hash or `stamp`; summaries describe scope, not contents; worktrees share the venv; branch commits need no request; new decisions named by date and slug.

@@ -52,7 +52,7 @@ Required `##` sections: concept/entity → `Summary`; paper → `Summary`, `Key 
 | `glossary --az` | Write `glossary/a-to-z.md`, the generated A to Z index of all terms; `check` reports `GLOSSARYINDEX` when it is stale |
 | `glossary ["<term>"] [--names] [--scope S]` | Look up glossary definitions on demand; `--names` lists term names (what the plugin shows at session start), `--scope field\|convention\|project` filters |
 | `fmt [--check]` | Pad all pipe tables like Obsidian (whitespace only, idempotent); `--check` just reports |
-| `commit <op> "<subject>" [--source URL]... [--body ...] [--dry-run]` | Lint-gated commit with structured message |
+| `commit <op> "<subject>" [--source URL]... [--body ... \| --body-file F] [--dry-run] [-- <paths>]` | Lint-gated commit with structured message; with `-- <paths>` only those paths are committed |
 | `log [-n N] [--op OP] [--path P] [--pages]` / `history <note>` | Read the change log back from git |
 | `setup` | One-time: create `.venv`, install deps, build the index, enable the hook (works from any cwd, e.g. `softhier_vla_wiki/tools/wiki.py setup`) |
 | `install-hooks` | Enable the `commit-msg` hook that enforces the format below |
@@ -62,7 +62,7 @@ Required `##` sections: concept/entity → `Summary`; paper → `Summary`, `Key 
 2. `fmt` (if you touched a table) → `check`. `STALE` is a warning for a folder whose notes changed while its summary files did not: reread its catalog line and move on if it is still right. Parents are not flagged; edit a parent's summary only when its scope changed.
 3. `index` → `health`; no errors, and every warning read (`NEARDUP`: merge or cross-link; `ORPHAN`: link via `related`).
 4. **Delete** = remove the file, its catalog line, and links to it (`check` finds the rest).
-5. Commit (op: `ingest` = a new external source; `update` = new/changed knowledge or decisions from our own work; `delete`; `lint` = health fixes; `refactor` = restructuring; `init` = first commit). Only commit when the user asked you to, or in an autonomous maintenance run): `tools/wiki.py commit <op> "<subject>"`.
+5. Commit (op: `ingest` = a new external source; `update` = new/changed knowledge or decisions from our own work; `delete`; `lint` = health fixes; `refactor` = restructuring; `init` = first commit). `tools/wiki.py commit <op> "<subject>"`, adding `-- <paths>` when other changes in the tree are not yours. On a branch other than `main` (such as a worktree branch) commit each finished operation without asking; on `main`, commit only when the user asks. Merging into `main` and pushing always wait for the user.
 
 ## Git as the log
 One logical operation = one commit; the message is the dated record. Format (enforced by hook + `commit`):
