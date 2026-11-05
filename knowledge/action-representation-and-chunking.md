@@ -1,7 +1,7 @@
 ---
 type: concept
 tags: [action-tokens, chunking, fast, flow-matching, diffusion, cvae, regression, execution-horizon, temporal-ensembling]
-sources: [resources/serving/vla-workload-characterization-kaist.md, resources/models/rt-2.md, resources/models/openvla.md, resources/models/fast-tokenizer.md, resources/models/openvla-oft.md, resources/models/pi0.md, resources/models/smolvla.md, resources/models/octo.md, resources/surveys/survey-vla-action-tokenization.md, resources/models/act-aloha.md, resources/models/diffusion-policy.md, resources/surveys/tutorial-robot-learning-hf.md, resources/surveys/tutorial-flow-diffusion-mit.md, resources/benchmarks/vlabench.md]
+sources: [resources/serving/vla-workload-characterization-kaist.md, resources/serving/vla-hwbench-edge-latency.md, resources/models/rt-2.md, resources/models/openvla.md, resources/models/fast-tokenizer.md, resources/models/openvla-oft.md, resources/models/pi0.md, resources/models/smolvla.md, resources/models/octo.md, resources/surveys/survey-vla-action-tokenization.md, resources/models/act-aloha.md, resources/models/diffusion-policy.md, resources/surveys/tutorial-robot-learning-hf.md, resources/surveys/tutorial-flow-diffusion-mit.md, resources/benchmarks/vlabench.md]
 ---
 # Action representation and chunking
 
@@ -55,6 +55,20 @@ The table is "Representations" below and the bar is "Chunk size and horizon".
 - A chunk lets a slow model keep the robot moving: with 50 actions at 30 Hz a chunk lasts 1.67 s.
 - **Open vs closed loop on VLABench (RDT-1B, seen primitive tasks, Progress Score not success rate):** open loop with 64-step chunks 15.37, with 32-step chunks 15.52, closed loop 17.68. The authors read the small gap as showing the model itself, not error build-up over the open-loop chunk, limits the score ([VLABench](../resources/benchmarks/vlabench.md); see [simulation benchmarks](simulation-benchmarks.md)).
 - **Overlap and success (LIBERO, MuJoCo, four models):** starting the next call earlier, at 10%, 25% or 50% of the chunk left, lets the robot run at a shorter control period. It also makes the robot act on older observations. From 10% to 50% overlap, success fell 15–20 points for π0.5 and OpenVLA-OFT and 31–49 points for GR00T N1.6 and Cosmos-Policy on an RTX 4090, while episodes on the long-horizon LIBERO-10 tasks got 2.8–3.0× shorter for GR00T N1.6 and 3.6–3.9× for π0.5 ([Jung et al.](../resources/serving/vla-workload-characterization-kaist.md); overview in [benchmark workloads](vla-benchmark-workloads.md)).
+
+**Measured inference cost per form (one benchmark, same hardware)**
+[VLA-HWBench](../resources/serving/vla-hwbench-edge-latency.md) times 19 configurations on a Jetson AGX Thor in eager PyTorch and models action generation as T₄ ≈ N·t, N iterations of cost t:
+
+| Form                    | N per call                              | Cost per iteration (Jetson) | Example latencies (Jetson)                     |
+| ----------------------- | --------------------------------------- | --------------------------- | ---------------------------------------------- |
+| Flow matching           | denoising steps                         | 3.9–107 ms per step         | X-VLA 77 ms, π0.5 405 ms, InternVLA-A1.5 1.2 s |
+| Parallel decoding       | one                                     | one pass                    | VLA-Adapter 93 ms, OpenVLA-OFT 250 ms          |
+| Autoregressive tokens   | generated tokens                        | 20–52 ms per token          | pi0-FAST 989 ms, VLA-0 6.3 s (208 tokens)      |
+| Reasoning, then actions | reasoning tokens plus action iterations | as autoregressive           | DeepThinkVLA 2.4 s, MolmoAct2-Think 4.5 s      |
+
+- On identical weights, MolmoAct2's discrete head is 2.3× slower than its flow head.
+- With a 50 ms action period, 10 of 19 configurations produce actions as fast as they are executed (time per call over chunk size); long chunks lower that figure, so π0.5 (chunk 50) spends less time per action than VLA-Adapter (chunk 8) though its call is 4.4× longer.
+- Parallel decoders run one iteration but still pay for a large backbone in prefill (OpenVLA-OFT's prefill alone is about 155 ms), so a single iteration does not make them the fastest.
 
 **Reported on combining representations**
 - Discrete tokens help training speed and language following, and continuous heads help serving; π0.5 uses both stages ([π0.5](../resources/models/pi05.md)).

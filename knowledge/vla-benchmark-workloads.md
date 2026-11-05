@@ -1,17 +1,19 @@
 ---
 type: comparison
 tags: [benchmark, workloads, serving, roofline, batch-1, closed-loop, edge]
-sources: [resources/serving/vla-workload-characterization-kaist.md, resources/models/openvla.md, resources/models/openvla-oft.md, resources/models/pi05.md, resources/models/gr00t-n1.md]
+sources: [resources/serving/vla-workload-characterization-kaist.md, resources/serving/vla-hwbench-edge-latency.md, resources/models/openvla.md, resources/models/openvla-oft.md, resources/models/pi05.md, resources/models/gr00t-n1.md]
 ---
 # Benchmark workloads: five VLAs profiled at batch size 1
 
-What does one inference of each VLA in the [Jung et al. characterization](../resources/serving/vla-workload-characterization-kaist.md) cost, which stage dominates, and what limits that stage? The five workloads are OpenVLA (autoregressive baseline), OpenVLA-OFT, GR00T N1.6, π0.5 and Cosmos-Policy. All numbers come from that one paper, measured on the same machines. That makes them comparable with each other, unlike the mixed-source speeds in the [architecture overview](vla-architecture-overview.md). This note measures how fast models run; how well they do tasks is in [simulation benchmarks](simulation-benchmarks.md).
+What does one inference of each VLA in the [Jung et al. characterization](../resources/serving/vla-workload-characterization-kaist.md) cost, which stage dominates, and what limits that stage? The five workloads are OpenVLA (autoregressive baseline), OpenVLA-OFT, GR00T N1.6, π0.5 and Cosmos-Policy. Except in the VLA-HWBench section, all numbers come from that one paper, measured on the same machines. That makes them comparable with each other, unlike the mixed-source speeds in the [architecture overview](vla-architecture-overview.md). This note measures how fast models run; how well they do tasks is in [simulation benchmarks](simulation-benchmarks.md).
 
 ## Summary
 At batch size 1 the bottleneck follows the size of the tensors a stage processes ([source §4.2](../resources/serving/vla-workload-characterization-kaist.md)):
 - **Iterative heads over a short action chunk are memory-bound.** GR00T N1.6's DiT and π0.5's 300M expert run 4 or 10 denoising steps over a few action and state tokens. Their GEMMs (matrix multiplies) reuse each weight across few tokens, so they fall below the RTX 4090 ridge point. These heads dominate latency (65% and 75% of eager E2E) and gain most from compilation.
 - **Large-sequence stages are compute-bound.** OpenVLA-OFT's 7B backbone (99% of latency; the MLP head takes 0.6 ms) and Cosmos-Policy's video DiT over 7,056 latent positions sit above the ridge.
 - **The autoregressive baseline** repeats the LLM-serving split: prefill is compute-bound and the 6 cached-decode passes are entirely memory-bound (67% of its 209.56 ms).
+
+A second benchmark, [VLA-HWBench](../resources/serving/vla-hwbench-edge-latency.md) (18 models, Jetson AGX Thor and an AMD Ryzen AI Max+ 395, seven stages per call), agrees that denoising steps are memory-bound and adds CPU preprocessing, a non-NVIDIA platform and staged optimizations; it is compared in its own section below.
 
 Platform balance moves the line. On Jetson Thor every stage is more bandwidth- than clock-sensitive, though the ordering by intensity mostly holds. In closed loop, raising the overlap of inference and execution speeds episodes up and costs success. How much success is lost depends on the model: π0.5 and OpenVLA-OFT lose least.
 
@@ -61,6 +63,24 @@ Closed loop. RTT_max is the compiled synchronous round trip including transfer (
 | OpenVLA-OFT   | 148.7 / 306.8 / 528.2          | 15–20 pp (with π0.5)                 | –                      | steep energy curve                 |
 | Cosmos-Policy | 442.9 / 1023.0 / 2558.4        | 31–49 pp (with GR00T N1.6)           | –                      | about 17 actions/s at 2,632 J      |
 
+## A second benchmark: VLA-HWBench
+[VLA-HWBench](../resources/serving/vla-hwbench-edge-latency.md) measures 18 open VLAs (19 configurations) on a Jetson AGX Thor and an AMD Ryzen AI Max+ PRO 395, both with CPU–GPU shared memory, and splits each call into seven stages from CPU preprocessing (S0) to postprocessing (S5). It measures latency only, open loop on one fixed LIBERO-10 observation; it measures no task success.
+
+| Question                     | Jung et al.                                                     | VLA-HWBench                                                                                                                    |
+| ---------------------------- | --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| Models, forms                | 5 models; autoregressive, denoising, parallel, video generation | 18 models; flow matching, parallel decoding, autoregressive tokens, reasoning then acting                                      |
+| Platforms                    | RTX 4090, Jetson Thor, Jetson AGX Orin                          | Jetson AGX Thor, AMD Ryzen AI Max+ PRO 395                                                                                     |
+| Stages                       | backbone and head, plus prefill and decode for OpenVLA          | seven: CPU preprocessing, host-to-device copy, vision, prefill, action generation, postprocessing, residual                    |
+| Denoising steps              | head GEMMs below the RTX 4090 ridge (memory-bound)              | 20–150 FLOP per weight byte on the Jetson, far below the FP8 and NVFP4 ridges; FlashRT steps at 1.6–1.8× the weight-read bound |
+| Long-prefix stages           | OpenVLA-OFT backbone and Cosmos-Policy DiT above the ridge      | π0.5 prefill near the ridge: compute-bound on the AMD platform (BF16), memory side on the Jetson (NVFP4/FP8)                   |
+| Compilation                  | head speed-up 4.42× (GR00T N1.6), 7.96× (π0.5)                  | whole-call 2.5× for π0.5 (one CUDA graph); 1.02× for GR00T N1.7, whose recipe compiles only the action head                    |
+| What else limits the call    | not measured                                                    | CPU preprocessing (39% of the optimized GR00T N1.7 call), unfused kernels, missing low-precision support on AMD                |
+| Closed loop and task success | 43,200 LIBERO episodes under overlap                            | none; keeping up is tested as time per action under 50 ms at LIBERO's 20 Hz                                                    |
+
+- **Agreement:** both find the iterative action head memory-bound at batch size 1 and the dominant stage in most flow-matching models (VLA-HWBench: action generation largest in 14 of 19 configurations on the Jetson).
+- **Not directly comparable:** the GR00T versions differ (N1.6 vs N1.7), π0.5 runs different workloads (Jung et al.: chunk 10; VLA-HWBench reference: chunk 50 with an FP32 vision tower), and the compile speed-ups are per stage in one paper and per call in the other.
+- **Latency ranking across forms** (VLA-HWBench, Jetson, eager): 77 ms (X-VLA, flow matching) to 6.3 s (VLA-0, autoregressive); a log-log fit on parameter count explains at most 15% of the variance, and the paper attributes the gap to the number of action-generation iterations. See [action representation and chunking](action-representation-and-chunking.md).
+
 ## How the measurements were made
 - **Inputs and checkpoints:** official LIBERO-finetuned checkpoints at native resolution and precision. Single-inference runs feed random tensors of the right shape.
 - **Stage latency:** wall clock with `cuda.synchronize` at stage boundaries. Roofline uses NVIDIA NCU (FLOPs and DRAM bytes per kernel) on the RTX 4090 only.
@@ -68,7 +88,7 @@ Closed loop. RTT_max is the compiled synchronous round trip including transfer (
 - **Closed loop:** the control period is not a fixed 33 ms. It is set per model, platform and overlap from the measured worst-case round trip (diagram, last line), so slower models run at slower control rates. The paper does not say whether simulated time follows the wall clock between actions, or whether a new chunk replaces the unexecuted actions of the old one (its Fig 2 and its FIFO description differ). Both choices change what the success comparison measures; see the reading notes in the [source note](../resources/serving/vla-workload-characterization-kaist.md).
 
 ## Caveats
-- One paper, one software stack (PyTorch 2.10, NVIDIA only), simulation only. See its caveats in the [source note](../resources/serving/vla-workload-characterization-kaist.md).
+- The Jung et al. tables: one paper, one software stack (PyTorch 2.10, NVIDIA only), simulation only. See its caveats in the [source note](../resources/serving/vla-workload-characterization-kaist.md).
 - GR00T N1.6 is a newer model than the [GR00T N1](../resources/models/gr00t-n1.md) of the wiki's model notes. Its backbone is Cosmos-Reason, not Eagle-2, and its numbers do not carry over.
 - Eager-mode splits (table 1) and compiled round trips (table 2) are different modes. Do not divide one by the other.
 - Energy compares within a platform only; cross-platform energy shows trends.
@@ -76,8 +96,9 @@ Closed loop. RTT_max is the compiled synchronous round trip including transfer (
 
 ## Open questions
 These are things the source does not cover:
-- Smaller or distilled heads: SmolVLA ([note](smolvla.md)) and 1-step distilled heads are not measured, and the paper says the latter can remove the memory-bound stage.
-- Non-NVIDIA accelerators and real robots.
+- Smaller or distilled heads: 1-step distilled heads are not measured in either benchmark; Jung et al. say they can remove the memory-bound stage. SmolVLA ([note](smolvla.md)) is timed by VLA-HWBench (191 ms on the Jetson, eager) but not profiled on a roofline.
+- Real robots, and non-NVIDIA accelerators beyond VLA-HWBench's AMD integrated GPU.
+- How latency and task success trade off: Jung et al. measure success only in a simulation whose timing is not fully specified, and VLA-HWBench measures no success.
 - The action dimension and exact token counts behind each head GEMM. The paper gives only above or below the ridge point, not per-stage intensities.
 
 Related: [one VLA call](one-vla-call.md) (latency, async execution, stale actions), [action representation and chunking](action-representation-and-chunking.md) (the paradigms), [WAM overview](wam-overview.md) (its survey lists CosmosPolicy as a WAM example).

@@ -1,7 +1,7 @@
 ---
 type: concept
 tags: [overview, vla, smolvla, walkthrough, start-here]
-sources: [resources/models/smolvla.md]
+sources: [resources/models/smolvla.md, resources/serving/vla-hwbench-edge-latency.md]
 ---
 # One VLA call, step by step
 
@@ -47,5 +47,7 @@ The stage numbers match the stages below; they are separate from the reading ste
 3. **Stage 3: the prefill (the prefix pass) runs once.** The first 16 layers of the language model ([LLM](../glossary/model-and-attention.md), the part of the VLA that reads all tokens together) process the 241 tokens one time. In attention each token offers a key (what it can be matched on) and a value (what it passes on); each layer keeps the keys and values it computed (the [KV cache](../glossary/model-and-attention.md); see [keys and values](../glossary/model-and-attention.md)), so later work can read the prefix's keys and values instead of recomputing the prefix. The prefill is not repeated: only stage 4 repeats.
 4. **Stage 4: ten expert steps.** A smaller network, the [action expert](../glossary/model-and-attention.md), starts from random numbers shaped like 50 actions and improves them in 10 small steps ([flow matching](../glossary/action-generation.md); each repeat is a flow step). In every step it looks at the cached keys and values from stage 3 and nudges the 50 actions toward what the model thinks the robot should do. Only this part repeats; the expert re-reads its own weights in every step.
 5. **Stage 5: a chunk of 50 actions goes into a queue, and the robot keeps moving.** One [action](../glossary/robots-and-data.md) is one command for one control step, and the batch is an [action chunk](../glossary/robot-and-control-loop.md). At a [control rate](../glossary/robot-and-control-loop.md) of 30 Hz (30 commands per second, a rate used in the SmolVLA setups: the paper's async condition uses a control period of about 33 ms at 30 fps) 50 actions last roughly 1.7 s: the [chunk duration](../glossary/robot-and-control-loop.md). The robot takes one action from the queue at each control step and, when the queue falls below a set fraction of a chunk, asks for the next call ([asynchronous execution](../glossary/robot-and-control-loop.md)). The time between asking and receiving a chunk is the call's [latency](../glossary/robot-and-control-loop.md). The queue does not run empty while the latency stays below the chunk duration; late, [stale actions](../glossary/robot-and-control-loop.md) are those that arrive after the robot has already moved on.
+
+**What a measured call adds.** The stages above are the model's own work. A measured call also spends time around it: CPU preprocessing of images and text, the copy to the accelerator, postprocessing back to robot units, and dispatch between steps. [VLA-HWBench](../resources/serving/vla-hwbench-edge-latency.md) times these as seven stages. For SmolVLA on a Jetson AGX Thor in eager PyTorch it reports about 4 ms of CPU preprocessing, 21 ms of vision encoding, 15 ms of prefill and 147 ms of action generation, 187 ms in all; compiled, the call falls to about 66–72 ms.
 
 Where to go next: the [VLA architecture overview](vla-architecture-overview.md) for how designs differ, [SmolVLA](smolvla.md) for the same flow with every size, and [SoftHier and the project](softhier-and-the-project.md) for what this project is about.

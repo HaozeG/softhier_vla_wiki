@@ -16,8 +16,8 @@ Synthesis of what the sources say about physical AI; VLA models are the first co
 - [Imitation learning and behaviour cloning](imitation-learning-and-behaviour-cloning.md) — BC, compounding error, multimodal demos; why chunking and generative heads
 - [Action representation and chunking](action-representation-and-chunking.md) — tokens vs regression and CVAE vs diffusion and flow; chunk size, ensembling
 - [SmolVLA](smolvla.md) — the reference small VLA, its data flow and sizes
-- [Dual-system VLA](dual-system-vla.md) — System 1 and System 2 as separate networks at different rates; contrast with SmolVLA
+- [Dual-system VLA](dual-system-vla.md) — System 1 and System 2 as separate networks at different rates; contrast with SmolVLA; the full chain down to System 0 (IK or OSC on arms, a learned tracker on humanoids) and how the interface affects latency
 - [Fast policy trained by RL](fast-policy-trained-by-rl.md) — RL Token, Real-Time EXPO-FT and π*0.6: where RL enters a VLA
 - [Simulation benchmarks](simulation-benchmarks.md) — task-success benchmarks (LIBERO, CALVIN, Meta-World, VLABench): what each tests and reports; VLABench's knowledge and long-horizon tasks where fine-tuned VLAs score low
-- [Benchmark workloads](vla-benchmark-workloads.md) — five VLAs profiled at batch 1 on one stack: stage latency, memory- vs compute-bound, Jetson sensitivity, closed-loop overlap
+- [Benchmark workloads](vla-benchmark-workloads.md) — five VLAs profiled at batch 1 on one stack: stage latency, memory- vs compute-bound, Jetson sensitivity, closed-loop overlap; compared with VLA-HWBench (18 models, Jetson Thor and AMD, seven stages, staged optimizations)
 - [Low-level policy loop](low-level-policy-loop.md) — a 50 Hz one-action-per-call joint policy (microduck): inputs, tick, CPU vs NPU, camera placement

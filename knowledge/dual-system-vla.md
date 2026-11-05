@@ -1,12 +1,12 @@
 ---
 type: concept
 tags: [dual-system, system-1, system-2, frequency, vla]
-sources: [resources/surveys/survey-openhelix-dual-system.md, resources/surveys/survey-world-action-models-nus.md, resources/models/smolvla.md, resources/models/gr00t-n1.md, resources/models/pi0.md, resources/models/figure-helix.md]
+sources: [resources/surveys/survey-openhelix-dual-system.md, resources/surveys/survey-world-action-models-nus.md, resources/models/smolvla.md, resources/models/gr00t-n1.md, resources/models/pi0.md, resources/models/figure-helix.md, resources/serving/vla-workload-characterization-kaist.md, https://arxiv.org/abs/2609.09158, https://arxiv.org/abs/2610.28480, https://arxiv.org/abs/2511.07820, resources/benchmarks/vlabench.md, session:vla-hwbench-reading]
 ---
 # Dual-system VLA: big brain, small brain
 
 ## Summary
-A dual-system VLA splits the work between two separate networks that run at different rates: System 2, a large vision-language model that reads the scene and instruction slowly, and System 1, a small policy that produces the actions quickly. The two are joined by a latent that System 2 hands to System 1. This differs from [SmolVLA](smolvla.md), where the vision-language trunk and the action expert sit in one model and run together inside every call.
+A dual-system VLA splits the work between two separate networks that run at different rates: System 2, a large vision-language model that reads the scene and instruction slowly, and System 1, a small policy that produces the actions quickly. The two are joined by a latent that System 2 hands to System 1. Below System 1 sits a layer that turns actions into motor commands, called System 0 in some humanoid work; the last sections follow this full chain and what each interface means for latency. This differs from [SmolVLA](smolvla.md), where the vision-language trunk and the action expert sit in one model and run together inside every call.
 
 ```text
 SmolVLA: one model, one rate        DUAL-SYSTEM: two models, two rates
@@ -27,8 +27,17 @@ SmolVLA: one model, one rate        DUAL-SYSTEM: two models, two rates
   |
   v                                  S2 refreshes the latent less often;
 chunk of 50 actions                  S1 keeps running on the held latent
-trunk + expert run together
-in every call
+trunk + expert run together                   |
+in every call                                 v  actions
+  |                                     +-------------+
+  v  actions                            |  SYSTEM 0   |  arm: IK or OSC
++--------------+                        |  (optional  |  humanoid: learned
+| SYSTEM 0     |                        |  planner    |  tracker, 50 Hz
+| arm control  |                        |  above it)  |
++--------------+                        +-------------+
+  |  motor commands                           |  joint targets
+  v                                           v
+motors                                      motors
 ```
 
 ## Details
@@ -67,7 +76,37 @@ in every call
 
 **World-model versions.** WAMs also use fast and slow parts: HarmoWAM and LingBot-VA hand frequent control to a lighter action expert while visual dynamics stay available, and FFDC-WAM uses a lightweight verifier to trigger replanning ([WAM overview](wam-overview.md)).
 
+## The full chain down to the motors: System 0
+In the examples here, a layer below System 1 turns its actions into motor commands. TANGO calls it **System 0** in a "triple-system" design (VL backbone as system-2, action expert as system-1, whole-body tracker as system-0). On the fixed-base arms here this layer is an analytic controller (inverse kinematics in VLABench, operational-space control in LIBERO); the manipulation surveys above do not name it as a system. On a humanoid it is a learned policy that also keeps balance, so it is trained, specified and discussed as its own system. SONIC adds an optional learned **kinematic planner** between the command and the tracker.
+
+What each layer is in the examples. TANGO and SONIC are arXiv papers checked by text search for these facts but **not ingested** as source notes.
+
+| Example                                        | System 2 + System 1                                  | Interface (one "action")                                                                     | Planner                                                                                 | System 0                                                                                                                               |
+| ---------------------------------------------- | ---------------------------------------------------- | -------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| LIBERO manipulation (arm, fixed base)          | One VLA, e.g. π0.5                                   | End-effector pose delta per 20 Hz step                                                       | none                                                                                    | Analytic `OSC_POSE` controller in robosuite ([Jung et al.](../resources/serving/vla-workload-characterization-kaist.md) reading notes) |
+| VLABench (arm, fixed base)                     | The evaluated policy                                 | End-effector position and quaternion                                                         | none                                                                                    | Inverse kinematics to joint angles ([VLABench](../resources/benchmarks/vlabench.md))                                                   |
+| microduck (small legged robot)                 | none: gamepad, app or program                        | Hand-made 13-float command: body velocity, head, body pose                                   | none                                                                                    | Learned policy at 50 Hz writing joint targets ([low-level policy loop](low-level-policy-loop.md))                                      |
+| SONIC + GR00T N1.5, 3-point (arXiv 2511.07820) | GR00T N1.5, fine-tuned on 300 VR-teleoperation demos | Same format as the teleoperator: head and wrist SE(3) poses, base height, navigation command | Learned kinematic planner: about 2 s of full-body motion at 30 fps, replans up to 10 Hz | SONIC tracking policy at 50 Hz; commands streamed to the motors at 500 Hz                                                              |
+| SONIC + GR00T N1.5, whole-body                 | GR00T N1.5                                           | 78-D: 64-D universal motion token plus 14 hand joint angles                                  | skipped                                                                                 | SONIC policy decodes the token                                                                                                         |
+| TANGO (humanoid navigation, arXiv 2609.09158)  | VL backbone + action expert on a remote RTX PRO 6000 | 29-DoF joint-space chunks; inference every 0.5 s, 15 actions at 30 Hz, resampled to 50 Hz    | none                                                                                    | SONIC on a Jetson Orin NX, low-level loop at about 200 Hz                                                                              |
+| SuperMimic (System 0 only, arXiv 2610.28480)   | none published                                       | K = 10 future reference frames, or a velocity command through a separate encoder             | none                                                                                    | Learned tracker, joint setpoints at 50 Hz; low PD gains make the setpoint a proxy for torque                                           |
+
+- SONIC runs its layers as parallel loops at different rates (input 100 Hz, planner 10 Hz, policy 50 Hz, command writer 500 Hz) that share data on a "latest data wins" basis.
+- SONIC compares action spaces for the VLA in the whole-body mode: predicting its FSQ tokens beats predicting SMPL whole-body poses (81-D), 68% vs 27% success on average, and the SMPL version moved jerkily.
+- The interface can sit at different depths: above the planner (coarse commands), at the tracker's latent (tokens) or at the reference itself (joint trajectories).
+
+## Why the interface matters for latency
+Measured, from TANGO (§5, Table 5): removing real-time chunking lowers success from 43.75% to 10.94% and raises collisions from 9.9% to 14.6%; the authors attribute this to motion continuity across chunks. SuperMimic's listed domain randomization (Table A.3: friction, joint offsets, torso centre of mass) includes no latency or action delay.
+
+**Inference (asked for by the user; no source measures it).** A whole-body reference stream is probably more sensitive to upper-layer latency than a velocity or waypoint command, for three reasons:
+- *Stale reference.* The reference is built from an observation that is one call old. If the body has drifted or been pushed, the reference may no longer fit its state, and a tracker trained to follow references has little room to deviate. With a velocity command, the lower layer chooses foot placement from its own fresh sensing.
+- *Chunk-boundary jump.* A late chunk starts from where the robot was, not where it is; the gap grows with latency and shows up as a tracking-error spike. TANGO's real-time-chunking ablation is indirect support: it tests continuity across chunks, not latency size.
+- *No safe default.* When a velocity command stops, holding it or sending zero lets the lower layer stand. When a reference runs out, the last frame may be an unstable pose.
+
+Also inference: a finer command expresses more (whole-body loco-manipulation) but couples the upper layer's latency more tightly to balance. A fixed-base arm has no balance to lose, so for LIBERO a late chunk costs time or accuracy, not a fall.
+
 ## Open questions
 - How small System 2 can be: OpenHelix fixes the MLLM (LLaVA-7B) and the policy, and names the question open.
 - Which latent form carries visual information when the scene changes within a System 2 interval.
 - Real-robot rates: the surveys give almost no Hz figures for either system.
+- Whether a whole-body reference interface is in fact more latency-sensitive than a velocity command: no source found sweeps upper-layer latency against success or falls on a legged robot or humanoid.
