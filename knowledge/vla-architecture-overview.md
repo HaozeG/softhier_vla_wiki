@@ -79,4 +79,4 @@ In the table, Params is the model size in billions (B) or millions (M) of learne
 ## Open questions
 - How world action models ([WAM stub](wam-overview.md)) differ architecturally from VLAs. One measured video-generation policy, Cosmos-Policy, is profiled in [benchmark workloads](vla-benchmark-workloads.md).
 - Whether discrete-token pretraining (π0.5, π0-FAST) or flow-only training is the better base for small models; the evidence here comes from PI's own comparisons.
-- How much semantic generalization is lost when the VLM is truncated or replaced by a sub-1B model; most small-model results use LIBERO-style benchmarks and short tasks.
+- How much semantic generalization is lost when the VLM is truncated or replaced by a sub-1B model; most small-model results use LIBERO-style benchmarks and short tasks (see [simulation benchmarks](simulation-benchmarks.md) for a benchmark that tests knowledge and long horizons).

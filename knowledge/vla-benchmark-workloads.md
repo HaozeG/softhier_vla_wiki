@@ -5,7 +5,7 @@ sources: [resources/serving/vla-workload-characterization-kaist.md, resources/mo
 ---
 # Benchmark workloads: five VLAs profiled at batch size 1
 
-What does one inference of each VLA in the [Jung et al. characterization](../resources/serving/vla-workload-characterization-kaist.md) cost, which stage dominates, and what limits that stage? The five workloads are OpenVLA (autoregressive baseline), OpenVLA-OFT, GR00T N1.6, π0.5 and Cosmos-Policy. All numbers come from that one paper, measured on the same machines. That makes them comparable with each other, unlike the mixed-source speeds in the [architecture overview](vla-architecture-overview.md).
+What does one inference of each VLA in the [Jung et al. characterization](../resources/serving/vla-workload-characterization-kaist.md) cost, which stage dominates, and what limits that stage? The five workloads are OpenVLA (autoregressive baseline), OpenVLA-OFT, GR00T N1.6, π0.5 and Cosmos-Policy. All numbers come from that one paper, measured on the same machines. That makes them comparable with each other, unlike the mixed-source speeds in the [architecture overview](vla-architecture-overview.md). This note measures how fast models run; how well they do tasks is in [simulation benchmarks](simulation-benchmarks.md).
 
 ## Summary
 At batch size 1 the bottleneck follows the size of the tensors a stage processes ([source §4.2](../resources/serving/vla-workload-characterization-kaist.md)):
