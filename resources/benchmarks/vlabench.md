@@ -5,7 +5,7 @@ sources: [https://vlabench.github.io/media/VLAbench_arxiv_v1.pdf, arxiv:2412.181
 ---
 # VLABench: A Large-Scale Benchmark for Language-Conditioned Robotics Manipulation with Long-Horizon Reasoning Tasks
 
-Zhang, Xu, Liu, Yu, et al. (Fudan University), arXiv 2412.18194 (v1, posted December 2024). Read from the project-site PDF; numbers checked against the arXiv HTML rendering (see Caveats for where the two differ).
+Zhang, Xu, Liu, Yu, et al. (Fudan University), arXiv 2412.18194 (v1 posted December 2024). Read from the project-site revision of the PDF; numbers checked against the arXiv HTML rendering (see Caveats for where the two differ).
 
 ## Summary
 VLABench is an open-source MuJoCo benchmark of 100 language-conditioned manipulation (LCM) task categories (60 primitive, 40 composite) built for methods that rest on foundation models. Its tasks are meant to need world knowledge, implicit goals stated in natural conversation instead of templates, and multi-step reasoning over long horizons. It ships an automatic demonstration generator and evaluates three kinds of method: fine-tuned pretrained VLAs (OpenVLA, Octo, RDT-1B), training-free LLM/VLM workflows (VoxPoser, CoPA), and VLMs that plan in a skill language. All three score low; the authors conclude current VLAs do not show LLM-like generalization after fine-tuning.
@@ -48,9 +48,9 @@ VLABench is an open-source MuJoCo benchmark of 100 language-conditioned manipula
 - **Simulation only;** no real-robot transfer is tested. Episodes per task for evaluation are not stated.
 - **Scores are Progress Scores, not success rates.** Table 2 does not name its metric; its seen averages equal Table 4's "From Pretrained" column and Table 5's "Avg PS" row, which identifies it as PS. PS gives partial credit (20% for choosing the right objects), unlike the 0/1 task success the paper contrasts it with (§3.2).
 - **Workflow numbers disagree with the figure:** the text cites PS 30–40 for VoxPoser, but Fig. 4's axis tops out near 23.
-- **Horizon claim vs Fig. 9:** the text says VLABench has the longest horizon for both primitive and composite tasks, but Fig. 9 places RLBench (160.2) above VLABench Primitive (157.2); §3.1 gives about 120 timesteps for primitive tasks against 157.2 in Fig. 9.
+- **Horizon claim vs Fig. 9:** the text says VLABench has the longest horizon for both primitive and composite tasks, but Fig. 9 places RLBench (160.2) above VLABench Primitive (157.2); §3.1 gives about 120 timesteps for primitive tasks against 157.2 in Fig. 9. The plotted values give 27.8% (157.2 / 123.0), not the 27.0% in the text; 35.1% matches.
 - **Memory claim vs Octo's paper:** §10.1 says current models take only the current state; Octo's own paper uses 2 frames of history (see [Octo](../models/octo.md)). The paper also calls Octo a pretrained VLA, though Octo is not built on a VLM.
-- **Version differences:** the arXiv v1 HTML cites Table 5 for the from-scratch ablation, Figure 5 for the workflow chart, Figure 17 for chain-of-thought and Figure 15 for rotation failures; the project-site PDF corrects the first, second and fourth to Table 4, Figure 4 and Figure 13. Table values are the same in both.
+- **Version differences:** the arXiv v1 HTML cites Table 5 for the from-scratch ablation, Figure 5 for the workflow chart, Figure 17 for chain-of-thought, and Figure 15 for all three grasp failures in §10.2; the project-site PDF cites Table 4, Figure 4, Figure 16, and Figures 13 (rotation), 14 (centroid grasps on toys) and 15 (GraspNet). Table values are the same in both.
 - **Comparison table is self-reported:** Table 1 is the authors' feature check of competing benchmarks.
 
 ## Reading notes (inference)

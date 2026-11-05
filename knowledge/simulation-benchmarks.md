@@ -31,12 +31,12 @@ A simulation benchmark tests how well a policy *does tasks*. It has three parts:
 
 ## Details
 **Benchmarks the wiki's sources use**
-| Benchmark  | Where it appears                                                                                                                                                                                        | What is reported                                                                           |
-| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
-| LIBERO     | [SmolVLA](../resources/models/smolvla.md), [OpenVLA-OFT](../resources/models/openvla-oft.md), [Jung et al.](../resources/serving/vla-workload-characterization-kaist.md) (MuJoCo, official checkpoints) | success rate; for example OpenVLA 76.5, Octo 75.1, SmolVLA 0.45B 87.3, OpenVLA-OFT 97.1    |
-| CALVIN     | [OpenHelix](../resources/surveys/survey-openhelix-dual-system.md)                                                                                                                                       | average completed sequence length (for example 3.27 policy only)                           |
-| Meta-World | [TinyVLA](../resources/models/tinyvla.md)                                                                                                                                                               | success rate over 50 tasks (TinyVLA 31.6%, Diffusion Policy 10.5%)                         |
-| VLABench   | [VLABench](../resources/benchmarks/vlabench.md)                                                                                                                                                         | Progress Score (partial credit) for VLAs and workflows; graph-matching score for VLM plans |
+| Benchmark  | Where it appears                                                                                                                                                                                        | What is reported                                                                                      |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| LIBERO     | [SmolVLA](../resources/models/smolvla.md), [OpenVLA-OFT](../resources/models/openvla-oft.md), [Jung et al.](../resources/serving/vla-workload-characterization-kaist.md) (MuJoCo, official checkpoints) | success rate; SmolVLA paper: OpenVLA 76.5, Octo 75.1, SmolVLA 0.45B 87.3; OpenVLA-OFT paper: OFT 97.1 |
+| CALVIN     | [OpenHelix](../resources/surveys/survey-openhelix-dual-system.md)                                                                                                                                       | average completed sequence length (for example 3.27 policy only)                                      |
+| Meta-World | [TinyVLA](../resources/models/tinyvla.md)                                                                                                                                                               | success rate over 50 tasks (TinyVLA 31.6%, Diffusion Policy 10.5%)                                    |
+| VLABench   | [VLABench](../resources/benchmarks/vlabench.md)                                                                                                                                                         | Progress Score (partial credit) for VLAs and workflows; graph-matching score for VLM plans            |
 
 The Embodied-AI-Guide files benchmarks under Infrastructure, next to simulators and datasets ([guide](../resources/surveys/guide-embodied-ai.md)).
 
@@ -49,7 +49,7 @@ The Embodied-AI-Guide files benchmarks under Infrastructure, next to simulators 
 - VLABench's comparison of itself with other suites (its Table 1) is the authors' own assessment.
 
 **What VLABench reports for VLAs (Progress Score, 0–100)**
-- Fine-tuned on 1,600 demonstrations, seen-object primitive tasks average Octo 1.34, OpenVLA 11.74, RDT-1B 15.37. Unseen categories, new phrasing and composite tasks drop each to single digits; Octo scores 0 on all three.
+- Fine-tuned on 1,600 demonstrations, seen-object primitive tasks average Octo 1.34, OpenVLA 11.74, RDT-1B 15.37. On unseen object categories the averages fall to 0.77, 7.93 and 9.08 (base tasks). On out-of-domain phrasing, unseen but similar tasks and composite tasks every average is below 5, and Octo scores 0.00 on all three.
 - Pretraining helps compared with training from scratch (OpenVLA 3.02 to 11.74), and going from 100 to 2,000 demonstrations raises the score by only a few points.
 - Closed-loop RDT-1B scores 17.68 against 15.37 for open-loop 64-step chunks (see [action representation and chunking](action-representation-and-chunking.md)).
 - The authors name single 224×224 images, no memory of past actions, the precision loss of action tokens, and OpenVLA's trajectory-only pretraining as causes. Octo's own paper reports 2 frames of history, which differs from VLABench's statement that current models see only the current state ([Octo](../resources/models/octo.md)).
