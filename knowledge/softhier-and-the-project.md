@@ -14,6 +14,8 @@ The README lists three goals:
 2. Workload analysis: what a VLA application asks of a chip. The [VLA architecture overview](vla-architecture-overview.md) and [one VLA call](one-vla-call.md) are the current starting points.
 3. Aim for MFU, with a scheduling layer in software (the README line is unfinished). MFU is the share of the chip's peak arithmetic rate that a model's work actually uses (standard meaning, not spelled out in the README).
 
+The metrics tracked for the first experiment, and the choices behind them, are in the [first baseline decision](../memories/decisions/2026-11-10-first-baseline-latency-and-success-rate.md).
+
 ## Hardware overview (current status)
 From the architecture figure of the SoftHier model on the `soft_hier_release` branch of GVSoC (`docs/figures/SoftHier_Arch.png`); the figure's labels only.
 ```text
