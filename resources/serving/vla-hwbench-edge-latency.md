@@ -151,4 +151,4 @@ Readers' inferences from a guided reading, not claims of the paper.
 - **The "fast host CPU" recommendation rests on a software problem in one model.** CPU preprocessing dominates only GR00T N1.7's optimized call; π0.5's is small (Fig. 6a). About a third of GR00T N1.7's 18.0 ms is thread wake-up that one thread removes (12.6 ms), and the rest is serial Python in Isaac-GR00T's input processor and data collator, which no optimization in the study touched. Insight 3 turns this into a hardware requirement before the software fix is tried.
 
 ## Related
-See also: [Jung et al. VLA workload characterization](vla-workload-characterization-kaist.md), another batch-size-1 characterization that also measures π0.5, GR00T and OpenVLA-OFT on Jetson Thor.
+See also: [Zhou et al. (SJTU)](vla-xpu-characterization-sjtu.md) (cost, energy and time across seven platforms incl. Ascend NPUs and an Intel GPU), [Jung et al. VLA workload characterization](vla-workload-characterization-kaist.md), another batch-size-1 characterization that also measures π0.5, GR00T and OpenVLA-OFT on Jetson Thor.
