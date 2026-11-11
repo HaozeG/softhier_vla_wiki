@@ -1,12 +1,12 @@
 ---
 type: entity
 tags: [softhier, project, scope, start-here]
-sources: [session:parent-readme, https://github.com/pulp-platform/softhier-sdk, https://github.com/gvsoc/gvsoc/tree/soft_hier_release]
+sources: [session:parent-readme, https://github.com/gvsoc/gvsoc/tree/soft_hier_release]
 ---
 # SoftHier and the SoftHier-VLA project
 
 ## Summary
-The project wants to map VLA applications for physical AI onto a tile-based many-PE chip like [SoftHier](https://github.com/pulp-platform/softhier-sdk): it is a repository for exploring that mapping (the project README). Its three goals, listed below, are an MLIR-based deployment toolchain, workload analysis, and aiming for high utilization with a scheduling layer in software. A PE (processing element) is one compute unit, so a many-PE chip has many of them, and tile-based says the chip is organised in tiles. The README states no compute or latency target. This note records only what the README states; the rest of the wiki covers the VLA side, starting with [one VLA call](one-vla-call.md).
+The project wants to map VLA applications for physical AI onto a tile-based many-PE chip like [SoftHier](https://github.com/gvsoc/gvsoc/tree/soft_hier_release): it is a repository for exploring that mapping (the project README). Its three goals, listed below, are an MLIR-based deployment toolchain, workload analysis, and aiming for high utilization with a scheduling layer in software. A PE (processing element) is one compute unit, so a many-PE chip has many of them, and tile-based says the chip is organised in tiles. The README states no compute or latency target. This note records only what the README states; the rest of the wiki covers the VLA side, starting with [one VLA call](one-vla-call.md).
 
 ## Goals
 The README lists three goals:
@@ -46,7 +46,7 @@ TE cluster (inside each tile)
 Papers on chips of this kind (tile-based and dataflow hardware, their compilers, workload mapping) are tracked in the [paper map](dataflow-hw-paper-map.md).
 
 ## Terms
-- **SoftHier:** the tile-based many-PE chip the project maps VLA applications to; the SDK is at https://github.com/pulp-platform/softhier-sdk.
+- **SoftHier:** the tile-based many-PE chip the project maps VLA applications to; the simulator is the GVSoC `soft_hier_release` branch, https://github.com/gvsoc/gvsoc/tree/soft_hier_release.
 - **PE (processing element):** one compute unit of a many-PE chip.
 - **Tile (of a tile-based chip):** the unit the chip is organised in.
 - **SRAM:** static random-access memory, the fast memory on a chip itself (standard meaning, not from the README).
