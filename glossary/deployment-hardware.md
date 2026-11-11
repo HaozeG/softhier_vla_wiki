@@ -1,7 +1,7 @@
 ---
 type: glossary
 tags: [glossary, devices, softhier, performance]
-sources: [session:parent-readme, https://github.com/pulp-platform/softhier-sdk, resources/models/rt-2.md, resources/serving/vla-workload-characterization-kaist.md, resources/serving/vla-hwbench-edge-latency.md]
+sources: [session:parent-readme, https://github.com/gvsoc/gvsoc/tree/soft_hier_release, resources/models/rt-2.md, resources/serving/vla-workload-characterization-kaist.md, resources/serving/vla-hwbench-edge-latency.md]
 ---
 # Deployment hardware
 

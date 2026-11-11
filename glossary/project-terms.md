@@ -1,7 +1,7 @@
 ---
 type: glossary
 tags: [glossary, project]
-sources: [wiki-design/decisions/0012-glossary-with-on-demand-lookup.md, session:parent-readme, https://github.com/pulp-platform/softhier-sdk]
+sources: [wiki-design/decisions/0012-glossary-with-on-demand-lookup.md, session:parent-readme, https://github.com/gvsoc/gvsoc/tree/soft_hier_release]
 ---
 # Project terms
 
