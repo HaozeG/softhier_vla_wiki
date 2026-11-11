@@ -46,7 +46,7 @@ TE cluster (inside each tile)
 Papers on chips of this kind (tile-based and dataflow hardware, their compilers, workload mapping) are tracked in the [paper map](dataflow-hw-paper-map.md).
 
 ## Terms
-- **SoftHier:** the tile-based many-PE chip the project maps VLA applications to; the simulator is the GVSoC `soft_hier_release` branch, https://github.com/gvsoc/gvsoc/tree/soft_hier_release.
+- **SoftHier:** the tile-based many-PE chip the project maps VLA applications to; the simulator used is the GVSoC `soft_hier_release` branch, https://github.com/gvsoc/gvsoc/tree/soft_hier_release, and the SDK repository https://github.com/pulp-platform/softhier-sdk targets a newer model without RedMulE (see [the first-baseline decision](../memories/decisions/2026-11-10-first-baseline-latency-and-success-rate.md)).
 - **PE (processing element):** one compute unit of a many-PE chip.
 - **Tile (of a tile-based chip):** the unit the chip is organised in.
 - **SRAM:** static random-access memory, the fast memory on a chip itself (standard meaning, not from the README).
