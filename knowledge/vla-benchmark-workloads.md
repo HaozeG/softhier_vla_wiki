@@ -79,6 +79,7 @@ Closed loop. RTT_max is the compiled synchronous round trip including transfer (
 
 - **Agreement:** both find the iterative action head memory-bound at batch size 1 and the dominant stage in most flow-matching models (VLA-HWBench: action generation largest in 14 of 19 configurations on the Jetson).
 - **Not directly comparable:** the GR00T versions differ (N1.6 vs N1.7), π0.5 runs different workloads (Jung et al.: chunk 10; VLA-HWBench reference: chunk 50 with an FP32 vision tower), and the compile speed-ups are per stage in one paper and per call in the other.
+- **Utilization per stage:** the share of peak FLOP/s and bandwidth that VLA-HWBench's fastest configurations reach is tabulated, as our own arithmetic on its Table 15 (labelled `inference`), in [MFU from measurements](mfu-from-measurements.md).
 - **Latency ranking across forms** (VLA-HWBench, Jetson, eager): 77 ms (X-VLA, flow matching) to 6.3 s (VLA-0, autoregressive); a log-log fit on parameter count explains at most 15% of the variance, and the paper attributes the gap to the number of action-generation iterations. See [action representation and chunking](action-representation-and-chunking.md).
 
 ## A third study: Zhou et al. (cost, energy and non-NVIDIA platforms)

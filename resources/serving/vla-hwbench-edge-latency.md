@@ -121,22 +121,22 @@ Scope: the timed span ends at the host-side action chunk (§3.1), and every conf
 - Vision encoding misses the matrix units on the AMD platform: LeRobot runs π0.5's tower in FP32, for which RDNA 3.5 has no matrix instructions, and ROCm's MIOpen runs GR00T N1.7's 3D patch embedding as 512 matrix-vector products, so the towers are 8× and 17× above the bound. On the Jetson, FlashRT's FP8 towers are memory-bound but 2.9–3.7× above the bound, as normalization, quantization and attention take a third to half their time.
 - CPU preprocessing is the largest stage of GR00T N1.7 on the Jetson (39% of the fastest call); no optimization touches Isaac-GR00T's Python input processor and data collator. With PyTorch's 14 threads it takes 18.0 ms, with one thread 12.6 ms, and 2.3 ms on the AMD host (Fig. 6b). About a third goes to waking worker threads from the deepest idle state their cores enter while the GPU runs; the rest is serial work on one Arm core, which the AMD host does about 5× faster.
 
-| Configuration      | Stage   | Format     | Time (ms) | F/P (ms) | W/B (ms) | Ratio |
-| ------------------ | ------- | ---------- | --------- | -------- | -------- | ----- |
-| Jetson, π0.5       | Vision  | FP8        | 5.66      | 0.88     | 1.51     | 3.7   |
-| Jetson, π0.5       | Prefill | NVFP4, FP8 | 15.20     | 2.45     | 4.15     | 3.7   |
-| Jetson, π0.5       | Action  | FP8        | 1.92      | 0.02     | 1.18     | 1.6   |
-| Jetson, GR00T N1.7 | Vision  | FP8        | 4.61      | 0.72     | 1.58     | 2.9   |
-| Jetson, GR00T N1.7 | Prefill | FP8        | 5.12      | 0.50     | 2.95     | 1.7   |
-| Jetson, GR00T N1.7 | Action  | NVFP4      | 3.30      | 0.07     | 1.79     | 1.8   |
-| AMD, π0.5          | Vision  | FP32       | 123.64    | 14.81    | 6.46     | 8.4   |
-| AMD, π0.5          | Prefill | BF16       | 115.92    | 48.78    | 15.48    | 2.4   |
-| AMD, π0.5          | Action  | BF16       | 8.09      | 0.12     | 2.49     | 3.3   |
-| AMD, GR00T N1.7    | Vision  | BF16       | 99.51     | 5.88     | 3.16     | 16.9  |
-| AMD, GR00T N1.7    | Prefill | BF16       | 49.79     | 5.92     | 8.72     | 5.7   |
-| AMD, GR00T N1.7    | Action  | BF16       | 24.21     | 1.71     | 8.59     | 2.8   |
+| Configuration      | Stage   | Format     | Time (ms) | F (GFLOP) | W (MB) | F/P (ms) | W/B (ms) | Ratio |
+| ------------------ | ------- | ---------- | --------- | --------- | ------ | -------- | -------- | ----- |
+| Jetson, π0.5       | Vision  | FP8        | 5.66      | 439.7     | 413    | 0.88     | 1.51     | 3.7   |
+| Jetson, π0.5       | Prefill | NVFP4, FP8 | 15.20     | 2205.4    | 1132   | 2.45     | 4.15     | 3.7   |
+| Jetson, π0.5       | Action  | FP8        | 1.92      | 7.1       | 322    | 0.02     | 1.18     | 1.6   |
+| Jetson, GR00T N1.7 | Vision  | FP8        | 4.61      | 349.5     | 431    | 0.72     | 1.58     | 2.9   |
+| Jetson, GR00T N1.7 | Prefill | FP8        | 5.12      | 254.4     | 805    | 0.50     | 2.95     | 1.7   |
+| Jetson, GR00T N1.7 | Action  | NVFP4      | 3.30      | 69.8      | 489    | 0.07     | 1.79     | 1.8   |
+| AMD, π0.5          | Vision  | FP32       | 123.64    | 439.7     | 1654   | 14.81    | 6.46     | 8.4   |
+| AMD, π0.5          | Prefill | BF16       | 115.92    | 2896.8    | 3964   | 48.78    | 15.48    | 2.4   |
+| AMD, π0.5          | Action  | BF16       | 8.09      | 7.3       | 636    | 0.12     | 2.49     | 3.3   |
+| AMD, GR00T N1.7    | Vision  | BF16       | 99.51     | 349.5     | 808    | 5.88     | 3.16     | 16.9  |
+| AMD, GR00T N1.7    | Prefill | BF16       | 49.79     | 351.5     | 2233   | 5.92     | 8.72     | 5.7   |
+| AMD, GR00T N1.7    | Action  | BF16       | 24.21     | 101.4     | 2199   | 1.71     | 8.59     | 2.8   |
 
-Table 15 (action per denoising step); Ratio = time over the larger of the two bounds.
+Table 15 (action per denoising step); F = floating-point operations and W = weight bytes of the stage, counted from the GEMM shapes in the number format of its kernels; Ratio = time over the larger of the two bounds.
 - Insight 3 (authors): after optimization no single resource limits VLA inference; bandwidth limits few-token stages such as denoising on the Jetson, kernels limit vision encoding and prefill, and the host CPU limits preprocessing. Edge hardware needs bandwidth and a fast CPU more than peak compute, and inference software must fuse the kernels around the GEMMs and streamline preprocessing.
 
 ## Reading notes (inference)
