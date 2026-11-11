@@ -1,7 +1,7 @@
 ---
 type: paper
 tags: [vla, smolvla, edge, flow-matching, layer-skipping, async-inference]
-sources: [arxiv:2506.01844, https://arxiv.org/abs/2506.01844, https://huggingface.co/blog/smolvla, https://github.com/huggingface/lerobot/blob/main/src/lerobot/policies/smolvla/modeling_smolvla.py, https://github.com/huggingface/lerobot/blob/main/src/lerobot/policies/smolvla/smolvlm_with_expert.py]
+sources: [arxiv:2506.01844, https://arxiv.org/abs/2506.01844, https://huggingface.co/blog/smolvla, https://github.com/huggingface/lerobot/blob/main/src/lerobot/policies/smolvla/modeling_smolvla.py, https://github.com/huggingface/lerobot/blob/main/src/lerobot/policies/smolvla/smolvlm_with_expert.py, https://huggingface.co/lerobot/smolvla_base, https://huggingface.co/HuggingFaceTB/SmolVLM2-500M-Video-Instruct/blob/main/config.json]
 ---
 # SmolVLA: A vision-language-action model for affordable and efficient robotics
 
@@ -30,6 +30,24 @@ SmolVLA is a 450M-parameter VLA: a truncated SmolVLM-2 backbone plus a roughly 1
 - **Limitations (§5.1):** pretraining data is a single robot type (SO100); no long-horizon reasoning; dataset diversity; the VLM backbone was pretrained mainly on document and OCR tasks, and its suitability for robotics is untested.
 - **Released config (first-party, `lerobot/smolvla_base`):** backbone `SmolVLM2-500M-Video-Instruct`, `num_vlm_layers` 16, three cameras resized with padding to 512×512, language padded to 48 tokens, chunk 50, 10 steps, expert width multiplier 0.75.
 - **Reference code (first-party, `lerobot` main branch: `policies/smolvla/modeling_smolvla.py`, `smolvlm_with_expert.py`):** `sample_actions` embeds images, language and state into one prefix, runs it through the VLM layers once and keeps the per-layer keys and values (`use_cache` defaults to true), then calls `denoise_step` `num_steps` = 10 times inside an Euler integrator. Each step embeds the noisy chunk (`chunk_size` 50 tokens): a linear projection, joined to a sinusoidal embedding of the flow time and passed through a two-layer SiLU MLP. Cross-attention layer i of the expert reads the cached keys and values of VLM layer i and applies the expert's own key and value projections (inside every step, so the projected prefix is not itself cached); every second layer (`self_attn_every_n_layers` 2) is self-attention, where the action tokens are causal among themselves and the cached prefix is also visible (the paper text mentions only attention among action tokens). A linear layer maps the expert output to the velocity; the cache is cropped back to the prefix after each step. Read from the main branch at the time of writing; the code can change.
+
+## Layer dimensions (released checkpoint)
+First-party. Shapes and counts were read from the tensor names and shapes in the `lerobot/smolvla_base` `model.safetensors` header, and checked against the `SmolVLM2-500M-Video-Instruct` `config.json` and `smolvlm_with_expert.py` (main branch). The vision config leaves its layer count and MLP size at class defaults, so for those two the header is the source. Parameter counts are summed from the header shapes; the total is 450.0M.
+
+| Part                    | Layers                     | Width | Attention                                                              | MLP                  | Params |
+| ----------------------- | -------------------------- | ----- | ---------------------------------------------------------------------- | -------------------- | ------ |
+| Vision encoder (SigLIP) | 12                         | 768   | 12 heads; 512×512 input, patch 16, 1024 patches                        | 3072                 | 86.4M  |
+| Connector               | 1 linear                   | 960   | pixel shuffle, scale factor 4: 1024 patches → 64 tokens of 12288 → 960 | n/a                  | 11.8M  |
+| LLM (SmolLM2)           | 16 kept of 32              | 960   | 15 query heads, 5 key/value heads, head size 64                        | 2560 (gated, SwiGLU) | 157.3M |
+| Action expert           | 16                         | 720   | queries projected to 15 × 64 = 960; keys/values 5 × 64 = 320           | 2048 (gated)         | 98.2M  |
+| Token embedding         | n/a                        | 960   | vocabulary 49280                                                       | n/a                  | 47.3M  |
+| LM head                 | n/a                        | 960   | vocabulary 49280                                                       | n/a                  | 47.3M  |
+| Action, time, state I/O | small linears and time MLP | n/a   | n/a                                                                    | n/a                  | ~1.5M  |
+
+- **Expert layer pattern:** layers 0, 2, 4, … are self-attention, where key and value projections map 720 → 320. Layers 1, 3, 5, … are cross-attention, where they map the VLM's 320-wide keys and values to 320. The cross-attention key and value weights are stored in FP32, the rest in BF16.
+- **Expert sizing rule** (`get_intermediate_size`): MLP width = 4 × (2/3 × 720), rounded up to a multiple of 256, gives 2048. The expert copies the LLM config, so it keeps 15 heads of size 64 at width 720.
+- **The LM head is stored but not called.** In the reference code `lm_head` appears only in the parameter-freezing logic. Action generation runs the inner model (vision encoder, connector, LLM layers) and the expert, and never decodes text. The token embedding is used only as a lookup for the 48 prompt tokens.
+- **Input shapes in the config:** `input_features` lists 256×256 camera images and a 6-dimensional state and action. Images are resized with padding to 512×512 before the encoder. State and action are padded to `max_state_dim` and `max_action_dim` 32.
 
 ## Related
 See also: [OpenVLA](openvla.md) and [π0](pi0.md) (baselines).
