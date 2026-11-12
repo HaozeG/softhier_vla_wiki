@@ -1,0 +1,1 @@
+Log of changes the project made to upstream infrastructure (such as the GVSoC simulator): upstream status, measured impact and links, keyed by finding ID. The patch files themselves stay in the code repository.
