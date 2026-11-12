@@ -5,6 +5,8 @@ sources: [session:scope-and-no-derived-content]
 ---
 # 0013: Scope is physical AI; notes state what sources say, not derived content
 
+Revised by [Labelled derived content in status and patch logs](2026-11-12-status-and-patch-logs.md): `memories/status/` and `memories/patches/` may hold labelled derived content.
+
 ## Context
 The wiki began as the knowledge base for one question, how VLA models run on a small chip. Over time `knowledge/` also gained content that no source states: an arithmetic estimate of a SmolVLA call on a 10-TOPS device, a note of design implications for SoftHier-VLA, "rules of thumb", "choosing a method" mappings and hypotheses. It was written before any rule governed it and was never reviewed, and it can mislead a later reader, who cannot tell a source's measurement from our extrapolation. What the project needs from the wiki is a clear and complete statement of what each concept and technique is, what it acts on and how the parts relate, so that later, more advanced discussions of techniques and their combinations stand on a solid base.
 

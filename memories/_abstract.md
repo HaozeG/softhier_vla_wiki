@@ -1,1 +1,1 @@
-What the project has decided and learned; today only decisions/ (SoftHier-VLA project decisions). Wiki design decisions live in wiki-design/.
+What the project has decided, where it stands and what it changed upstream: decisions/, status/ and patches/. Only status/ and patches/ may hold the project's own labelled results. Wiki design decisions live in wiki-design/.

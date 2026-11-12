@@ -6,7 +6,7 @@ Top-level map. Topic: physical AI (robots that perceive and act in the physical 
 - `glossary/` — grouped term definitions to look up while reading, with an A to Z index. Convention and project terms are loaded into project sessions.
 - `resources/` — 25 source notes in three topic folders (models, surveys, serving), tagged by evidence tier.
 - `knowledge/` — synthesis on SoftHier and on VLA models (first area covered: how they are built); start with `softhier-and-the-project.md` and `one-vla-call.md`.
-- `memories/` — project memory; `memories/decisions/` holds project decision records (none yet).
+- `memories/` — project memory: `decisions/` (project decision records), `status/` (where the project stands, by theme) and `patches/` (changes made to upstream infrastructure); only `status/` and `patches/` may hold the project's own labelled results.
 
 **Wiki side** (how the wiki works)
 - `wiki-design/` — decisions about the wiki and runbooks (ingest a source, review health).

@@ -19,10 +19,12 @@ An LLM-maintained wiki for the SoftHier-VLA project. It combines three ideas:
 |---|---|
 | `resources/<topic>/` | one faithful note per external source, grouped by topic (models, surveys) |
 | `glossary/` | grouped term definitions (field, convention, project scope); the plugin lists the names of convention and project terms at session start; definitions are looked up on demand (`wiki.py glossary`) |
-| `knowledge/` | synthesized concept/entity notes; start with `softhier-and-the-project.md` and `one-vla-call.md` |
+| `knowledge/` | synthesized concept/entity notes (what sources say; no derived content, [decision 0013](wiki-design/decisions/0013-scope-and-no-derived-content.md)); start with `softhier-and-the-project.md` and `one-vla-call.md` |
 | `memories/decisions/` | project decisions (`YYYY-MM-DD-<slug>.md`) |
+| `memories/status/` | project status log, one entry per theme; with `memories/patches/` the only folders that may hold the project's own results (derived content), each claim labelled `measured`, `estimate` or `inference` and linked to its commit-pinned source ([decision](wiki-design/decisions/2026-11-12-status-and-patch-logs.md)) |
+| `memories/patches/` | log of changes made to upstream infrastructure, keyed by finding ID: upstream status, measured impact, links; the patch files stay in the code repository |
 | `wiki-design/` | how the wiki works: `decisions/` (wiki design records) and `runbooks/` (ingest a source, review health) |
-| `tools/` | `wiki.py`, note templates (`concept entity paper decision runbook comparison`), commit-msg hook, `diagram.py` (ASCII diagrams), `arxiv.py` (arXiv paper to Markdown from its HTML: LaTeX equations, table cells) |
+| `tools/` | `wiki.py`, note templates (`concept entity paper decision runbook comparison status patch`), commit-msg hook, `diagram.py` (ASCII diagrams), `arxiv.py` (arXiv paper to Markdown from its HTML: LaTeX equations, table cells) |
 | `.claude/agents/wiki-health.md` | subagent that runs and triages `health` |
 
 ### Quick start
