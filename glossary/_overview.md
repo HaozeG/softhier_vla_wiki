@@ -25,4 +25,4 @@ Look terms up here while you read; you do not need to read it first. The best or
 - [Evidence](evidence.md) — words for how strong a claim's evidence is
 - [Deployment hardware](deployment-hardware.md) — the chip and the words for profiling and speeding up a workload on hardware
 - [Symbols and conventions](symbols-and-conventions.md) — letters and notation used across notes
-- [Project terms](project-terms.md) — terms specific to SoftHier-VLA, each defined by a decision
+- [Project terms](project-terms.md) — terms specific to SoftHier-VLA, defined by a decision, the project README or the maintainer (such as the level names the VLA, S0, S2+S1)
