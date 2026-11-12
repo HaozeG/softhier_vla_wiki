@@ -1,0 +1,1 @@
+Project status log: where SoftHier-VLA stands, one entry per theme of work, in sequence. Entries may hold the project's own results, each claim labelled measured, estimate or inference and linked to its source.
