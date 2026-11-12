@@ -11,6 +11,7 @@ The project runs SoftHier on GVSoC branch `soft_hier_release` at upstream commit
 
 - Upstream status: no upstream pull request is recorded in either file. The design names F13, F14, F15 (with F3), F16 and F17 as upstream candidates and F5 as a feature the stock tree lacks; F1 and F8 follow the owner's notes and have no effect on this workload.
 - Not patched, so not in the table: F2, F4, F6, F7, F9 to F11 (no symptom), F12 (host-speed models, patch not available), F19 (open, not investigated).
+- Later findings (F20 onward), in the hand-written kernels and the simulator defects they hit, are in [SoftHier kernel repository (implementation/) patches](softhier-kernel-repo.md).
 
 ## Patches
 | Finding     | Patch (as of e832bfb)                                                                                                                                                                     | Change                                                                                          | Upstream status                                                                      | Measured impact (simulated on GVSoC, or build)                                                                                                | Label    | Status  | Source                                                                                                                                                                                                                                                                                         |

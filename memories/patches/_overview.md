@@ -11,3 +11,4 @@ A log of the changes SoftHier-VLA made to upstream infrastructure, one note (typ
 
 **Catalog**
 - [GVSoC soft_hier_release patches](gvsoc-soft-hier-release.md) — the ten patches on upstream `d806a84`, by finding: what each changes, upstream status, measured impact.
+- [SoftHier kernel repository (implementation/) patches](softhier-kernel-repo.md) — fixes and simulator workarounds on the kernel branch `gelu-layernorm-kernels` (F20 onward): output check, preload address, sigmoid/SiLU NaN, constant loads, fp16 conversion, fp_ss NaN-boxing, vfmv.v.f.
