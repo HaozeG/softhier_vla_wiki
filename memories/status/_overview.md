@@ -1,6 +1,6 @@
 # memories/status/
 
-**Current state.** SmolVLA runs end to end on simulated SoftHier (GVSoC with a ten-patch series, compiled by softhier-mlir) and matches its golden reference in the published one-camera configuration; the LIBERO two-camera latency exists only as an estimate from partial runs, and the policy's LIBERO success rate was measured on a GPU. Details and labels: [Basic integration of components](basic-integration-of-components.md).
+**Current state.** SmolVLA runs end to end on simulated SoftHier (GVSoC with a ten-patch series, compiled by softhier-mlir) and matches its golden reference in the published one-camera configuration; the LIBERO two-camera latency exists only as an estimate from partial runs, and the LIBERO checkpoint's success rate was measured on a GPU. Details and labels: [Basic integration of components](basic-integration-of-components.md).
 
 **Rules** ([status and patch logs](../../wiki-design/decisions/2026-11-12-status-and-patch-logs.md)):
 - One entry (note type `status`) per theme of work. Title it by theme, never by date or pull-request number, for example "Basic integration of components" or "Analyzing the needs of one model: SmolVLA".
