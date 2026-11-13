@@ -1,6 +1,6 @@
 # memories/status/
 
-**Current state.** SmolVLA runs end to end on simulated SoftHier (GVSoC with a ten-patch series, compiled by softhier-mlir) and matches its golden reference in the published one-camera configuration; the LIBERO two-camera latency exists only as an estimate from partial runs, and the LIBERO checkpoint's success rate was measured on a GPU. Details and labels: [Basic integration of components](basic-integration-of-components.md).
+**Current state.** SmolVLA runs end to end on simulated SoftHier (GVSoC with a ten-patch series, compiled by softhier-mlir) and matches its golden reference in the published one-camera configuration; the LIBERO two-camera latency exists only as an estimate from partial runs, and the LIBERO checkpoint's success rate was measured on a GPU. Details and labels: [Basic integration of components](basic-integration-of-components.md). The model's needs are now stated (operator graph, compiler walk-through, four research questions), and a baseline composed from hand-written SoftHier kernels gives 79.2 ms per LIBERO call on a 16-cluster mesh (estimate), dominated by matrix products: [Analyzing the needs of one model: SmolVLA](analyzing-the-needs-of-one-model-smolvla.md).
 
 **Rules** ([status and patch logs](../../wiki-design/decisions/2026-11-12-status-and-patch-logs.md)):
 - One entry (note type `status`) per theme of work. Title it by theme, never by date or pull-request number, for example "Basic integration of components" or "Analyzing the needs of one model: SmolVLA".
@@ -12,3 +12,4 @@
 
 **Catalog (in sequence)**
 - [Basic integration of components](basic-integration-of-components.md) — simulator, compiler, golden reference and LIBERO evaluation joined; SmolVLA latency on simulated SoftHier (published configuration measured, LIBERO estimated) and LIBERO success rate on GPU.
+- [Analyzing the needs of one model: SmolVLA](analyzing-the-needs-of-one-model-smolvla.md) — operator graph with compute and bytes per operator, compiler walk-through, research questions, and a composed baseline from hand-written kernels (79.2 ms, estimate).
