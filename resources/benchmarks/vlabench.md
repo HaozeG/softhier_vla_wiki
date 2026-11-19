@@ -1,7 +1,7 @@
 ---
 type: paper
 tags: [benchmark, simulation, evaluation, mujoco, language-conditioned-manipulation, generalization, long-horizon, vlm-evaluation]
-sources: [https://vlabench.github.io/media/VLAbench_arxiv_v1.pdf, arxiv:2412.18194, https://arxiv.org/abs/2412.18194, https://vlabench.github.io/]
+sources: [https://vlabench.github.io/media/VLAbench_arxiv_v1.pdf, arxiv:2412.18194, https://arxiv.org/abs/2412.18194, https://vlabench.github.io/, https://huggingface.co/datasets/VLABench/vlabench_primitive_ft_lerobot, https://huggingface.co/datasets/VLABench/vlabench_primitive_ft_lerobot_video, https://huggingface.co/datasets/VLABench/vlabench_primitive_rlds_resize224]
 ---
 # VLABench: A Large-Scale Benchmark for Language-Conditioned Robotics Manipulation with Long-Horizon Reasoning Tasks
 
@@ -23,12 +23,20 @@ VLABench is an open-source MuJoCo benchmark of 100 language-conditioned manipula
 **Simulation and data**
 - **Simulator and robot (§3.3, §7.2):** MuJoCo with dm_control. Standard evaluation uses a 7-DoF Franka Panda with a parallel gripper; end-effector position and quaternion are converted to joint angles by inverse kinematics. Other arms, dual-arm, humanoid, quadruped and mobile robots are supported.
 - **Assets and scenes (§3.3, §7.1, §7.3, Table 3):** assets from RoboCasa, Objaverse, online model sites, and text/image-to-3D generation; 163 categories, 2,164 items; over 20 scene types. Grasp points were pre-annotated with GraspNet and receptacle boxes with SAM, then refined by hand.
-- **Observations (§6.2):** multi-view RGB-D, segmentation, point clouds, proprioception, sparse reward; demonstrations follow an RLDS-like layout.
+- **Observations (§6.2):** multi-view RGB-D, segmentation, point clouds, proprioception, sparse reward; demonstrations follow an RLDS-like layout. The paper does not state a camera count for policy training. Fig. 8 shows front, left-shoulder and right-shoulder views. The VLM evaluation samples four views per scene (§4.3, Fig. 6).
+- **Released fine-tuning datasets (Hugging Face, `meta/info.json`, checked directly):**
+
+| Dataset                                                         | Camera views                              | Resolution                  | Robot, rate                     | State, action |
+| --------------------------------------------------------------- | ----------------------------------------- | --------------------------- | ------------------------------- | ------------- |
+| `VLABench/vlabench_primitive_ft_lerobot` (and `_lerobot_video`) | 3: `image`, `second_image`, `wrist_image` | 480 x 480 RGB               | `panda`, 10 fps, 5,000 episodes | 7, 7          |
+| `VLABench/vlabench_primitive_rlds_resize224`                    | not checked                               | 224 (resized, per the name) |                                 |               |
+
+  Which physical camera each of `image` and `second_image` is, is not stated in the metadata.
 - **Domain randomization (§6.3):** mesh instance (for example one of 20 apples), position ±0.05 in x and y, yaw ±π/10, scale 0.95–1.05, lighting 0.8–1.2, scene textures, and optional distractor objects.
 - **Automatic demonstrations (§3.4, §8):** task-specific planners call a skill library written as a domain-specific language (DSL) with skills, parameters and execution sequences; parameters come from annotations and the scene. Trajectories use RRT, SLERP for rotations and Bezier smoothing, with rejection sampling on gripper-scene point-cloud overlap and early stop on failure. GPT-4 writes ten instruction variants per data point.
 
 **Results: fine-tuned VLAs (§4.1, §9.1, Table 2; scores are PS on a 0–100 scale)**
-- **Setup:** OpenVLA (LoRA), Octo and RDT-1B (full fine-tuning) with authors' default hyperparameters, fixed epochs, trained to convergence on 4 A800 80 GB GPUs. 100 trajectories per task category, 1,600 in total, joint training on base and common-sense data. OpenVLA and Octo take one camera view, RDT-1B three.
+- **Setup:** OpenVLA (LoRA), Octo and RDT-1B (full fine-tuning) with authors' default hyperparameters, fixed epochs, trained to convergence on 4 A800 80 GB GPUs. 100 trajectories per task category, 1,600 in total, joint training on base and common-sense data. OpenVLA and Octo take one camera view, RDT-1B three: the authors "adhere to the default configurations of these models" (§9.1), so each model gets the views its own setup accepts, not a benchmark-wide number.
 - **Seen / unseen objects, average over eight primitive tasks (Table 2a):** base tasks Octo 1.34 / 0.77, OpenVLA 11.74 / 7.93, RDT-1B 15.37 / 9.08; common-sense tasks Octo 1.16 / 0.96, OpenVLA 8.46 / 5.11, RDT-1B 11.97 / 3.61. The best single cell is OpenVLA on Select Painting, 40.20 seen.
 - **Out-of-domain language (2b), unseen similar tasks (2c), composite tasks (2d), averages:** Octo 0.00 / 0.00 / 0.00; OpenVLA 4.15 / 4.46 / 2.66; RDT-1B 4.31 / 3.85 / 3.34.
 - **Authors' reading (§4.1):** RDT-1B learns skills better; OpenVLA, limited by action discretization and single-frame input, learns skills worse but keeps more on unseen-object common-sense tasks, which they credit to its Llama 2 7B base. They put current VLAs "far from" a GPT-2-level stage.
