@@ -114,7 +114,7 @@ Closed loop. RTT_max is the compiled synchronous round trip including transfer (
 
 ## Open questions
 These are things the source does not cover:
-- Smaller or distilled heads: 1-step distilled heads are not measured in either benchmark; Jung et al. say they can remove the memory-bound stage. SmolVLA ([note](smolvla.md)) is timed by VLA-HWBench (191 ms on the Jetson, eager) but not profiled on a roofline.
+- Smaller or distilled heads: 1-step distilled heads are not measured in either benchmark; Jung et al. say they can remove the memory-bound stage. SmolVLA ([note](smolvla.md)) is timed by VLA-HWBench (191 ms on the Jetson, eager) and, read from figures only, by [Zhou et al.](../resources/serving/vla-xpu-characterization-sjtu.md) on five accelerators (about 90 ms on the RTX 4090, 198 ms on Thor, 776 ms on the AGX Orin, action expert the largest stage on each), but neither profiles it on a roofline.
 - Real robots, and non-NVIDIA accelerators beyond VLA-HWBench's AMD integrated GPU and Zhou et al.'s Ascend and Intel timings, which have no bottleneck analysis.
 - How latency and task success trade off: Jung et al. measure success only in a simulation whose timing is not fully specified, VLA-HWBench measures no success, and Zhou et al. assume success does not depend on the platform.
 - The action dimension and exact token counts behind each head GEMM. The paper gives only above or below the ridge point, not per-stage intensities.

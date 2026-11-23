@@ -42,6 +42,18 @@ Success rate is a single simulation score per model, assumed to be the same on e
 - Selection guideline for π0: latency priority → RTX 4090 (then Thor); cost priority → B60 Pro (then 310P); energy priority → Thor (then Orin) (§3.2).
 - Real-robot energy (App A.2, Fig 12; π0.5 on a Franka arm, four-stage pick-and-place task, platforms that run at about 5 Hz). Inference hardware and arm power are measured separately. Total task time / inference-hardware energy: RTX 4090 55.50 s / 17.27 kJ; Jetson Thor 65.20 s / 8.71 kJ; B60 Pro 78.57 s / 34.58 kJ (read from the figure). The paper concludes that Thor is the most energy-efficient end to end and the RTX 4090 the fastest. No success rate is reported for this run.
 - Fig 3 latency breakdown (vision, VLM, action expert, other) shows the action expert as the largest part of π0, SmolVLA and GR00T on every platform shown (read from the figure).
+- SmolVLA per platform (Fig 2 frequency bars, log scale; Fig 3 stacked latency bars). The paper prints no SmolVLA numbers; the values below were read from the figures by pixel measurement of the 400-dpi PDF render, calibrated on the axis ticks (Fig 3) and the 1 Hz and 10 Hz reference lines (Fig 2). Check: the same reading gives π0 on the RTX 4090 101 ms in Fig 3 against 102.3 ms in Table 1. Fig 2 and Fig 3 agree within about 3%. Treat each value as ±5 ms or ±5%, whichever is larger. Eager mode is assumed from Table 1 (see Caveats); precision, camera count and step count for SmolVLA are not stated.
+
+| Platform     | Vision, ms | VLM, ms | Action expert, ms | Other, ms | Total (Fig 3), ms | Fig 2, Hz |
+| ------------ | ---------- | ------- | ----------------- | --------- | ----------------- | --------- |
+| RTX 4090     | 9          | 8       | 67                | 5         | 90                | 10.8      |
+| Jetson Thor  | 30         | 16      | 152               | ≈0        | 198               | 5.0       |
+| Intel B60    | 32         | 19      | 203               | 6         | 261               | 3.75      |
+| Ascend 310P  | 172        | 40      | 274               | ≈0        | 486               | 2.0       |
+| AGX Orin     | 54         | 66      | 621               | 34        | 776               | 1.27      |
+| Intel i7 CPU | —          | —       | —                 | —         | —                 | 0.29      |
+
+- SmolVLA is not shown on the Ascend 310B in Fig 2 (no bar), and the CPU appears in Fig 2 only (§3.2).
 
 **Two-phase profile of π0 (§4.1, Fig 5; Nsight Systems on RTX 4090, AGX Orin, Jetson Thor)**
 - Time share: vision 12%, VLM backbone 28% ± 1%, action expert 59% ± 1% (Fig 5).
