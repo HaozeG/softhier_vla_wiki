@@ -4,11 +4,13 @@ tags: [status, smolvla, softhier, workload, operator-graph, compiler, kernels, b
 sources: [https://github.com/HaozeG/SoftHier-VLA/blob/32855521f1abbbef01ba7302e4305d75acff099f/docs/designs/stage1-problem-definition.md, https://github.com/HaozeG/SoftHier-VLA/blob/32855521f1abbbef01ba7302e4305d75acff099f/docs/analysis/smolvla-op-graph.md, https://github.com/HaozeG/SoftHier-VLA/blob/32855521f1abbbef01ba7302e4305d75acff099f/docs/analysis/compiler-walkthrough.md, https://github.com/HaozeG/SoftHier-VLA/blob/32855521f1abbbef01ba7302e4305d75acff099f/docs/analysis/stage-totals.md, https://github.com/HaozeG/SoftHier-VLA/blob/32855521f1abbbef01ba7302e4305d75acff099f/docs/analysis/crosscheck.md, https://github.com/HaozeG/SoftHier-VLA/blob/32855521f1abbbef01ba7302e4305d75acff099f/infra/workload-modeling/constants.yaml, https://github.com/HaozeG/gvsoc/commit/dc749bc2ac975698ba01046e28a3cb57a4f02e42, memories/patches/softhier-kernel-repo.md]
 evidence: [measured, estimate, inference]
 follows: [basic-integration-of-components.md]
-superseded_by: []
+superseded_by: [stage-1-kernel-baseline-on-h1-smolvla.md]
 ---
 # Analyzing the needs of one model: SmolVLA
 
 ## Summary
+Superseded for the baseline by [Stage-1 kernel baseline on H1: SmolVLA](stage-1-kernel-baseline-on-h1-smolvla.md): the 79.2 ms baseline below ran on the 16-cluster kernel-repo arch and was removed from the repository; the operator graph, compiler walk-through and research questions still stand.
+
 The second stage took one model, SmolVLA in the LIBERO two-camera configuration, and stated what it needs from a tile-based chip: an operator graph with each operator's FLOP, bytes and FLOP per weight byte; a walk-through of how softhier-mlir lowers the model onto SoftHier's units; four quantified research questions; and a baseline latency composed from hand-written SoftHier kernels, one per operator, simulated alone at the model's shapes. The baseline is 79.2 ms per inference call on a 16-cluster mesh (estimate: a sum of standalone kernel runs). With hand-written kernels the matrix products dominate (73 %), whereas PR1's compiled path spent about 60 % in row operators.
 
 The note gives the diagram, then the evidence table (model and workload, compiler, hardware, kernels, baseline), then open questions.
