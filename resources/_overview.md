@@ -4,5 +4,6 @@ One faithful note per external source, cited by the knowledge notes. Grouped by 
 
 - `models/` — 17 notes: the VLAs compared here (RT-2, OpenVLA, pi0, GR00T N1, SmolVLA, Helix, ...), their action representations, RL methods on top of VLAs, and the single-task imitation policies ACT and Diffusion Policy.
 - `benchmarks/` — 1 note: VLABench, a simulation benchmark of 100 knowledge-, language- and long-horizon manipulation tasks with baseline results for VLAs, LLM workflows and VLMs.
+- `hardware/` — 1 note: compilers and architectures for tile-based, inter-core connected and dataflow AI chips.
 - `serving/` — 1 note: a workload characterization of VLA inference at batch size 1 (stage latency, roofline, DVFS on Jetson SoCs, closed-loop overlap).
 - `surveys/` — 7 notes: surveys (VLA components, action tokenization, dual-system VLAs, world action models), tutorials (robot learning, flow matching and diffusion) and a community guide to embodied AI.
